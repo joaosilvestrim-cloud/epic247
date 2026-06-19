@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   motion,
   useInView,
+  useMotionValueEvent,
   useScroll,
   useSpring,
   useTransform,
@@ -143,9 +144,11 @@ function HeroBackground() {
 /* ───────────────────────────── página ───────────────────────────── */
 
 export default function Landing({ settings }: { settings: SiteSettings }) {
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress, scrollY } = useScroll();
   const barWidth = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const scaleX = useTransform(barWidth, [0, 1], [0, 1]);
+  const [scrolled, setScrolled] = useState(false);
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 40));
 
   return (
     <main className="overflow-x-hidden bg-offwhite">
@@ -155,24 +158,49 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         className="fixed left-0 top-0 z-50 h-1 w-full origin-left bg-gradient-to-r from-gold to-gold-soft"
       />
 
+      {/* cabeçalho */}
+      <header
+        className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
+          scrolled
+            ? "border-b border-gold/15 bg-navy-deep/90 py-3 backdrop-blur"
+            : "bg-transparent py-5"
+        }`}
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="flex items-baseline gap-2.5">
+            <span className="font-display text-xl font-black tracking-tight text-white">
+              EPIC<span className="text-gold">247</span>
+            </span>
+            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.3em] text-white/45 sm:inline">
+              Módulo Energia
+            </span>
+          </Link>
+          <nav className="flex items-center gap-2 sm:gap-5">
+            <Link
+              href="/quiz"
+              className="hidden text-sm font-medium text-white/70 transition hover:text-white sm:inline"
+            >
+              Diagnóstico
+            </Link>
+            <a
+              href="#oferta"
+              className="rounded-xl bg-gold px-4 py-2 text-sm font-bold text-navy-deep shadow-[0_6px_20px_-8px] shadow-gold/70 transition hover:brightness-110"
+            >
+              Quero o acesso
+            </a>
+          </nav>
+        </div>
+      </header>
+
       {/* ───────────── Bloco 1: Hero ───────────── */}
       <section className="relative isolate flex min-h-screen items-center justify-center px-6 py-24 text-white">
         <HeroBackground />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <motion.span
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-block rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-gold-soft"
-          >
-            EPIC247 · Módulo Energia
-          </motion.span>
-
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="mt-8 text-balance font-display text-4xl font-black leading-[1.08] sm:text-6xl"
+            className="text-balance font-display text-4xl font-black leading-[1.08] sm:text-6xl"
           >
             Você sabe muito, planeja bem, e mesmo assim não sai do lugar.
             <span className="mt-4 block text-gold-gradient">
