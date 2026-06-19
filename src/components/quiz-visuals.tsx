@@ -7,6 +7,21 @@ import { animate, motion, useMotionValue, useTransform } from "framer-motion";
  * Fundo aurora animado. `heat` (0..1) desloca a paleta do azul (cheio de energia)
  * para o vermelho/âmbar (drenado), reforçando a narrativa da Bateria Vital.
  */
+const AURORA_PARTICLES = [
+  { top: "14%", left: "10%", size: 5, delay: 0, dur: 4 },
+  { top: "24%", left: "84%", size: 3, delay: 0.7, dur: 5 },
+  { top: "42%", left: "18%", size: 4, delay: 1.3, dur: 4.5 },
+  { top: "60%", left: "74%", size: 6, delay: 0.3, dur: 3.6 },
+  { top: "72%", left: "28%", size: 3, delay: 1.0, dur: 5.2 },
+  { top: "33%", left: "55%", size: 4, delay: 1.8, dur: 4.2 },
+  { top: "82%", left: "88%", size: 5, delay: 0.5, dur: 3.9 },
+  { top: "18%", left: "44%", size: 3, delay: 1.4, dur: 4.8 },
+  { top: "66%", left: "50%", size: 4, delay: 2.0, dur: 4.1 },
+  { top: "50%", left: "92%", size: 3, delay: 0.9, dur: 5.5 },
+  { top: "88%", left: "60%", size: 4, delay: 1.6, dur: 4.3 },
+  { top: "8%", left: "70%", size: 3, delay: 2.2, dur: 5.0 },
+];
+
 export function Aurora({ heat }: { heat: number }) {
   // Interpola cores conforme o nível de "calor" (drenagem).
   const blobA = lerpColor([216, 183, 101], [244, 63, 94], heat); // dourado -> vermelho
@@ -15,6 +30,18 @@ export function Aurora({ heat }: { heat: number }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-quiz-grid opacity-40" />
+
+      {/* sheen rotativo de fundo */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 h-[140vmax] w-[140vmax] -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
+        style={{
+          background:
+            "conic-gradient(from 0deg, transparent, rgba(216,183,101,0.6), transparent 30%, transparent 60%, rgba(216,183,101,0.4), transparent)",
+        }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 60, ease: "linear", repeat: Infinity }}
+      />
+
       <motion.div
         className="absolute -left-32 -top-32 h-[28rem] w-[28rem] rounded-full blur-[120px] animate-float-blob"
         animate={{ backgroundColor: `rgba(${blobA},0.45)` }}
@@ -31,6 +58,24 @@ export function Aurora({ heat }: { heat: number }) {
         animate={{ backgroundColor: `rgba(${blobA},0.30)` }}
         transition={{ duration: 0.8 }}
       />
+
+      {/* partículas de energia */}
+      {AURORA_PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="absolute rounded-full bg-gold-soft animate-float-soft"
+          style={{
+            top: p.top,
+            left: p.left,
+            width: p.size,
+            height: p.size,
+            opacity: 0.5,
+            boxShadow: "0 0 8px rgba(216,183,101,0.8)",
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.dur}s`,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -149,6 +194,11 @@ export function VitalBattery({
         ? { base: "#c09840", glow: "192,152,64" }
         : { base: "#f43f5e", glow: "244,63,94" };
 
+  // Tamanhos proporcionais à largura para a bateria ficar responsiva.
+  const pctSize = Math.max(11, Math.round(width * 0.24));
+  const boltSize = Math.max(13, Math.round(width * 0.3));
+  const capH = Math.max(7, Math.round(width * 0.1));
+
   return (
     <div className="flex flex-col items-center">
       <div
@@ -160,7 +210,7 @@ export function VitalBattery({
           className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-[70%] rounded-md"
           style={{
             width: width * 0.34,
-            height: 12,
+            height: capH,
             backgroundColor: color.base,
           }}
         />
@@ -217,9 +267,17 @@ export function VitalBattery({
           <div className="pointer-events-none absolute inset-0 rounded-[1.1rem] shadow-[inset_0_0_30px_rgba(0,0,0,0.4)]" />
 
           {/* conteúdo */}
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-            <span className="text-3xl animate-bolt-flicker drop-shadow-lg">⚡</span>
-            <span className="mt-1 text-3xl font-extrabold tabular-nums text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center leading-none">
+            <span
+              className="animate-bolt-flicker leading-none drop-shadow-lg"
+              style={{ fontSize: boltSize }}
+            >
+              ⚡
+            </span>
+            <span
+              className="mt-1 font-extrabold leading-none tabular-nums text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)]"
+              style={{ fontSize: pctSize }}
+            >
               {shown}%
             </span>
           </div>

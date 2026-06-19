@@ -11,6 +11,7 @@ import {
 } from "@/lib/quiz-engine";
 import { DRENOS } from "@/lib/drenos";
 import { Aurora, CountUp, VitalBattery } from "@/components/quiz-visuals";
+import { playStart, playTick, playComplete } from "@/lib/sound";
 
 type Etapa = "intro" | "perguntas" | "captura" | "relatorio";
 
@@ -33,11 +34,17 @@ export default function QuizPage() {
   const [resultado, setResultado] = useState<QuizResult | null>(null);
   const [flash, setFlash] = useState<{ peso: number; key: number } | null>(null);
   const [travado, setTravado] = useState(false);
+  const [som, setSom] = useState(true);
 
   const total = QUIZ_QUESTIONS.length;
   const questao = QUIZ_QUESTIONS[indice];
   const energia = calcularEnergia(respostas);
   const heat = 1 - energia / 100;
+
+  function iniciar() {
+    if (som) playStart();
+    setEtapa("perguntas");
+  }
 
   function responder(opcaoIndex: number) {
     if (travado) return;
@@ -46,6 +53,7 @@ export default function QuizPage() {
 
     setTravado(true);
     setRespostas(novas);
+    if (som) playTick();
     if (peso > 0) setFlash({ peso, key: questao.id });
 
     window.setTimeout(() => {
@@ -54,6 +62,7 @@ export default function QuizPage() {
         setIndice(indice + 1);
       } else {
         setResultado(calcularResultado(novas));
+        if (som) playComplete();
         setEtapa("captura");
       }
       setTravado(false);
@@ -71,18 +80,26 @@ export default function QuizPage() {
       <Aurora heat={etapa === "perguntas" ? heat : etapa === "intro" ? 0 : heat} />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8">
-        <Link
-          href="/"
-          className="text-sm text-white/40 underline-offset-4 transition hover:text-white hover:underline"
-        >
-          ← Início
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-sm text-white/40 underline-offset-4 transition hover:text-white hover:underline"
+          >
+            ← Início
+          </Link>
+          <button
+            onClick={() => setSom((s) => !s)}
+            aria-label={som ? "Desativar som" : "Ativar som"}
+            title={som ? "Som ligado" : "Som desligado"}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/60 transition hover:text-white"
+          >
+            {som ? "🔊" : "🔇"}
+          </button>
+        </div>
 
         <div className="flex flex-1 flex-col justify-center py-6">
           <AnimatePresence mode="wait">
-            {etapa === "intro" && (
-              <Intro key="intro" onStart={() => setEtapa("perguntas")} />
-            )}
+            {etapa === "intro" && <Intro key="intro" onStart={iniciar} />}
 
             {etapa === "perguntas" && (
               <motion.div
