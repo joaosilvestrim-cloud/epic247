@@ -345,8 +345,10 @@ export function DrenoRadar({
 }) {
   const cx = size / 2;
   const cy = size / 2;
-  const R = size * 0.33; // raio máximo dos dados
-  const labelR = size * 0.45;
+  const R = size * 0.32; // raio máximo dos dados
+  const labelR = R + size * 0.09;
+  const padX = size * 0.26; // espaço lateral para os rótulos não cortarem
+  const padY = size * 0.14;
 
   const angle = (i: number) => ((-90 + i * 72) * Math.PI) / 180;
   const at = (i: number, r: number): [number, number] => [
@@ -363,10 +365,10 @@ export function DrenoRadar({
 
   return (
     <svg
-      viewBox={`0 0 ${size} ${size}`}
-      width={size}
-      height={size}
-      className="max-w-full"
+      viewBox={`${-padX} ${-padY} ${size + padX * 2} ${size + padY * 2}`}
+      width="100%"
+      style={{ maxWidth: size + padX * 2, height: "auto" }}
+      className="select-none"
     >
       {/* anéis de grade (pentágonos) */}
       {rings.map((r, ri) => (
@@ -410,6 +412,9 @@ export function DrenoRadar({
       {RADAR_ORDER.map((id, i) => {
         const [px, py] = dataPts[i];
         const [lx, ly] = at(i, labelR);
+        const cosA = Math.cos(angle(i));
+        const anchor = cosA > 0.25 ? "start" : cosA < -0.25 ? "end" : "middle";
+        const dx = cosA > 0.25 ? 4 : cosA < -0.25 ? -4 : 0;
         const isSel = id === selected;
         return (
           <g
@@ -430,13 +435,13 @@ export function DrenoRadar({
               style={{ transformOrigin: `${px}px ${py}px` }}
             />
             <text
-              x={lx}
+              x={lx + dx}
               y={ly}
-              textAnchor="middle"
+              textAnchor={anchor}
               dominantBaseline="middle"
-              fontSize={size * 0.042}
+              fontSize={size * 0.04}
               fontWeight={isSel ? 800 : 500}
-              fill={isSel ? DRENOS[id].cor : "rgba(255,255,255,0.55)"}
+              fill={isSel ? DRENOS[id].cor : "rgba(255,255,255,0.6)"}
             >
               {RADAR_CURTO[id]}
             </text>
