@@ -41,6 +41,10 @@ export default function QuizPage() {
   const [flash, setFlash] = useState<{ peso: number; key: number } | null>(null);
   const [travado, setTravado] = useState(false);
   const [som, setSom] = useState(true);
+  const [emailInfo, setEmailInfo] = useState<{ enviado: boolean; email: string }>({
+    enviado: false,
+    email: "",
+  });
 
   const total = QUIZ_QUESTIONS.length;
   const questao = QUIZ_QUESTIONS[indice];
@@ -131,12 +135,20 @@ export default function QuizPage() {
                 key="captura"
                 resultado={resultado}
                 energia={energia}
-                onConcluir={() => setEtapa("relatorio")}
+                onConcluir={(info) => {
+                  setEmailInfo(info);
+                  setEtapa("relatorio");
+                }}
               />
             )}
 
             {etapa === "relatorio" && resultado && (
-              <Relatorio key="relatorio" resultado={resultado} energia={energia} />
+              <Relatorio
+                key="relatorio"
+                resultado={resultado}
+                energia={energia}
+                emailInfo={emailInfo}
+              />
             )}
           </AnimatePresence>
         </div>
@@ -328,7 +340,7 @@ function Captura({
 }: {
   resultado: QuizResult;
   energia: number;
-  onConcluir: () => void;
+  onConcluir: (info: { enviado: boolean; email: string }) => void;
 }) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -357,12 +369,12 @@ function Captura({
           scores: resultado.scores,
         }),
       });
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
         throw new Error(data?.error ?? "Falha ao enviar.");
       }
       trackLead({ content_name: resultado.dominante });
-      onConcluir();
+      onConcluir({ enviado: Boolean(data?.emailEnviado), email });
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Algo deu errado.");
     } finally {
@@ -439,9 +451,11 @@ function Captura({
 function Relatorio({
   resultado,
   energia,
+  emailInfo,
 }: {
   resultado: QuizResult;
   energia: number;
+  emailInfo: { enviado: boolean; email: string };
 }) {
   const dominante = DRENOS[resultado.dominante];
   const secundario = DRENOS[resultado.secundario];
@@ -489,6 +503,36 @@ function Relatorio({
           secundário: <strong className="text-white/70">{secundario.nome}</strong>
         </p>
       </div>
+
+      {/* Aviso de relatório enviado por e-mail */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-6 flex items-start gap-3 rounded-2xl border border-epic-accent/30 bg-epic-accent/10 p-4"
+      >
+        <span className="text-xl">📧</span>
+        <p className="text-sm text-white/80">
+          {emailInfo.enviado ? (
+            <>
+              Enviamos um <strong className="text-white">relatório completo e
+              detalhado em PDF</strong>
+              {emailInfo.email ? (
+                <>
+                  {" "}para <strong className="text-white">{emailInfo.email}</strong>
+                </>
+              ) : null}
+              . Confira sua caixa de entrada (e também o spam).
+            </>
+          ) : (
+            <>
+              Seu <strong className="text-white">relatório completo em PDF</strong>{" "}
+              está a caminho do seu e-mail. Se não chegar em alguns minutos,
+              verifique a caixa de spam.
+            </>
+          )}
+        </p>
+      </motion.div>
 
       {/* Radar interativo */}
       <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm">
