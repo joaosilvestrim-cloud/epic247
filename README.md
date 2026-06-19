@@ -58,6 +58,18 @@ pela função serverless (evita o limite de tamanho do Vercel).
    `settings` e o bucket público `assets`.
 3. Copie as credenciais (Project Settings > API) para o `.env.local`.
 
+## Funil, relatórios e rastreamento
+
+- **Relatório em PDF por dreno**: ao concluir o quiz, a rota `/api/lead` gera um
+  PDF do Dreno Dominante (`lib/pdf-report.ts`, conteúdo em `lib/report-content.ts`)
+  e envia por e-mail via **Resend** (`lib/email.ts`). O texto dos relatórios é um
+  rascunho estrutural — expanda com o conteúdo final.
+- **Páginas do funil**: `/obrigado` (pós-compra) e `/oto` (oferta única do
+  Protocolo R$270 com timer real de 30 min, persistido no `localStorage`).
+- **Rastreamento**: Meta Pixel + GA4 (`components/analytics.tsx`) e Conversions
+  API server-side (`lib/meta-capi.ts`, evento `Lead` disparado em `/api/lead`).
+  Eventos de client em `lib/analytics.ts` (`Lead`, `InitiateCheckout`).
+
 ## Variáveis de ambiente
 
 | Variável | Descrição |
@@ -66,6 +78,11 @@ pela função serverless (evita o limite de tamanho do Vercel).
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave anônima pública |
 | `SUPABASE_SERVICE_ROLE_KEY` | Chave service role (somente servidor) |
 | `ADMIN_PASSWORD` | Senha do painel `/admin` (use algo forte) |
+| `RESEND_API_KEY` | Chave da Resend para enviar o relatório por e-mail |
+| `EMAIL_FROM` | Remetente dos e-mails (ex.: `EPIC247 <contato@dominio>`) |
+| `NEXT_PUBLIC_META_PIXEL_ID` | ID do Meta Pixel |
+| `META_CAPI_TOKEN` | Token da Conversions API do Meta |
+| `NEXT_PUBLIC_GA4_ID` | ID de medição do GA4 (G-XXXX) |
 
 ## Estrutura
 

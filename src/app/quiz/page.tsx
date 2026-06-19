@@ -17,6 +17,7 @@ import {
   VitalBattery,
 } from "@/components/quiz-visuals";
 import { playStart, playTick, playComplete } from "@/lib/sound";
+import { trackLead } from "@/lib/analytics";
 
 type Etapa = "intro" | "perguntas" | "captura" | "relatorio";
 
@@ -360,6 +361,7 @@ function Captura({
         const data = await res.json().catch(() => null);
         throw new Error(data?.error ?? "Falha ao enviar.");
       }
+      trackLead({ content_name: resultado.dominante });
       onConcluir();
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Algo deu errado.");

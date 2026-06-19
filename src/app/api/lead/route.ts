@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { DRENOS, type DrenoId } from "@/lib/drenos";
+import { generateDrenoReportPdf } from "@/lib/pdf-report";
+import { sendReportEmail } from "@/lib/email";
+import { sendMetaEvent } from "@/lib/meta-capi";
 
 const DRENO_IDS: DrenoId[] = ["sono", "combustivel", "cortisol", "atencao", "movimento"];
 
@@ -28,31 +31,56 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Dreno dominante inválido." }, { status: 400 });
   }
 
+  const nomeStr = typeof nome === "string" ? nome : null;
+  const drenoNome = DRENOS[dominante].nome;
+
+  // 1) Persistir o lead (se o Supabase estiver configurado)
   const supabase = getServiceClient();
-
-  // Sem Supabase configurado: não quebra o fluxo do usuário em desenvolvimento.
-  if (!supabase) {
+  if (supabase) {
+    const { error } = await supabase.from("leads").insert({
+      nome: nomeStr,
+      email,
+      dreno_dominante: dominante,
+      dreno_secundario: isDrenoId(secundario) ? secundario : null,
+      scores: scores ?? null,
+      origem: "quiz_5_drenos",
+    });
+    if (error) {
+      console.error("[lead] erro ao inserir:", error.message);
+      // Não interrompe o fluxo do usuário; segue para e-mail/tracking.
+    }
+  } else {
     console.warn("[lead] Supabase não configurado — lead não persistido:", email);
-    return NextResponse.json({ ok: true, persisted: false });
   }
 
-  const { error } = await supabase.from("leads").insert({
-    nome: typeof nome === "string" ? nome : null,
+  // 2) Gerar o PDF do dreno e enviar por e-mail (best-effort)
+  let emailEnviado = false;
+  try {
+    const pdf = await generateDrenoReportPdf(dominante);
+    emailEnviado = await sendReportEmail({
+      to: email,
+      nome: nomeStr,
+      drenoNome,
+      pdf,
+      pdfName: `relatorio-${dominante}.pdf`,
+    });
+  } catch (err) {
+    console.error("[lead] erro ao gerar/enviar relatório:", err);
+  }
+
+  // 3) Conversions API (Meta) — evento de Lead server-side
+  await sendMetaEvent("Lead", {
     email,
-    dreno_dominante: dominante,
-    dreno_secundario: isDrenoId(secundario) ? secundario : null,
-    scores: scores ?? null,
-    origem: "quiz_5_drenos",
+    sourceUrl: request.headers.get("referer") ?? undefined,
+    clientIp:
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined,
+    userAgent: request.headers.get("user-agent") ?? undefined,
   });
-
-  if (error) {
-    console.error("[lead] erro ao inserir:", error.message);
-    return NextResponse.json({ error: "Não foi possível salvar o lead." }, { status: 500 });
-  }
 
   return NextResponse.json({
     ok: true,
-    persisted: true,
-    drenoNome: DRENOS[dominante].nome,
+    persisted: Boolean(supabase),
+    emailEnviado,
+    drenoNome,
   });
 }

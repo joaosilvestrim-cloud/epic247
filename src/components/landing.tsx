@@ -13,6 +13,7 @@ import {
 } from "framer-motion";
 import { DRENOS_POR_HIERARQUIA } from "@/lib/drenos";
 import type { SiteSettings } from "@/lib/settings";
+import { trackInitiateCheckout } from "@/lib/analytics";
 
 const CHECKOUT_URL = "#oferta"; // Troque pela URL real do checkout (Hotmart/Kiwify).
 
@@ -84,6 +85,7 @@ function CTAButton({
   return (
     <motion.a
       href={href}
+      onClick={() => trackInitiateCheckout({ value: 97, currency: "BRL" })}
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.97 }}
       className={`group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gold px-9 py-4 text-lg font-bold text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 ${className}`}
@@ -91,6 +93,80 @@ function CTAButton({
       <span className="relative z-10">{children}</span>
       <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
     </motion.a>
+  );
+}
+
+/* ───────────────────────── FAQ ───────────────────────── */
+
+const FAQ_ITEMS: { q: string; a: string }[] = [
+  { q: "O que é exatamente o Módulo Energia?", a: "É o primeiro módulo do Protocolo EPIC247: um sistema prático para reconstruir sua energia a partir da biologia (sono, alimentação, estresse, foco e movimento), com Manual, Workbook e acesso à plataforma que monitora sua Bateria Vital." },
+  { q: "Preciso fazer o quiz antes de comprar?", a: "Não. O quiz é um diagnóstico gratuito que ajuda a identificar seu Dreno Dominante, mas você pode adquirir o Módulo Energia diretamente." },
+  { q: "Quanto tempo por dia preciso dedicar?", a: "Pouquíssimo. O método é baseado em micro-hábitos e em um check-in diário de menos de 60 segundos. A ideia é o mínimo viável, não mais uma rotina pesada." },
+  { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam mais disposição já nas primeiras duas semanas ao corrigir o Dreno Dominante. A consistência é o que consolida a mudança." },
+  { q: "Isso substitui acompanhamento médico ou psicológico?", a: "Não. O Módulo Energia é educacional e comportamental. Ele não substitui diagnóstico, tratamento ou acompanhamento de profissionais de saúde." },
+  { q: "Funciona para quem tem rotina muito corrida?", a: "Sim — foi desenhado justamente para isso. Você muda um hábito por semana, no seu ritmo, sem precisar reorganizar a vida inteira." },
+  { q: "Como recebo o acesso depois da compra?", a: "O acesso à plataforma é liberado imediatamente após a confirmação do pagamento, no e-mail cadastrado no checkout." },
+  { q: "Por quanto tempo tenho acesso?", a: "O acesso ao conteúdo do Módulo Energia é vitalício, incluindo as atualizações." },
+  { q: "O que é a Bateria Vital?", a: "É um indicador (0 a 100%) que a plataforma calcula a partir do seu check-in diário, mostrando sua capacidade de execução naquele dia e a evolução ao longo do tempo." },
+  { q: "Tem material físico?", a: "O conteúdo é digital. No checkout você pode adicionar o livro físico Energia como order bump, por um valor adicional." },
+  { q: "Posso pagar parcelado?", a: "Sim, o checkout oferece as opções de parcelamento no cartão, além de Pix e boleto." },
+  { q: "E se eu não gostar?", a: "Você tem 14 dias de garantia incondicional. Se não fizer sentido, pedimos o reembolso e devolvemos 100% do valor, sem perguntas." },
+  { q: "Preciso de algum equipamento ou app pago?", a: "Não. Tudo o que você precisa está dentro da plataforma EPIC247, acessível pelo navegador do celular ou computador." },
+  { q: "Serve para qualquer idade?", a: "Os princípios servem para adultos em geral. Em caso de condições de saúde específicas, consulte seu médico antes de mudanças na rotina." },
+  { q: "Quem é a responsável pelo método?", a: "A Ju Ferreira, psicóloga com mais de 15 anos de clínica, que desenvolveu o método a partir do atendimento a pessoas capazes, porém travadas por falta de energia." },
+];
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-line/40">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between gap-4 py-4 text-left"
+      >
+        <span className="font-medium text-navy">{q}</span>
+        <motion.span
+          animate={{ rotate: open ? 45 : 0 }}
+          className="flex-shrink-0 text-xl text-gold"
+        >
+          +
+        </motion.span>
+      </button>
+      <AnimatePresenceFaq open={open}>
+        <p className="pb-4 text-navy/70">{a}</p>
+      </AnimatePresenceFaq>
+    </div>
+  );
+}
+
+function AnimatePresenceFaq({
+  open,
+  children,
+}: {
+  open: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={false}
+      animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
+      transition={{ duration: 0.25 }}
+      className="overflow-hidden"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function FaqList() {
+  return (
+    <Reveal>
+      <div className="rounded-2xl border border-line/40 bg-offwhite px-6">
+        {FAQ_ITEMS.map((item) => (
+          <FaqItem key={item.q} {...item} />
+        ))}
+      </div>
+    </Reveal>
   );
 }
 
@@ -548,6 +624,124 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   Adicione o Livro Físico Energia por apenas +R$67.
                 </p>
               </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───────────── Garantia ───────────── */}
+      <section className="bg-cream px-6 py-20">
+        <div className="mx-auto max-w-2xl">
+          <Reveal>
+            <div className="flex flex-col items-center gap-6 rounded-3xl border-2 border-gold/40 bg-offwhite p-8 text-center sm:flex-row sm:text-left">
+              <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-gold/15 text-5xl">
+                🛡️
+              </div>
+              <div>
+                <h2 className="font-display text-2xl font-bold text-navy">
+                  Garantia incondicional de 14 dias
+                </h2>
+                <p className="mt-2 text-navy/70">
+                  Experimente o Módulo Energia por 14 dias. Se não fizer sentido para
+                  você, basta pedir o reembolso — devolvemos 100% do valor, sem
+                  perguntas e sem burocracia. O risco é todo nosso.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───────────── Para quem é / não é ───────────── */}
+      <section className="bg-offwhite px-6 py-24">
+        <div className="mx-auto max-w-4xl">
+          <Reveal>
+            <h2 className="text-center font-display text-3xl font-bold text-navy sm:text-4xl">
+              Para quem é (e para quem não é)
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <Reveal>
+              <div className="h-full rounded-2xl border border-gold/40 bg-cream p-6">
+                <h3 className="font-display text-lg font-bold text-navy">
+                  ✓ É para você se…
+                </h3>
+                <ul className="mt-4 space-y-3 text-navy/80">
+                  {[
+                    "Você sabe o que precisa fazer, mas não consegue executar.",
+                    "Já tentou métodos de produtividade que não duraram.",
+                    "Vive cansado, sobrecarregado ou com a mente nublada.",
+                    "Quer começar pequeno, com um hábito por vez, de forma sustentável.",
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-3">
+                      <span className="mt-0.5 text-gold">✓</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="h-full rounded-2xl border border-line/40 bg-offwhite p-6">
+                <h3 className="font-display text-lg font-bold text-navy">
+                  ✗ Não é para você se…
+                </h3>
+                <ul className="mt-4 space-y-3 text-navy/70">
+                  {[
+                    "Procura uma solução mágica da noite para o dia.",
+                    "Não está disposto a mudar nem um hábito por semana.",
+                    "Quer só acumular mais teoria sem colocar em prática.",
+                    "Busca diagnóstico ou tratamento clínico (isto não substitui).",
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-3">
+                      <span className="mt-0.5 text-line">✗</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────── FAQ ───────────── */}
+      <section className="bg-cream px-6 py-24">
+        <div className="mx-auto max-w-2xl">
+          <Reveal>
+            <h2 className="text-center font-display text-3xl font-bold text-navy sm:text-4xl">
+              Perguntas frequentes
+            </h2>
+          </Reveal>
+          <div className="mt-10">
+            <FaqList />
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────── CTA final ───────────── */}
+      <section className="relative isolate overflow-hidden bg-navy-deep px-6 py-24 text-center text-white">
+        <div className="pointer-events-none absolute inset-0 bg-grid-gold opacity-30" />
+        <div className="absolute left-1/2 top-1/2 h-72 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/15 blur-[120px] animate-pulse-glow" />
+        <div className="relative z-10 mx-auto max-w-2xl">
+          <Reveal>
+            <h2 className="text-balance font-display text-3xl font-black leading-tight sm:text-5xl">
+              Sua energia é a fundação de tudo.
+              <span className="mt-2 block text-gold-gradient">Comece a reconstruí-la hoje.</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="mt-10">
+              <CTAButton>QUERO O MÓDULO ENERGIA · R$97</CTAButton>
+              <p className="mt-4 text-sm text-white/50">
+                Acesso imediato · Garantia de 14 dias
+              </p>
+              <Link
+                href="/quiz"
+                className="mt-6 inline-block text-sm font-medium text-gold-soft underline-offset-4 transition hover:underline"
+              >
+                Ou faça o diagnóstico gratuito dos 5 Drenos →
+              </Link>
             </div>
           </Reveal>
         </div>

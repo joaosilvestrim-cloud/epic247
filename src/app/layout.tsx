@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
+import Analytics from "@/components/analytics";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -34,7 +35,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Analytics />
+        {children}
+      </body>
     </html>
   );
 }
