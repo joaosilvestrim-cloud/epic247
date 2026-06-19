@@ -108,6 +108,130 @@ export function EnergyRing({
   );
 }
 
+const BUBBLES = [
+  { left: "22%", size: 7, delay: 0, dur: 3.4 },
+  { left: "50%", size: 5, delay: 0.8, dur: 4.1 },
+  { left: "70%", size: 9, delay: 1.6, dur: 3.0 },
+  { left: "38%", size: 4, delay: 2.3, dur: 4.6 },
+  { left: "60%", size: 6, delay: 1.1, dur: 3.7 },
+];
+
+/**
+ * Bateria Vital animada — líquido que enche/drena com efeito de ondas,
+ * bolhas subindo, faísca elétrica e brilho pulsante. É a peça-tema do quiz.
+ */
+export function VitalBattery({
+  value,
+  height = 200,
+  width = 112,
+  label = "Bateria Vital",
+}: {
+  value: number; // 0..100
+  height?: number;
+  width?: number;
+  label?: string;
+}) {
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    const c = animate(shown, value, {
+      duration: 0.9,
+      ease: "easeOut",
+      onUpdate: (v) => setShown(Math.round(v)),
+    });
+    return () => c.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const color =
+    value > 66
+      ? { base: "#d8b765", glow: "216,183,101" }
+      : value > 33
+        ? { base: "#c09840", glow: "192,152,64" }
+        : { base: "#f43f5e", glow: "244,63,94" };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div
+        className="relative animate-battery-glow"
+        style={{ width, height }}
+      >
+        {/* terminal (tampa) */}
+        <div
+          className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-[70%] rounded-md"
+          style={{
+            width: width * 0.34,
+            height: 12,
+            backgroundColor: color.base,
+          }}
+        />
+        {/* corpo */}
+        <div
+          className="relative h-full w-full overflow-hidden rounded-[1.4rem] border-4 bg-navy-deep/70 backdrop-blur-sm"
+          style={{ borderColor: `rgba(${color.glow},0.7)` }}
+        >
+          {/* líquido */}
+          <motion.div
+            className="absolute inset-x-0 bottom-0 overflow-hidden"
+            initial={false}
+            animate={{
+              height: `${Math.max(value, 3)}%`,
+              backgroundColor: color.base,
+            }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          >
+            {/* ondas na superfície */}
+            <div
+              className="battery-wave"
+              style={{
+                top: -width * 1.9,
+                background: "rgba(255,255,255,0.22)",
+                animation: "wave-spin 7s linear infinite",
+              }}
+            />
+            <div
+              className="battery-wave"
+              style={{
+                top: -width * 1.95,
+                background: "rgba(255,255,255,0.12)",
+                animation: "wave-spin 11s linear infinite reverse",
+              }}
+            />
+          </motion.div>
+
+          {/* bolhas */}
+          {BUBBLES.map((b, i) => (
+            <span
+              key={i}
+              className="absolute bottom-2 rounded-full bg-white/40"
+              style={{
+                left: b.left,
+                width: b.size,
+                height: b.size,
+                animation: `bubble-rise ${b.dur}s ease-in infinite`,
+                animationDelay: `${b.delay}s`,
+              }}
+            />
+          ))}
+
+          {/* brilho interno */}
+          <div className="pointer-events-none absolute inset-0 rounded-[1.1rem] shadow-[inset_0_0_30px_rgba(0,0,0,0.4)]" />
+
+          {/* conteúdo */}
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+            <span className="text-3xl animate-bolt-flicker drop-shadow-lg">⚡</span>
+            <span className="mt-1 text-3xl font-extrabold tabular-nums text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+              {shown}%
+            </span>
+          </div>
+        </div>
+      </div>
+      <span className="mt-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50">
+        {label}
+      </span>
+    </div>
+  );
+}
+
 /** Número que conta de 0 até `to`. */
 export function CountUp({
   to,

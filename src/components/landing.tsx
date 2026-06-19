@@ -11,6 +11,7 @@ import {
   animate,
 } from "framer-motion";
 import { DRENOS_POR_HIERARQUIA } from "@/lib/drenos";
+import type { SiteSettings } from "@/lib/settings";
 
 const CHECKOUT_URL = "#oferta"; // Troque pela URL real do checkout (Hotmart/Kiwify).
 
@@ -141,7 +142,7 @@ function HeroBackground() {
 
 /* ───────────────────────────── página ───────────────────────────── */
 
-export default function Landing() {
+export default function Landing({ settings }: { settings: SiteSettings }) {
   const { scrollYProgress } = useScroll();
   const barWidth = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const scaleX = useTransform(barWidth, [0, 1], [0, 1]);
@@ -184,15 +185,26 @@ export default function Landing() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mx-auto mt-12 flex aspect-video max-w-2xl items-center justify-center rounded-3xl border border-gold/30 bg-navy-deep/60 shadow-[0_0_80px_-20px] shadow-gold/40 backdrop-blur"
+            className="mx-auto mt-12 aspect-video max-w-2xl overflow-hidden rounded-3xl border border-gold/30 bg-navy-deep/60 shadow-[0_0_80px_-20px] shadow-gold/40 backdrop-blur"
           >
-            <div className="text-center text-white/50">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gold text-2xl text-navy-deep shadow-lg animate-pulse-glow">
-                ▶
+            {settings.heroVideoUrl ? (
+              <video
+                src={settings.heroVideoUrl}
+                controls
+                playsInline
+                className="h-full w-full bg-black"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-center text-white/50">
+                <div>
+                  <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gold text-2xl text-navy-deep shadow-lg animate-pulse-glow">
+                    ▶
+                  </div>
+                  <p className="text-sm">VSL · 9 a 11 minutos</p>
+                  <p className="text-xs text-white/30">(envie o vídeo pelo /admin)</p>
+                </div>
               </div>
-              <p className="text-sm">VSL · 9 a 11 minutos</p>
-              <p className="text-xs text-white/30">(incorpore aqui seu player)</p>
-            </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -398,7 +410,16 @@ export default function Landing() {
           <Reveal>
             <div className="flex flex-col items-center gap-8 text-center sm:flex-row sm:text-left">
               <div className="h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-navy to-gold p-1">
-                <div className="h-full w-full rounded-full bg-navy" />
+                {settings.juPhotoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={settings.juPhotoUrl}
+                    alt="Ju Ferreira"
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full rounded-full bg-navy" />
+                )}
               </div>
               <div>
                 <h2 className="font-display text-2xl font-bold text-navy">
@@ -510,6 +531,11 @@ export default function Landing() {
         <p className="mt-3">
           <Link href="/quiz" className="text-gold-soft hover:underline">
             Fazer o diagnóstico dos 5 Drenos
+          </Link>
+        </p>
+        <p className="mt-4 text-xs text-white/20">
+          <Link href="/admin" className="hover:text-white/50">
+            Admin
           </Link>
         </p>
       </footer>

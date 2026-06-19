@@ -10,7 +10,7 @@ import {
   type QuizResult,
 } from "@/lib/quiz-engine";
 import { DRENOS } from "@/lib/drenos";
-import { Aurora, CountUp, EnergyRing } from "@/components/quiz-visuals";
+import { Aurora, CountUp, VitalBattery } from "@/components/quiz-visuals";
 
 type Etapa = "intro" | "perguntas" | "captura" | "relatorio";
 
@@ -135,9 +135,9 @@ function Intro({ onStart }: { onStart: () => void }) {
         initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 120, damping: 12, delay: 0.1 }}
-        className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-full bg-epic-accent/15 animate-pulse-glow"
+        className="mb-8 flex justify-center"
       >
-        <span className="text-5xl">⚡</span>
+        <VitalBattery value={100} height={170} width={96} label="Energia total" />
       </motion.div>
 
       <span className="text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
@@ -181,7 +181,7 @@ function HUD({
   const progresso = Math.round((indice / total) * 100);
   return (
     <div className="mb-8 flex items-center gap-5">
-      <EnergyRing value={energia} size={88} stroke={8} label="Energia" />
+      <VitalBattery value={energia} height={118} width={62} label="Energia" />
       <div className="flex-1">
         <div className="mb-1.5 flex items-center justify-between text-sm">
           <span className="font-semibold text-white/80">
@@ -357,9 +357,9 @@ function Captura({
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 110, damping: 12 }}
-        className="mx-auto"
+        className="flex justify-center"
       >
-        <EnergyRing value={energia} size={150} label="Bateria Vital" />
+        <VitalBattery value={energia} height={210} width={116} label="Bateria Vital" />
       </motion.div>
 
       <span className="mt-6 inline-block text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">

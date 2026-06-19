@@ -88,6 +88,40 @@ body {
   50% { transform: translateY(8px); opacity: 1; }
 }
 
+/* ── Bateria Vital ───────────────────────────────────────────── */
+@keyframes wave-spin {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
+}
+
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  15% { opacity: 0.75; }
+  100% { transform: translateY(-150px) scale(0.3); opacity: 0; }
+}
+
+@keyframes battery-glow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(192, 152, 64, 0.45)); }
+  50% { filter: drop-shadow(0 0 22px rgba(216, 183, 101, 0.85)); }
+}
+
+@keyframes bolt-flicker {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  45% { opacity: 1; transform: scale(1.08); }
+  50% { opacity: 0.6; }
+}
+
+.animate-battery-glow { animation: battery-glow 3s ease-in-out infinite; }
+.animate-bolt-flicker { animation: bolt-flicker 2.4s ease-in-out infinite; }
+
+.battery-wave {
+  position: absolute;
+  left: 50%;
+  width: 240%;
+  aspect-ratio: 1;
+  border-radius: 43%;
+}
+
 .animate-float-blob { animation: float-blob 16s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 3.5s ease-in-out infinite; }
 .animate-float-soft { animation: float-soft 7s ease-in-out infinite; }

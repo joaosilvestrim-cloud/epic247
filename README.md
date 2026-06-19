@@ -37,10 +37,25 @@ Acesse http://localhost:3000.
 > Sem `.env.local` configurado, o quiz funciona normalmente — apenas os leads
 > não são persistidos (são logados no console do servidor).
 
+## Painel administrativo (`/admin`)
+
+Login protegido por senha (variável `ADMIN_PASSWORD`). Permite:
+
+- **Ver as respostas do quiz** (leads) com estatísticas e distribuição por Dreno.
+- **Enviar o vídeo da VSL** e a **foto da Ju Ferreira** — ficam guardados no
+  Supabase Storage (bucket `assets`) e aparecem automaticamente na landing page.
+
+Os uploads vão direto do navegador para o Supabase via *signed URL*, sem passar
+pela função serverless (evita o limite de tamanho do Vercel).
+
+> Vídeos grandes: ajuste o limite de tamanho de arquivo do bucket no Supabase
+> (Storage > assets > Settings) ou prefira hospedar em YouTube/Vimeo.
+
 ## Configuração do Supabase
 
 1. Crie um projeto no [Supabase](https://supabase.com).
-2. Rode o SQL de `supabase/schema.sql` no SQL Editor para criar a tabela `leads`.
+2. Rode o SQL de `supabase/schema.sql` no SQL Editor — cria as tabelas `leads` e
+   `settings` e o bucket público `assets`.
 3. Copie as credenciais (Project Settings > API) para o `.env.local`.
 
 ## Variáveis de ambiente
@@ -50,6 +65,7 @@ Acesse http://localhost:3000.
 | `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave anônima pública |
 | `SUPABASE_SERVICE_ROLE_KEY` | Chave service role (somente servidor) |
+| `ADMIN_PASSWORD` | Senha do painel `/admin` (use algo forte) |
 
 ## Estrutura
 
