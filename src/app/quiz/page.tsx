@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { QUIZ_QUESTIONS } from "@/lib/quiz-data";
@@ -9,8 +9,13 @@ import {
   MAX_SCORE_POR_DRENO,
   type QuizResult,
 } from "@/lib/quiz-engine";
-import { DRENOS } from "@/lib/drenos";
-import { Aurora, CountUp, VitalBattery } from "@/components/quiz-visuals";
+import { DRENOS, type DrenoId } from "@/lib/drenos";
+import {
+  Aurora,
+  CountUp,
+  DrenoRadar,
+  VitalBattery,
+} from "@/components/quiz-visuals";
 import { playStart, playTick, playComplete } from "@/lib/sound";
 
 type Etapa = "intro" | "perguntas" | "captura" | "relatorio";
@@ -428,7 +433,7 @@ function Captura({
   );
 }
 
-/* ────────────────────────── Relatório ────────────────────────── */
+/* ────────────────────────── Relatório (interativo) ────────────────────────── */
 function Relatorio({
   resultado,
   energia,
@@ -439,24 +444,36 @@ function Relatorio({
   const dominante = DRENOS[resultado.dominante];
   const secundario = DRENOS[resultado.secundario];
 
-  const barras = useMemo(
-    () =>
-      resultado.ranking.map((id) => ({
-        dreno: DRENOS[id],
-        score: resultado.scores[id],
-        pct: Math.round((resultado.scores[id] / MAX_SCORE_POR_DRENO) * 100),
-      })),
-    [resultado]
-  );
+  // Dreno selecionado no radar (começa pelo dominante).
+  const [selecionado, setSelecionado] = useState<DrenoId>(resultado.dominante);
+  // Passos marcados, por dreno: chave `${drenoId}-${i}`.
+  const [feitos, setFeitos] = useState<Record<string, boolean>>({});
+
+  const sel = DRENOS[selecionado];
+  const selScore = resultado.scores[selecionado];
+  const isDominante = selecionado === resultado.dominante;
+
+  const concluidos = sel.passos.filter((_, i) => feitos[`${selecionado}-${i}`]).length;
+  const progresso = Math.round((concluidos / sel.passos.length) * 100);
+
+  function alternar(id: DrenoId) {
+    if (id !== selecionado) {
+      setSelecionado(id);
+      if (typeof window !== "undefined") playTick();
+    }
+  }
+
+  function togglePasso(i: number) {
+    const k = `${selecionado}-${i}`;
+    setFeitos((f) => ({ ...f, [k]: !f[k] }));
+    playTick();
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}>
       <div className="text-center">
         <span className="text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
-          Seu relatório
+          Seu relatório interativo
         </span>
         <h1
           className="mt-3 font-display text-3xl font-black leading-tight"
@@ -464,78 +481,160 @@ function Relatorio({
         >
           {dominante.headline}
         </h1>
-      </div>
-
-      <p className="mt-6 text-lg leading-relaxed text-white/80">
-        {dominante.descricao}
-      </p>
-
-      {/* Mapa de Drenos com barras animadas */}
-      <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">
-            Seu mapa de Drenos
-          </h2>
-          <span className="text-sm text-white/50">
-            Bateria Vital: <CountUp to={energia} className="font-bold text-white" />%
-          </span>
-        </div>
-        <div className="mt-5 space-y-4">
-          {barras.map(({ dreno, score, pct }, i) => (
-            <div key={dreno.id}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="font-medium">{dreno.nome}</span>
-                <span className="text-white/50">
-                  {score}/{MAX_SCORE_POR_DRENO}
-                </span>
-              </div>
-              <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ backgroundColor: dreno.cor }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ delay: 0.15 * i, duration: 0.7, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-xs text-white/40">
-          Dreno secundário:{" "}
-          <strong className="text-white/70">{secundario.nome}</strong>
+        <p className="mt-2 text-sm text-white/50">
+          Bateria Vital:{" "}
+          <CountUp to={energia} className="font-bold text-white" />% · Dreno
+          secundário: <strong className="text-white/70">{secundario.nome}</strong>
         </p>
       </div>
 
-      {/* 4 próximos passos */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold">Seus 4 próximos passos práticos</h2>
-        <div className="mt-4 space-y-3">
-          {dominante.passos.map((passo, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 * i + 0.2 }}
-              className="flex items-start gap-4 rounded-xl bg-white/[0.04] p-4"
-            >
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-epic-accent text-sm font-bold text-epic-dark">
-                {i + 1}
-              </span>
-              <span className="text-white/90">{passo}</span>
-            </motion.div>
-          ))}
+      {/* Radar interativo */}
+      <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm">
+        <h2 className="mb-1 text-center text-sm font-semibold uppercase tracking-wide text-white/50">
+          Radar de Drenos
+        </h2>
+        <p className="mb-2 text-center text-xs text-white/40">
+          Toque em cada ponto para explorar o dreno
+        </p>
+        <div className="flex justify-center">
+          <DrenoRadar
+            scores={resultado.scores}
+            selected={selecionado}
+            onSelect={alternar}
+            size={320}
+          />
         </div>
       </div>
+
+      {/* Painel de detalhe do dreno selecionado */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selecionado}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -16 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 rounded-2xl border p-6"
+          style={{
+            borderColor: `${sel.cor}55`,
+            backgroundColor: `${sel.cor}12`,
+          }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span
+                className="h-3 w-3 flex-shrink-0 rounded-full"
+                style={{ backgroundColor: sel.cor }}
+              />
+              <h3 className="font-display text-xl font-bold" style={{ color: sel.cor }}>
+                {sel.nome}
+              </h3>
+            </div>
+            {isDominante && (
+              <span className="rounded-full bg-epic-amber/20 px-3 py-1 text-xs font-bold text-epic-amber">
+                Dominante
+              </span>
+            )}
+          </div>
+
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: sel.cor }}
+                initial={{ width: 0 }}
+                animate={{ width: `${(selScore / MAX_SCORE_POR_DRENO) * 100}%` }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              />
+            </div>
+            <span className="text-sm text-white/50">
+              {selScore}/{MAX_SCORE_POR_DRENO}
+            </span>
+          </div>
+
+          <p className="mt-4 leading-relaxed text-white/80">{sel.descricao}</p>
+
+          {/* Checklist de passos */}
+          <div className="mt-6">
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-white/60">
+                Plano de ação · {sel.passos.length} passos
+              </h4>
+              <span className="text-sm font-bold" style={{ color: sel.cor }}>
+                {progresso}%
+              </span>
+            </div>
+            <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: sel.cor }}
+                animate={{ width: `${progresso}%` }}
+                transition={{ type: "spring", stiffness: 120, damping: 20 }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              {sel.passos.map((passo, i) => {
+                const checado = !!feitos[`${selecionado}-${i}`];
+                return (
+                  <motion.button
+                    key={i}
+                    onClick={() => togglePasso(i)}
+                    whileTap={{ scale: 0.98 }}
+                    className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition ${
+                      checado
+                        ? "border-transparent bg-white/[0.08]"
+                        : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"
+                    }`}
+                  >
+                    <span
+                      className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md border-2 text-xs font-bold transition"
+                      style={{
+                        borderColor: sel.cor,
+                        backgroundColor: checado ? sel.cor : "transparent",
+                        color: checado ? "#0f1c34" : "transparent",
+                      }}
+                    >
+                      ✓
+                    </span>
+                    <span
+                      className={`text-sm ${
+                        checado ? "text-white/50 line-through" : "text-white/90"
+                      }`}
+                    >
+                      {passo}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            <AnimatePresence>
+              {progresso === 100 && (
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="mt-4 rounded-xl bg-epic-amber/15 p-3 text-center text-sm font-semibold text-epic-amber"
+                >
+                  🎉 Plano completo! Esse é o caminho para recarregar a sua energia.
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       {/* CTA */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6 }}
-        className="mt-10 rounded-2xl border border-epic-amber/30 bg-epic-amber/10 p-6 text-center"
+        transition={{ delay: 0.4 }}
+        className="mt-8 rounded-2xl border border-epic-amber/30 bg-epic-amber/10 p-6 text-center"
       >
-        <h2 className="text-xl font-bold">Pronto para recarregar de verdade?</h2>
+        <h2 className="font-display text-xl font-bold">
+          Pronto para recarregar de verdade?
+        </h2>
         <p className="mt-2 text-white/70">
           O Módulo Energia te dá o sistema completo para reconstruir sua energia a
           partir do seu Dreno Dominante.

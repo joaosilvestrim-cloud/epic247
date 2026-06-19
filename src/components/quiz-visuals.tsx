@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { DRENOS, type DrenoId } from "@/lib/drenos";
+import { MAX_SCORE_POR_DRENO, type ScoreMap } from "@/lib/quiz-engine";
 
 /**
  * Fundo aurora animado. `heat` (0..1) desloca a paleta do azul (cheio de energia)
@@ -310,6 +312,139 @@ export function CountUp({
     return () => controls.stop();
   }, [to, duration]);
   return <span className={className}>{shown}</span>;
+}
+
+/* ───────────────────────── Radar de Drenos ───────────────────────── */
+
+const RADAR_ORDER: DrenoId[] = [
+  "sono",
+  "combustivel",
+  "cortisol",
+  "atencao",
+  "movimento",
+];
+const RADAR_CURTO: Record<DrenoId, string> = {
+  sono: "Sono",
+  combustivel: "Combustível",
+  cortisol: "Estresse",
+  atencao: "Tela",
+  movimento: "Movimento",
+};
+
+/** Gráfico radar interativo dos 5 Drenos — clique/toque para selecionar um dreno. */
+export function DrenoRadar({
+  scores,
+  selected,
+  onSelect,
+  size = 300,
+}: {
+  scores: ScoreMap;
+  selected: DrenoId;
+  onSelect: (id: DrenoId) => void;
+  size?: number;
+}) {
+  const cx = size / 2;
+  const cy = size / 2;
+  const R = size * 0.33; // raio máximo dos dados
+  const labelR = size * 0.45;
+
+  const angle = (i: number) => ((-90 + i * 72) * Math.PI) / 180;
+  const at = (i: number, r: number): [number, number] => [
+    cx + r * Math.cos(angle(i)),
+    cy + r * Math.sin(angle(i)),
+  ];
+
+  const rings = [0.25, 0.5, 0.75, 1];
+  const dataPts = RADAR_ORDER.map((id, i) =>
+    at(i, R * (scores[id] / MAX_SCORE_POR_DRENO))
+  );
+  const dataStr = dataPts.map((p) => p.join(",")).join(" ");
+  const selColor = DRENOS[selected].cor;
+
+  return (
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      width={size}
+      height={size}
+      className="max-w-full"
+    >
+      {/* anéis de grade (pentágonos) */}
+      {rings.map((r, ri) => (
+        <polygon
+          key={ri}
+          points={RADAR_ORDER.map((_, i) => at(i, R * r).join(",")).join(" ")}
+          fill="none"
+          stroke="rgba(255,255,255,0.10)"
+          strokeWidth={1}
+        />
+      ))}
+      {/* eixos */}
+      {RADAR_ORDER.map((_, i) => {
+        const [x, y] = at(i, R);
+        return (
+          <line
+            key={i}
+            x1={cx}
+            y1={cy}
+            x2={x}
+            y2={y}
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth={1}
+          />
+        );
+      })}
+
+      {/* polígono de dados animado */}
+      <motion.polygon
+        points={dataStr}
+        fill={`${selColor}33`}
+        stroke={selColor}
+        strokeWidth={2}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        style={{ transformOrigin: `${cx}px ${cy}px` }}
+      />
+
+      {/* vértices clicáveis + rótulos */}
+      {RADAR_ORDER.map((id, i) => {
+        const [px, py] = dataPts[i];
+        const [lx, ly] = at(i, labelR);
+        const isSel = id === selected;
+        return (
+          <g
+            key={id}
+            onClick={() => onSelect(id)}
+            className="cursor-pointer"
+          >
+            {/* área de toque maior (invisível) */}
+            <circle cx={px} cy={py} r={16} fill="transparent" />
+            <motion.circle
+              cx={px}
+              cy={py}
+              r={isSel ? 7 : 4.5}
+              fill={DRENOS[id].cor}
+              stroke="#0f1c34"
+              strokeWidth={2}
+              animate={{ scale: isSel ? 1.15 : 1 }}
+              style={{ transformOrigin: `${px}px ${py}px` }}
+            />
+            <text
+              x={lx}
+              y={ly}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize={size * 0.042}
+              fontWeight={isSel ? 800 : 500}
+              fill={isSel ? DRENOS[id].cor : "rgba(255,255,255,0.55)"}
+            >
+              {RADAR_CURTO[id]}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
 }
 
 function lerpColor(a: number[], b: number[], t: number): string {
