@@ -88,7 +88,7 @@ function CTAButton({
       onClick={() => trackInitiateCheckout({ value: 97, currency: "BRL" })}
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.97 }}
-      className={`group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gold px-9 py-4 text-lg font-bold text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 ${className}`}
+      className={`group relative inline-flex max-w-full items-center justify-center overflow-hidden text-balance rounded-2xl bg-gold px-6 py-4 text-center text-base font-bold leading-snug text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 sm:px-9 sm:text-lg ${className}`}
     >
       <span className="relative z-10">{children}</span>
       <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -227,7 +227,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 40));
 
   return (
-    <main className="overflow-x-hidden bg-offwhite">
+    <main className="overflow-x-clip bg-offwhite">
       {/* barra de progresso de leitura */}
       <motion.div
         style={{ scaleX }}

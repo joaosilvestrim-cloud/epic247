@@ -86,7 +86,7 @@ export default function QuizPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-epic-dark text-white">
+    <main className="relative min-h-screen overflow-clip bg-epic-dark text-white">
       <Aurora heat={etapa === "perguntas" ? heat : etapa === "intro" ? 0 : heat} />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8">
@@ -687,7 +687,7 @@ function Relatorio({
         </p>
         <Link
           href="/#oferta"
-          className="mt-6 inline-flex items-center justify-center rounded-xl bg-epic-amber px-8 py-4 text-lg font-bold text-epic-dark shadow-lg transition hover:brightness-110"
+          className="mt-6 inline-flex max-w-full items-center justify-center text-balance rounded-xl bg-epic-amber px-6 py-4 text-center text-base font-bold leading-snug text-epic-dark shadow-lg transition hover:brightness-110 sm:px-8 sm:text-lg"
         >
           Conhecer o Módulo Energia · R$97
         </Link>
