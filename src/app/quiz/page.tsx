@@ -143,7 +143,7 @@ function Intro({ onStart }: { onStart: () => void }) {
       <span className="text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
         Diagnóstico EPIC247
       </span>
-      <h1 className="mt-4 text-balance text-3xl font-extrabold leading-tight sm:text-5xl">
+      <h1 className="mt-4 text-balance font-display text-3xl font-black leading-tight sm:text-5xl">
         Você sabe muito, planeja bem
         <br />e executa pouco?
       </h1>
@@ -365,7 +365,7 @@ function Captura({
       <span className="mt-6 inline-block text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
         Diagnóstico concluído
       </span>
-      <h1 className="mt-3 text-balance text-3xl font-extrabold leading-tight">
+      <h1 className="mt-3 text-balance font-display text-3xl font-black leading-tight">
         {dreno.headline}
       </h1>
       <p
@@ -442,7 +442,7 @@ function Relatorio({
           Seu relatório
         </span>
         <h1
-          className="mt-3 text-3xl font-extrabold leading-tight"
+          className="mt-3 font-display text-3xl font-black leading-tight"
           style={{ color: dominante.cor }}
         >
           {dominante.headline}

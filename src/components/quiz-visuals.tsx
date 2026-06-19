@@ -9,8 +9,8 @@ import { animate, motion, useMotionValue, useTransform } from "framer-motion";
  */
 export function Aurora({ heat }: { heat: number }) {
   // Interpola cores conforme o nível de "calor" (drenagem).
-  const blobA = lerpColor([56, 189, 248], [244, 63, 94], heat); // accent -> red
-  const blobB = lerpColor([99, 102, 241], [245, 158, 11], heat); // indigo -> amber
+  const blobA = lerpColor([216, 183, 101], [244, 63, 94], heat); // dourado -> vermelho
+  const blobB = lerpColor([34, 50, 92], [192, 152, 64], heat); // navy -> ouro
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -71,7 +71,7 @@ export function EnergyRing({
     };
   }, [value, progress, display]);
 
-  const color = value > 66 ? "#38bdf8" : value > 33 ? "#f59e0b" : "#f43f5e";
+  const color = value > 66 ? "#d8b765" : value > 33 ? "#c09840" : "#f43f5e";
 
   return (
     <div className="relative inline-flex items-center justify-center">
