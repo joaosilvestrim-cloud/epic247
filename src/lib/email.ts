@@ -57,7 +57,7 @@ export async function sendReportEmail(
           Em anexo está o seu <strong>relatório completo</strong> com os 4 próximos
           passos práticos para reverter isso e recarregar a sua energia.
         </p>
-        <a href="https://epic247.com.br/#oferta"
+        <a href="https://energia.epic247.com.br/#oferta"
            style="display:inline-block;background:#c09840;color:#0f1c34;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:12px">
           Conhecer o Módulo Energia · R$97
         </a>
