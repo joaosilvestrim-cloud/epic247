@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-epic-dark: #0a1628;
+  --color-epic-navy: #0f2847;
+  --color-epic-blue: #1e3a8a;
+  --color-epic-accent: #38bdf8;
+  --color-epic-amber: #f59e0b;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
