@@ -346,9 +346,9 @@ export function DrenoRadar({
   const cx = size / 2;
   const cy = size / 2;
   const R = size * 0.32; // raio máximo dos dados
-  const labelR = R + size * 0.09;
-  const padX = size * 0.26; // espaço lateral para os rótulos não cortarem
-  const padY = size * 0.14;
+  const labelR = R + size * 0.085;
+  const padX = size * 0.2; // espaço lateral para os rótulos não cortarem
+  const padY = size * 0.12;
 
   const angle = (i: number) => ((-90 + i * 72) * Math.PI) / 180;
   const at = (i: number, r: number): [number, number] => [
