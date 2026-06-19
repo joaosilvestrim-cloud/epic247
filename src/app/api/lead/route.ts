@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { DRENOS, type DrenoId } from "@/lib/drenos";
 import { generateDrenoReportPdf } from "@/lib/pdf-report";
+import { getReportPdfUrl, getReportFileName } from "@/lib/report-files";
 import { sendReportEmail } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
@@ -53,19 +54,33 @@ export async function POST(request: Request) {
     console.warn("[lead] Supabase não configurado — lead não persistido:", email);
   }
 
-  // 2) Gerar o PDF do dreno e enviar por e-mail (best-effort)
+  // 2) Enviar o relatório por e-mail (best-effort).
+  //    Preferimos o PDF final diagramado (Supabase Storage); se não houver,
+  //    geramos um em runtime como fallback.
   let emailEnviado = false;
   try {
-    const pdf = await generateDrenoReportPdf(dominante);
-    emailEnviado = await sendReportEmail({
-      to: email,
-      nome: nomeStr,
-      drenoNome,
-      pdf,
-      pdfName: `relatorio-${dominante}.pdf`,
-    });
+    const pdfUrl = getReportPdfUrl(dominante);
+    const pdfName = getReportFileName(dominante);
+    if (pdfUrl) {
+      emailEnviado = await sendReportEmail({
+        to: email,
+        nome: nomeStr,
+        drenoNome,
+        attachmentUrl: pdfUrl,
+        pdfName,
+      });
+    } else {
+      const pdf = await generateDrenoReportPdf(dominante);
+      emailEnviado = await sendReportEmail({
+        to: email,
+        nome: nomeStr,
+        drenoNome,
+        pdf,
+        pdfName,
+      });
+    }
   } catch (err) {
-    console.error("[lead] erro ao gerar/enviar relatório:", err);
+    console.error("[lead] erro ao enviar relatório:", err);
   }
 
   // 3) Conversions API (Meta) — evento de Lead server-side

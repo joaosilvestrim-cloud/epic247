@@ -5,8 +5,11 @@ export interface SendReportEmailOptions {
   to: string;
   nome?: string | null;
   drenoNome: string;
-  pdf: Uint8Array;
   pdfName: string;
+  /** URL pública do PDF (Resend baixa e anexa). Preferencial. */
+  attachmentUrl?: string;
+  /** Alternativa: bytes do PDF gerado em runtime. */
+  pdf?: Uint8Array;
 }
 
 export async function sendReportEmail(
@@ -21,7 +24,21 @@ export async function sendReportEmail(
 
   const nome = opts.nome?.trim() || "";
   const ola = nome ? `Olá, ${nome}!` : "Olá!";
-  const base64 = Buffer.from(opts.pdf).toString("base64");
+
+  // Anexo: preferimos a URL hospedada (Resend baixa); senão usamos os bytes.
+  let attachment: Record<string, string> | null = null;
+  if (opts.attachmentUrl) {
+    attachment = { filename: opts.pdfName, path: opts.attachmentUrl };
+  } else if (opts.pdf) {
+    attachment = {
+      filename: opts.pdfName,
+      content: Buffer.from(opts.pdf).toString("base64"),
+    };
+  }
+  if (!attachment) {
+    console.warn("[email] sem anexo (nem URL nem bytes):", opts.to);
+    return false;
+  }
 
   const html = `
   <div style="font-family:Arial,Helvetica,sans-serif;background:#f8f8f8;padding:32px">
@@ -63,7 +80,7 @@ export async function sendReportEmail(
         to: opts.to,
         subject: `Seu relatório de energia · ${opts.drenoNome}`,
         html,
-        attachments: [{ filename: opts.pdfName, content: base64 }],
+        attachments: [attachment],
       }),
     });
     if (!res.ok) {
