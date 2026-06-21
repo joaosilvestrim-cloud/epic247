@@ -104,7 +104,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   { q: "Quanto tempo por dia preciso dedicar?", a: "Pouquíssimo. O método é baseado em micro-hábitos e em um check-in diário de menos de 60 segundos. A ideia é o mínimo viável, não mais uma rotina pesada." },
   { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam mais disposição já nas primeiras duas semanas ao corrigir o Dreno Dominante. A consistência é o que consolida a mudança." },
   { q: "Isso substitui acompanhamento médico ou psicológico?", a: "Não. O Módulo Energia é educacional e comportamental. Ele não substitui diagnóstico, tratamento ou acompanhamento de profissionais de saúde." },
-  { q: "Funciona para quem tem rotina muito corrida?", a: "Sim — foi desenhado justamente para isso. Você muda um hábito por semana, no seu ritmo, sem precisar reorganizar a vida inteira." },
+  { q: "Funciona para quem tem rotina muito corrida?", a: "Sim, foi desenhado justamente para isso. Você muda um hábito por semana, no seu ritmo, sem precisar reorganizar a vida inteira." },
   { q: "Como recebo o acesso depois da compra?", a: "O acesso à plataforma é liberado imediatamente após a confirmação do pagamento, no e-mail cadastrado no checkout." },
   { q: "Por quanto tempo tenho acesso?", a: "O acesso ao conteúdo do Módulo Energia é vitalício, incluindo as atualizações." },
   { q: "O que é a Bateria Vital?", a: "É um indicador (0 a 100%) que a plataforma calcula a partir do seu check-in diário, mostrando sua capacidade de execução naquele dia e a evolução ao longo do tempo." },
@@ -353,7 +353,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             </Reveal>
             <Reveal delay={0.1}>
               <p>
-                Depois, como sempre, desmoronou. E você se culpou — de novo — por não
+                Depois, como sempre, desmoronou. E você se culpou, de novo, por não
                 ter &ldquo;disciplina suficiente&rdquo;.
               </p>
             </Reveal>
@@ -384,8 +384,8 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-4 text-lg leading-relaxed text-navy/80">
-              Quando a sua biologia está drenada — sono ruim, combustível errado,
-              cortisol nas alturas — nenhuma técnica de organização se sustenta. A
+              Quando a sua biologia está drenada, sono ruim, combustível errado,
+              cortisol nas alturas, nenhuma técnica de organização se sustenta. A
               energia vem primeiro. Tudo o mais é construído sobre ela.
             </p>
           </Reveal>
@@ -407,7 +407,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             ))}
           </div>
           <p className="mt-4 text-xs text-line">
-            Dados ilustrativos — substitua pelas fontes e números oficiais antes de publicar.
+            Dados ilustrativos, substitua pelas fontes e números oficiais antes de publicar.
           </p>
         </div>
       </section>
@@ -534,7 +534,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                 </p>
                 <p className="mt-4 text-navy/80">
                   O Módulo Energia nasceu de mais de uma década atendendo pessoas
-                  inteligentes e capazes que estavam travadas — não por falta de
+                  inteligentes e capazes que estavam travadas, não por falta de
                   conhecimento, mas por falta de energia para executar o que já sabiam.
                 </p>
               </div>
@@ -569,7 +569,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             ))}
           </div>
           <p className="mt-4 text-center text-xs text-line">
-            Depoimentos ilustrativos — substitua por depoimentos reais com autorização.
+            Depoimentos ilustrativos, substitua por depoimentos reais com autorização.
           </p>
         </div>
       </section>
@@ -584,7 +584,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         <div className="relative z-10 mx-auto max-w-xl text-center">
           <Reveal>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">
-              Módulo Energia — Acesso completo
+              Módulo Energia · Acesso completo
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
@@ -643,7 +643,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                 </h2>
                 <p className="mt-2 text-navy/70">
                   Experimente o Módulo Energia por 14 dias. Se não fizer sentido para
-                  você, basta pedir o reembolso — devolvemos 100% do valor, sem
+                  você, basta pedir o reembolso, devolvemos 100% do valor, sem
                   perguntas e sem burocracia. O risco é todo nosso.
                 </p>
               </div>

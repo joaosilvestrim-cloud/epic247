@@ -7,7 +7,7 @@ import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "EPIC247 — Admin",
+  title: "EPIC247 · Admin",
   robots: { index: false, follow: false },
 };
 

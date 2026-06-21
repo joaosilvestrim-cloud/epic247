@@ -51,8 +51,8 @@ export default function OtoPage() {
           Acelere seus resultados com o Protocolo EPIC247 completo
         </h1>
         <p className="mt-4 text-white/70">
-          Você acabou de garantir a base. Agora destrave os próximos módulos —
-          Mentalidade, Planejamento e mais — em uma única condição especial que{" "}
+          Você acabou de garantir a base. Agora destrave os próximos módulos,
+          Mentalidade, Planejamento e mais, em uma única condição especial que{" "}
           <strong className="text-white">não se repete</strong>.
         </p>
 
@@ -105,7 +105,7 @@ export default function OtoPage() {
           href="/obrigado"
           className="mt-6 inline-block text-sm text-white/40 underline-offset-4 transition hover:text-white hover:underline"
         >
-          Não, obrigado — prefiro seguir só com o Módulo Energia
+          Não, obrigado, prefiro seguir só com o Módulo Energia
         </Link>
       </motion.div>
     </main>

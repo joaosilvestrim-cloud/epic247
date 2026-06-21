@@ -30,10 +30,10 @@ export const DRENOS: Record<DrenoId, Dreno> = {
     hierarquia: 1,
     headline: "Seu Dreno Dominante é o Sono Quebrado.",
     descricao:
-      "Você não está sem disciplina — está operando com a bateria nunca totalmente recarregada. Quando o sono é fragmentado ou curto, o cérebro entra no dia com a função executiva comprometida. Não é preguiça: é hardware sem energia.",
+      "Você não está sem disciplina, está operando com a bateria nunca totalmente recarregada. Quando o sono é fragmentado ou curto, o cérebro entra no dia com a função executiva comprometida. Não é preguiça: é hardware sem energia.",
     passos: [
       "Estabeleça um horário fixo para acordar, inclusive nos fins de semana, por 7 dias.",
-      "Corte cafeína após as 15h — ela tem meia-vida de ~6 horas e sabota o sono profundo.",
+      "Corte cafeína após as 15h, ela tem meia-vida de ~6 horas e sabota o sono profundo.",
       "Crie um ritual de desaceleração de 30 minutos sem telas antes de deitar.",
       "Exponha-se à luz natural nos primeiros 30 minutos do dia para ancorar o ritmo circadiano.",
     ],
@@ -51,7 +51,7 @@ export const DRENOS: Record<DrenoId, Dreno> = {
       "Beba 500ml de água antes do café da manhã para reidratar após o jejum noturno.",
       "Inclua proteína na primeira refeição para estabilizar a glicemia do dia.",
       "Troque o lanche açucarado da tarde por uma fonte de gordura boa ou proteína.",
-      "Não pule refeições — jejuns não planejados intensificam a queda de energia.",
+      "Não pule refeições, jejuns não planejados intensificam a queda de energia.",
     ],
     microHabito: "Beber 500ml de água antes do café da manhã",
     cor: "#10b981",
@@ -80,7 +80,7 @@ export const DRENOS: Record<DrenoId, Dreno> = {
     descricao:
       "Sua energia mental vaza pelas telas. A troca constante de contexto e o excesso de estímulo digital fragmentam o foco e geram fadiga decisional. Você termina o dia exausto, mesmo sem ter produzido o que queria.",
     passos: [
-      "Comece o dia com 30 minutos sem celular — nada de tela antes de você decidir suas prioridades.",
+      "Comece o dia com 30 minutos sem celular, nada de tela antes de você decidir suas prioridades.",
       "Desative notificações não essenciais e agrupe as checagens de mensagens.",
       "Use blocos de foco de 25 a 50 minutos com o celular fora de alcance.",
       "Defina um horário de corte para telas à noite.",
@@ -94,12 +94,12 @@ export const DRENOS: Record<DrenoId, Dreno> = {
     hierarquia: 5,
     headline: "Seu Dreno Dominante é o Corpo Parado.",
     descricao:
-      "Seu corpo está estagnado e isso derruba sua energia. A falta de movimento reduz a circulação, a disposição e a clareza mental. O movimento não é só sobre estética — é o gerador de energia que está desligado.",
+      "Seu corpo está estagnado e isso derruba sua energia. A falta de movimento reduz a circulação, a disposição e a clareza mental. O movimento não é só sobre estética, é o gerador de energia que está desligado.",
     passos: [
       "Faça uma caminhada de 10 minutos logo após uma refeição principal.",
       "A cada hora sentado, levante e movimente-se por 2 minutos.",
       "Inclua 5 minutos de mobilidade ao acordar para ativar o corpo.",
-      "Escolha uma forma de movimento que você goste — consistência vence intensidade.",
+      "Escolha uma forma de movimento que você goste, consistência vence intensidade.",
     ],
     microHabito: "Caminhada de 10 minutos após uma refeição",
     cor: "#3b82f6",

@@ -28,16 +28,16 @@ export function getReport(id: DrenoId): DrenoReport {
         titulo: "O que está acontecendo com você",
         paragrafos: [
           d.descricao,
-          "Este relatório foi gerado a partir do seu diagnóstico dos 5 Drenos. Ele não é um diagnóstico clínico — é um mapa prático para você entender onde sua energia está vazando e por onde começar.",
+          "Este relatório foi gerado a partir do seu diagnóstico dos 5 Drenos. Ele não é um diagnóstico clínico, é um mapa prático para você entender onde sua energia está vazando e por onde começar.",
         ],
       },
       {
         titulo: "Por que isso acontece",
         paragrafos: [
           "A maioria das pessoas tenta resolver a falta de execução com mais disciplina, mais método e mais força de vontade. Mas quando a biologia está drenada, nenhuma técnica se sustenta por muito tempo.",
-          "O seu Dreno Dominante — " +
+          "O seu Dreno Dominante, " +
             d.nome +
-            " — é a alavanca de maior impacto agora. Corrigir a fundação antes de tudo o mais é o que faz a mudança finalmente grudar.",
+            ", é a alavanca de maior impacto agora. Corrigir a fundação antes de tudo o mais é o que faz a mudança finalmente grudar.",
           "[Espaço para aprofundamento da Ju: mecanismo fisiológico, exemplos e referências.]",
         ],
       },
@@ -59,7 +59,7 @@ export function getReport(id: DrenoId): DrenoReport {
       {
         titulo: "O próximo passo",
         paragrafos: [
-          "Este relatório é o ponto de partida. O Módulo Energia te dá o sistema completo — Manual, Workbook e a plataforma que monitora sua Bateria Vital dia a dia — para transformar estes passos em resultado real.",
+          "Este relatório é o ponto de partida. O Módulo Energia te dá o sistema completo, Manual, Workbook e a plataforma que monitora sua Bateria Vital dia a dia, para transformar estes passos em resultado real.",
           "Acesse: energia.epic247.com.br (Módulo Energia · R$97).",
         ],
       },

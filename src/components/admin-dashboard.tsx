@@ -78,7 +78,7 @@ export default function AdminDashboard({
 
         {!supabaseReady && (
           <p className="mt-6 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-            Supabase não está configurado no servidor — leads e uploads ficam
+            Supabase não está configurado no servidor, leads e uploads ficam
             indisponíveis.
           </p>
         )}
