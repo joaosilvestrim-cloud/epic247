@@ -1,6 +1,7 @@
 import { isAdmin, adminConfigurado } from "@/lib/admin-auth";
 import { getServiceClient } from "@/lib/supabase";
 import { getSettings } from "@/lib/settings";
+import type { Tarefa } from "@/lib/tarefas";
 import AdminLogin from "@/components/admin-login";
 import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
 
@@ -18,13 +19,25 @@ export default async function AdminPage() {
 
   const supabase = getServiceClient();
   let leads: LeadRow[] = [];
+  let tarefas: Tarefa[] = [];
+  let tarefasReady = false;
+
   if (supabase) {
-    const { data } = await supabase
+    const { data: leadsData } = await supabase
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(500);
-    leads = (data as LeadRow[]) ?? [];
+    leads = (leadsData as LeadRow[]) ?? [];
+
+    const { data: tarefasData, error: tarefasError } = await supabase
+      .from("tarefas")
+      .select("*")
+      .order("ordem", { ascending: true })
+      .order("created_at", { ascending: true });
+    // Sem erro = tabela existe (mesmo que vazia)
+    tarefasReady = !tarefasError;
+    tarefas = (tarefasData as Tarefa[]) ?? [];
   }
 
   const settings = await getSettings();
@@ -34,6 +47,8 @@ export default async function AdminPage() {
       leads={leads}
       settings={settings}
       supabaseReady={Boolean(supabase)}
+      tarefas={tarefas}
+      tarefasReady={tarefasReady}
     />
   );
 }
