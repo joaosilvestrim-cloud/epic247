@@ -507,15 +507,24 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
 
   const tipos = useMemo(() => [...new Set(conteudos.map((c) => c.tipo).filter(Boolean) as string[])].sort(), [conteudos]);
   const filtrados = useMemo(() => {
-    return conteudos.filter((c) => {
-      if (filtroStatus !== "todos" && c.status !== filtroStatus) return false;
-      if (filtroTipo !== "todos" && c.tipo !== filtroTipo) return false;
-      if (busca) {
-        const q = busca.toLowerCase();
-        if (!`${c.nome} ${c.nomenclatura ?? ""} ${c.legenda ?? ""} ${c.hashtags ?? ""}`.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
+    const dKey = (c: Conteudo) => (c.data && c.data.trim() ? c.data.trim() : "9999-99-99");
+    const hKey = (c: Conteudo) => (c.horario && c.horario.trim() ? c.horario.trim() : "99:99");
+    return conteudos
+      .filter((c) => {
+        if (filtroStatus !== "todos" && c.status !== filtroStatus) return false;
+        if (filtroTipo !== "todos" && c.tipo !== filtroTipo) return false;
+        if (busca) {
+          const q = busca.toLowerCase();
+          if (!`${c.nome} ${c.nomenclatura ?? ""} ${c.legenda ?? ""} ${c.hashtags ?? ""}`.toLowerCase().includes(q)) return false;
+        }
+        return true;
+      })
+      .sort(
+        (a, b) =>
+          dKey(a).localeCompare(dKey(b)) ||
+          hKey(a).localeCompare(hKey(b)) ||
+          (a.ordem ?? 0) - (b.ordem ?? 0)
+      );
   }, [conteudos, filtroStatus, filtroTipo, busca]);
 
   async function mudarStatus(c: Conteudo, status: ConteudoStatus) {
