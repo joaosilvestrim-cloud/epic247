@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import BrandLogo from "./brand-logo";
 
 export default function AdminLogin({ configurado }: { configurado: boolean }) {
   const router = useRouter();
@@ -34,10 +35,9 @@ export default function AdminLogin({ configurado }: { configurado: boolean }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-navy-deep px-6 text-white">
       <div className="w-full max-w-sm rounded-3xl border border-gold/30 bg-white/[0.04] p-8 shadow-[0_0_80px_-24px] shadow-gold/40 backdrop-blur">
-        <div className="text-center">
-          <span className="text-3xl">⚡</span>
-          <h1 className="mt-3 font-display text-2xl font-bold">EPIC247 · Admin</h1>
-          <p className="mt-1 text-sm text-white/50">Painel administrativo</p>
+        <div className="flex flex-col items-center text-center text-white">
+          <BrandLogo size="1.6rem" />
+          <p className="mt-3 text-sm text-white/50">Painel administrativo</p>
         </div>
 
         {!configurado ? (

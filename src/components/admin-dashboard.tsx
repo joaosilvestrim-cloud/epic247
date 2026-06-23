@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase-browser";
 import { DRENOS, type DrenoId } from "@/lib/drenos";
 import { SETTING_KEYS, type SiteSettings } from "@/lib/settings";
-import type { Tarefa } from "@/lib/tarefas";
-import TarefasView, { TarefasAnalytics } from "./admin-tarefas";
+import type { Conteudo } from "@/lib/conteudos";
+import ConteudosView, { ConteudosAnalytics } from "./admin-conteudos";
 
-type Aba = "visao" | "tarefas" | "leads" | "conteudo";
+type Aba = "visao" | "calendario" | "leads" | "midias";
 
 export interface LeadRow {
   id: string;
@@ -33,14 +33,14 @@ export default function AdminDashboard({
   leads,
   settings,
   supabaseReady,
-  tarefas,
-  tarefasReady,
+  conteudos,
+  conteudosReady,
 }: {
   leads: LeadRow[];
   settings: SiteSettings;
   supabaseReady: boolean;
-  tarefas: Tarefa[];
-  tarefasReady: boolean;
+  conteudos: Conteudo[];
+  conteudosReady: boolean;
 }) {
   const router = useRouter();
   const [aba, setAba] = useState<Aba>("visao");
@@ -60,9 +60,9 @@ export default function AdminDashboard({
 
   const abas: { id: Aba; label: string }[] = [
     { id: "visao", label: "Visão geral" },
-    { id: "tarefas", label: "Tarefas" },
+    { id: "calendario", label: "Calendário" },
     { id: "leads", label: "Leads" },
-    { id: "conteudo", label: "Conteúdo" },
+    { id: "midias", label: "Mídias" },
   ];
 
   return (
@@ -117,7 +117,7 @@ export default function AdminDashboard({
         {/* Visão geral */}
         {aba === "visao" && (
           <div className="mt-8 space-y-10">
-            <TarefasAnalytics tarefas={tarefas} />
+            <ConteudosAnalytics conteudos={conteudos} />
 
             <section>
               <h2 className="mb-4 font-display text-2xl font-bold">Leads do quiz</h2>
@@ -157,10 +157,10 @@ export default function AdminDashboard({
           </div>
         )}
 
-        {/* Tarefas */}
-        {aba === "tarefas" && (
+        {/* Calendário de conteúdo */}
+        {aba === "calendario" && (
           <div className="mt-8">
-            <TarefasView tarefas={tarefas} tarefasReady={tarefasReady} />
+            <ConteudosView conteudos={conteudos} pronto={conteudosReady} />
           </div>
         )}
 
@@ -222,8 +222,8 @@ export default function AdminDashboard({
           </section>
         )}
 
-        {/* Conteúdo */}
-        {aba === "conteudo" && (
+        {/* Mídias do site */}
+        {aba === "midias" && (
           <div className="mt-8 space-y-10">
             <section>
               <h2 className="font-display text-2xl font-bold">Conteúdo do site</h2>

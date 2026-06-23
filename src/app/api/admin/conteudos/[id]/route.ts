@@ -1,7 +1,21 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/admin-auth";
 import { getServiceClient } from "@/lib/supabase";
-import { isStatus, isPrioridade } from "@/lib/tarefas";
+import { isStatus } from "@/lib/conteudos";
+
+const CAMPOS = [
+  "data",
+  "dia",
+  "horario",
+  "tipo",
+  "formato",
+  "nomenclatura",
+  "story_num",
+  "link",
+  "legenda",
+  "hashtags",
+  "notas",
+] as const;
 
 export async function PATCH(
   request: Request,
@@ -26,27 +40,21 @@ export async function PATCH(
   const b = (body ?? {}) as Record<string, unknown>;
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
 
-  if (typeof b.titulo === "string") patch.titulo = b.titulo.trim();
-  if ("descricao" in b) patch.descricao = b.descricao ?? null;
-  if ("categoria" in b) patch.categoria = b.categoria ?? null;
-  if ("responsavel" in b) patch.responsavel = b.responsavel ?? null;
-  if ("prazo" in b) patch.prazo = b.prazo || null;
-  if (isPrioridade(b.prioridade)) patch.prioridade = b.prioridade;
-  if (typeof b.ordem === "number") patch.ordem = b.ordem;
-  if (isStatus(b.status)) {
-    patch.status = b.status;
-    patch.concluido_em = b.status === "concluido" ? new Date().toISOString() : null;
+  if (typeof b.nome === "string") patch.nome = b.nome.trim();
+  if (isStatus(b.status)) patch.status = b.status;
+  for (const c of CAMPOS) {
+    if (c in b) patch[c] = b[c] ? b[c] : null;
   }
 
   const { data, error } = await supabase
-    .from("tarefas")
+    .from("conteudos")
     .update(patch)
     .eq("id", id)
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ tarefa: data });
+  return NextResponse.json({ conteudo: data });
 }
 
 export async function DELETE(
@@ -62,7 +70,7 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const { error } = await supabase.from("tarefas").delete().eq("id", id);
+  const { error } = await supabase.from("conteudos").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

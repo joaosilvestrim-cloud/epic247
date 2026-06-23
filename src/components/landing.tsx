@@ -14,6 +14,7 @@ import {
 import { DRENOS_POR_HIERARQUIA } from "@/lib/drenos";
 import type { SiteSettings } from "@/lib/settings";
 import { trackInitiateCheckout } from "@/lib/analytics";
+import BrandLogo from "./brand-logo";
 
 const CHECKOUT_URL = "#oferta"; // Troque pela URL real do checkout (Hotmart/Kiwify).
 
@@ -243,13 +244,8 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-baseline gap-2.5">
-            <span className="font-display text-xl font-black tracking-tight text-white">
-              EPIC<span className="text-gold">247</span>
-            </span>
-            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.3em] text-white/45 sm:inline">
-              Módulo Energia
-            </span>
+          <Link href="/" className="text-white">
+            <BrandLogo size="1.35rem" />
           </Link>
           <nav className="flex items-center gap-2 sm:gap-5">
             <Link
@@ -749,8 +745,10 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
 
       {/* ───────────── Rodapé ───────────── */}
       <footer className="bg-navy px-6 py-12 text-center text-sm text-white/40">
-        <p className="font-display text-base text-white/70">EPIC247 · Módulo Energia</p>
-        <p className="mt-3">
+        <div className="flex justify-center text-white/80">
+          <BrandLogo size="1.5rem" />
+        </div>
+        <p className="mt-5">
           <Link href="/quiz" className="text-gold-soft hover:underline">
             Fazer o diagnóstico dos 5 Drenos
           </Link>

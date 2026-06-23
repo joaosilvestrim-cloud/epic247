@@ -1,23 +1,37 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/admin-auth";
 import { getServiceClient } from "@/lib/supabase";
-import { isStatus, isPrioridade } from "@/lib/tarefas";
+import { isStatus } from "@/lib/conteudos";
+
+const CAMPOS = [
+  "data",
+  "dia",
+  "horario",
+  "tipo",
+  "formato",
+  "nomenclatura",
+  "story_num",
+  "link",
+  "legenda",
+  "hashtags",
+  "notas",
+] as const;
 
 export async function GET() {
   if (!(await isAdmin())) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
   const supabase = getServiceClient();
-  if (!supabase) return NextResponse.json({ tarefas: [] });
+  if (!supabase) return NextResponse.json({ conteudos: [] });
 
   const { data, error } = await supabase
-    .from("tarefas")
+    .from("conteudos")
     .select("*")
     .order("ordem", { ascending: true })
-    .order("created_at", { ascending: true });
+    .order("data", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ tarefas: data ?? [] });
+  return NextResponse.json({ conteudos: data ?? [] });
 }
 
 export async function POST(request: Request) {
@@ -37,22 +51,20 @@ export async function POST(request: Request) {
   }
 
   const b = (body ?? {}) as Record<string, unknown>;
-  const titulo = typeof b.titulo === "string" ? b.titulo.trim() : "";
-  if (!titulo) {
-    return NextResponse.json({ error: "Título é obrigatório." }, { status: 400 });
+  const nome = typeof b.nome === "string" ? b.nome.trim() : "";
+  if (!nome) {
+    return NextResponse.json({ error: "Nome é obrigatório." }, { status: 400 });
   }
 
-  const row = {
-    titulo,
-    descricao: typeof b.descricao === "string" ? b.descricao : null,
-    categoria: typeof b.categoria === "string" ? b.categoria : null,
-    responsavel: typeof b.responsavel === "string" ? b.responsavel : null,
-    status: isStatus(b.status) ? b.status : "a_fazer",
-    prioridade: isPrioridade(b.prioridade) ? b.prioridade : "media",
-    prazo: typeof b.prazo === "string" && b.prazo ? b.prazo : null,
+  const row: Record<string, unknown> = {
+    nome,
+    status: isStatus(b.status) ? b.status : "a_produzir",
   };
+  for (const c of CAMPOS) {
+    row[c] = typeof b[c] === "string" && b[c] ? b[c] : null;
+  }
 
-  const { data, error } = await supabase.from("tarefas").insert(row).select().single();
+  const { data, error } = await supabase.from("conteudos").insert(row).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ tarefa: data });
+  return NextResponse.json({ conteudo: data });
 }
