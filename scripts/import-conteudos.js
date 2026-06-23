@@ -83,6 +83,7 @@ data.forEach((rw, i) => {
   if (!nome) return;
   registros.push({
     ordem: i + 1,
+    semana: clean(rw[0]),
     data: dateISO(rw[1]),
     dia: clean(rw[2]),
     horario: clean(rw[3]),

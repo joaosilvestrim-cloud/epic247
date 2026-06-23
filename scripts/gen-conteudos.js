@@ -75,8 +75,11 @@ function q(v) {
 
 const out = [];
 out.push("-- EPIC247 — Calendario de Conteudo (gerado da planilha). Rode no SQL Editor.");
-out.push("create table if not exists public.conteudos (");
+out.push("-- Recria a tabela com TODAS as colunas e reimporta os conteudos.");
+out.push("drop table if exists public.conteudos cascade;");
+out.push("create table public.conteudos (");
 out.push("  id uuid primary key default gen_random_uuid(),");
+out.push("  semana text,");
 out.push("  data date, dia text, horario text, tipo text, formato text,");
 out.push("  nomenclatura text, nome text not null, story_num text,");
 out.push("  status text not null default 'a_produzir',");
@@ -90,7 +93,7 @@ out.push("create index if not exists conteudos_status_idx on public.conteudos (s
 out.push("alter table public.conteudos enable row level security;");
 out.push("");
 out.push(
-  "insert into public.conteudos (ordem, data, dia, horario, tipo, formato, nomenclatura, nome, story_num, status, link, legenda, hashtags, notas) values"
+  "insert into public.conteudos (ordem, semana, data, dia, horario, tipo, formato, nomenclatura, nome, story_num, status, link, legenda, hashtags, notas) values"
 );
 const vals = [];
 data.forEach((rw, i) => {
@@ -101,6 +104,7 @@ data.forEach((rw, i) => {
     "(" +
       [
         i + 1,
+        q(rw[0]),
         iso ? "'" + iso + "'" : "NULL",
         q(rw[2]),
         q(rw[3]),

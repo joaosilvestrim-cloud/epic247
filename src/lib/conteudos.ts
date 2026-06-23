@@ -4,6 +4,7 @@ export type ConteudoStatus = "a_produzir" | "validar" | "entregue" | "repost";
 
 export interface Conteudo {
   id: string;
+  semana: string | null;
   data: string | null; // YYYY-MM-DD
   dia: string | null;
   horario: string | null;

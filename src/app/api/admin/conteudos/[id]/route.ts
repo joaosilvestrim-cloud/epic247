@@ -4,6 +4,7 @@ import { getServiceClient } from "@/lib/supabase";
 import { isStatus } from "@/lib/conteudos";
 
 const CAMPOS = [
+  "semana",
   "data",
   "dia",
   "horario",
