@@ -139,6 +139,145 @@ function agrupar(itens: Conteudo[], fn: (c: Conteudo) => string) {
 }
 
 const PALETA = ["#182848", "#c09840", "#10b981", "#6366f1", "#f43f5e", "#0ea5e9", "#f59e0b", "#ec4899", "#14b8a6", "#a855f7"];
+const MESES_LONGOS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+/* ════════════════ Calendário editorial (grade mensal) ════════════════ */
+function CalendarioEditorial({ conteudos }: { conteudos: Conteudo[] }) {
+  const porData = useMemo(() => {
+    const m = new Map<string, Conteudo[]>();
+    for (const c of conteudos) {
+      if (!c.data) continue;
+      if (!m.has(c.data)) m.set(c.data, []);
+      m.get(c.data)!.push(c);
+    }
+    return m;
+  }, [conteudos]);
+
+  const meses = useMemo(
+    () => [...new Set(conteudos.filter((c) => c.data).map((c) => c.data!.slice(0, 7)))].sort(),
+    [conteudos]
+  );
+
+  const [mes, setMes] = useState(() => {
+    const hoje = `${new Date().getFullYear()}-${pad2(new Date().getMonth() + 1)}`;
+    return meses.includes(hoje) ? hoje : meses[0] ?? hoje;
+  });
+  const [diaSel, setDiaSel] = useState<string | null>(null);
+
+  const [y, mo] = mes.split("-").map(Number);
+  const inicioOffset = new Date(y, mo - 1, 1).getDay(); // 0=Dom
+  const diasNoMes = new Date(y, mo, 0).getDate();
+
+  const celulas: (string | null)[] = [];
+  for (let i = 0; i < inicioOffset; i++) celulas.push(null);
+  for (let d = 1; d <= diasNoMes; d++) celulas.push(`${y}-${pad2(mo)}-${pad2(d)}`);
+  while (celulas.length % 7 !== 0) celulas.push(null);
+
+  function mover(delta: number) {
+    const dt = new Date(y, mo - 1 + delta, 1);
+    setMes(`${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}`);
+    setDiaSel(null);
+  }
+
+  const hojeStr = `${new Date().getFullYear()}-${pad2(new Date().getMonth() + 1)}-${pad2(new Date().getDate())}`;
+  const totalMes = celulas.filter((c) => c && porData.has(c)).reduce((a, c) => a + (porData.get(c!)?.length ?? 0), 0);
+  const selPosts = diaSel ? porData.get(diaSel) ?? [] : [];
+
+  return (
+    <div className="rounded-2xl border border-line/40 bg-white p-5 sm:p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h3 className="font-display text-lg font-bold text-navy">
+          Calendário editorial
+          <span className="ml-2 text-sm font-normal text-navy/50">{totalMes} posts no mês</span>
+        </h3>
+        <div className="flex items-center gap-2">
+          <button onClick={() => mover(-1)} className="rounded-lg border border-line/50 px-3 py-1.5 text-sm hover:bg-cream">‹</button>
+          <span className="min-w-[140px] text-center font-semibold text-navy">{MESES_LONGOS[mo - 1]} {y}</span>
+          <button onClick={() => mover(1)} className="rounded-lg border border-line/50 px-3 py-1.5 text-sm hover:bg-cream">›</button>
+          {meses.length > 0 && (
+            <select value={mes} onChange={(e) => { setMes(e.target.value); setDiaSel(null); }} className="rounded-lg border border-line/50 px-2 py-1.5 text-sm outline-none focus:border-gold">
+              {meses.map((m) => { const [yy, mm] = m.split("-"); return <option key={m} value={m}>{MESES_LONGOS[+mm - 1].slice(0, 3)}/{yy.slice(2)}</option>; })}
+            </select>
+          )}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <div className="min-w-[640px]">
+          <div className="grid grid-cols-7 gap-1.5">
+            {DOW.map((d) => (
+              <div key={d} className="pb-1 text-center text-xs font-semibold uppercase tracking-wide text-navy/40">{d}</div>
+            ))}
+            {celulas.map((cell, i) => {
+              if (!cell) return <div key={i} className="min-h-[92px] rounded-lg bg-cream/30" />;
+              const posts = porData.get(cell) ?? [];
+              const diaNum = +cell.slice(8, 10);
+              const hoje = cell === hojeStr;
+              return (
+                <button
+                  key={i}
+                  onClick={() => posts.length && setDiaSel(diaSel === cell ? null : cell)}
+                  className={`min-h-[92px] rounded-lg border p-1.5 text-left align-top transition ${
+                    diaSel === cell ? "border-gold ring-1 ring-gold" : "border-line/30"
+                  } ${posts.length ? "bg-white hover:border-gold/60" : "bg-cream/20"}`}
+                >
+                  <div className={`mb-1 text-xs font-bold ${hoje ? "inline-flex h-5 w-5 items-center justify-center rounded-full bg-navy text-white" : "text-navy/60"}`}>
+                    {diaNum}
+                  </div>
+                  <div className="space-y-1">
+                    {posts.slice(0, 3).map((p) => (
+                      <div
+                        key={p.id}
+                        title={`${p.horario ? p.horario + " · " : ""}${p.nome} (${STATUS_INFO[p.status].label})`}
+                        className="truncate rounded px-1 py-0.5 text-[10px] font-medium leading-tight text-white"
+                        style={{ backgroundColor: STATUS_INFO[p.status].cor }}
+                      >
+                        {p.nomenclatura || p.tipo || p.nome}
+                      </div>
+                    ))}
+                    {posts.length > 3 && <div className="px-1 text-[10px] font-semibold text-navy/50">+{posts.length - 3} mais</div>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Legenda */}
+      <div className="mt-3 flex flex-wrap gap-3">
+        {STATUS_ORDER.map((s) => (
+          <span key={s} className="flex items-center gap-1.5 text-xs text-navy/60">
+            <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: STATUS_INFO[s].cor }} />
+            {STATUS_INFO[s].label}
+          </span>
+        ))}
+      </div>
+
+      {/* Detalhe do dia selecionado */}
+      {diaSel && selPosts.length > 0 && (
+        <div className="mt-4 rounded-xl border border-line/40 bg-cream/30 p-4">
+          <p className="mb-2 font-semibold text-navy">
+            {new Date(diaSel + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })} · {selPosts.length} post(s)
+          </p>
+          <div className="space-y-2">
+            {selPosts.map((p) => (
+              <div key={p.id} className="flex items-start gap-2 text-sm">
+                <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: STATUS_INFO[p.status].cor }} />
+                <div>
+                  <span className="font-medium text-navy">{p.nomenclatura ? `${p.nomenclatura} · ` : ""}{p.nome}</span>
+                  <span className="ml-2 text-xs text-navy/50">{[p.horario, p.tipo, STATUS_INFO[p.status].label].filter(Boolean).join(" · ")}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ════════════════ Resumo (Visão geral) ════════════════ */
 export function ConteudosAnalytics({ conteudos }: { conteudos: Conteudo[] }) {
@@ -203,6 +342,9 @@ export function ConteudosDashboards({ conteudos }: { conteudos: Conteudo[] }) {
         <CardNum label="Atrasados" valor={atrasados.length} cor="#f43f5e" />
         <CardNum label="Próx. 7 dias" valor={proximos.filter((c) => (diasAteData(c.data, hoje) ?? 99) <= 7).length} cor="#c09840" />
       </div>
+
+      {/* Calendário editorial */}
+      <CalendarioEditorial conteudos={conteudos} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Status — donut */}
