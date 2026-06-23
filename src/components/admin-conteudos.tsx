@@ -152,6 +152,11 @@ function CalendarioEditorial({ conteudos }: { conteudos: Conteudo[] }) {
       if (!m.has(c.data)) m.set(c.data, []);
       m.get(c.data)!.push(c);
     }
+    // Ordena os posts de cada dia por horário (sem horário vai para o fim).
+    const hKey = (c: Conteudo) => (c.horario && c.horario.trim() ? c.horario.trim() : "99:99");
+    for (const arr of m.values()) {
+      arr.sort((a, b) => hKey(a).localeCompare(hKey(b)) || (a.ordem ?? 0) - (b.ordem ?? 0));
+    }
     return m;
   }, [conteudos]);
 
