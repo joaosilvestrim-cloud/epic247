@@ -19,10 +19,11 @@ function hojeISO() {
 }
 function fmtData(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-  });
+  return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
+function fmtDataLonga(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 }
 const DIAS_ORDEM = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
@@ -41,7 +42,7 @@ function Bloco({ titulo, children }: { titulo: string; children: React.ReactNode
   return (
     <div className="rounded-2xl border border-line/40 bg-white p-6">
       <h3 className="mb-4 font-display text-lg font-bold text-navy">{titulo}</h3>
-      <div className="space-y-3">{children}</div>
+      {children}
     </div>
   );
 }
@@ -57,6 +58,74 @@ function Barra({ label, valor, max, cor, sufixo }: { label: string; valor: numbe
     </div>
   );
 }
+
+/** Donut/rosca SVG com legenda. */
+function Donut({
+  segs,
+  size = 168,
+  thickness = 24,
+  centerTop,
+  centerBottom,
+}: {
+  segs: { label: string; valor: number; cor: string }[];
+  size?: number;
+  thickness?: number;
+  centerTop?: string;
+  centerBottom?: string;
+}) {
+  const total = segs.reduce((a, s) => a + s.valor, 0) || 1;
+  const r = (size - thickness) / 2;
+  const C = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <div className="flex flex-wrap items-center gap-5">
+      <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f1ece2" strokeWidth={thickness} />
+          {segs.map((s, i) => {
+            const len = (s.valor / total) * C;
+            const el = (
+              <circle
+                key={i}
+                cx={size / 2}
+                cy={size / 2}
+                r={r}
+                fill="none"
+                stroke={s.cor}
+                strokeWidth={thickness}
+                strokeDasharray={`${len} ${C - len}`}
+                strokeDashoffset={-offset}
+              />
+            );
+            offset += len;
+            return el;
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-2xl font-black text-navy">{centerTop ?? total}</span>
+          {centerBottom && <span className="text-[11px] text-navy/50">{centerBottom}</span>}
+        </div>
+      </div>
+      <ul className="min-w-[120px] flex-1 space-y-1.5">
+        {segs.map((s) => (
+          <li key={s.label} className="flex items-center justify-between gap-3 text-sm">
+            <span className="flex items-center gap-2 text-navy/80">
+              <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: s.cor }} />
+              {s.label}
+            </span>
+            <span className="font-semibold text-navy">
+              {s.valor}
+              <span className="ml-1 text-xs font-normal text-navy/40">
+                {Math.round((s.valor / total) * 100)}%
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function agrupar(itens: Conteudo[], fn: (c: Conteudo) => string) {
   const map = new Map<string, { total: number; entregues: number }>();
   for (const c of itens) {
@@ -69,6 +138,8 @@ function agrupar(itens: Conteudo[], fn: (c: Conteudo) => string) {
   return [...map.entries()].map(([chave, v]) => ({ chave, ...v }));
 }
 
+const PALETA = ["#182848", "#c09840", "#10b981", "#6366f1", "#f43f5e", "#0ea5e9", "#f59e0b", "#ec4899", "#14b8a6", "#a855f7"];
+
 /* ════════════════ Resumo (Visão geral) ════════════════ */
 export function ConteudosAnalytics({ conteudos }: { conteudos: Conteudo[] }) {
   const hoje = hojeISO();
@@ -78,7 +149,6 @@ export function ConteudosAnalytics({ conteudos }: { conteudos: Conteudo[] }) {
   const ativos = conteudos.filter((c) => pendente(c.status));
   const atrasados = ativos.filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d < 0; }).length;
   const prox7 = ativos.filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d >= 0 && d <= 7; }).length;
-
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <CardNum label="Conteúdos" valor={total} cor="#182848" />
@@ -98,17 +168,12 @@ export function ConteudosDashboards({ conteudos }: { conteudos: Conteudo[] }) {
   const pct = total ? Math.round((entregues / total) * 100) : 0;
 
   const ativos = conteudos.filter((c) => pendente(c.status));
-  const atrasados = ativos
-    .filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d < 0; })
-    .sort((a, b) => (a.data || "").localeCompare(b.data || ""));
-  const proximos = ativos
-    .filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d >= 0; })
-    .sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  const atrasados = ativos.filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d < 0; }).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  const proximos = ativos.filter((c) => { const d = diasAteData(c.data, hoje); return d !== null && d >= 0; }).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
 
   const porTipo = agrupar(conteudos, (c) => c.tipo || "Sem tipo").sort((a, b) => b.total - a.total);
   const porFormato = agrupar(conteudos, (c) => c.formato || "Sem formato").sort((a, b) => b.total - a.total);
 
-  // por mês (cronograma)
   const porMes = useMemo(() => {
     const map = new Map<string, { total: number; entregues: number }>();
     for (const c of conteudos) {
@@ -122,9 +187,11 @@ export function ConteudosDashboards({ conteudos }: { conteudos: Conteudo[] }) {
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [conteudos]);
   const maxMes = Math.max(1, ...porMes.map(([, v]) => v.total));
-
   const porDia = DIAS_ORDEM.map((d) => ({ dia: d, qtd: conteudos.filter((c) => (c.dia || "").trim() === d).length }));
   const maxDia = Math.max(1, ...porDia.map((d) => d.qtd));
+
+  const statusSegs = STATUS_ORDER.map((s) => ({ label: STATUS_INFO[s].label, valor: cont(s), cor: STATUS_INFO[s].cor }));
+  const tipoSegs = porTipo.map((g, i) => ({ label: g.chave, valor: g.total, cor: PALETA[i % PALETA.length] }));
 
   return (
     <div className="space-y-6">
@@ -138,51 +205,67 @@ export function ConteudosDashboards({ conteudos }: { conteudos: Conteudo[] }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Funil de produção */}
-        <Bloco titulo="Funil de produção">
-          <Barra label="A produzir" valor={cont("a_produzir")} max={total} cor="#94a3b8" />
-          <Barra label="Validar" valor={cont("validar")} max={total} cor="#c09840" />
-          <Barra label="Entregue" valor={cont("entregue")} max={total} cor="#10b981" />
-          <Barra label="Repost" valor={cont("repost")} max={total} cor="#6366f1" />
+        {/* Status — donut */}
+        <Bloco titulo="Distribuição por status">
+          <Donut segs={statusSegs} centerTop={String(total)} centerBottom="conteúdos" />
         </Bloco>
 
-        {/* Progresso geral */}
+        {/* Progresso — anel */}
         <Bloco titulo="Progresso de entrega">
-          <div className="flex items-center justify-center py-2">
-            <div className="text-center">
-              <p className="font-display text-5xl font-black text-emerald-500">{pct}%</p>
-              <p className="mt-1 text-sm text-navy/60">{entregues} de {total} entregues</p>
-            </div>
-          </div>
-          <div className="h-3 w-full overflow-hidden rounded-full bg-cream">
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
-          </div>
+          <Donut
+            segs={[
+              { label: "Entregue", valor: entregues, cor: "#10b981" },
+              { label: "Pendente", valor: total - entregues, cor: "#e5e1d6" },
+            ]}
+            centerTop={`${pct}%`}
+            centerBottom="entregue"
+          />
         </Bloco>
 
-        {/* Por tipo */}
+        {/* Tipo — donut */}
         <Bloco titulo="Por tipo de conteúdo">
-          {porTipo.map((g) => (
-            <Barra key={g.chave} label={g.chave} valor={g.total} max={total} cor="#182848" />
-          ))}
+          <Donut segs={tipoSegs} centerTop={String(total)} centerBottom="total" />
         </Bloco>
 
-        {/* Por formato */}
+        {/* Funil — barras */}
+        <Bloco titulo="Funil de produção">
+          <div className="space-y-3">
+            <Barra label="A produzir" valor={cont("a_produzir")} max={total} cor="#94a3b8" />
+            <Barra label="Validar" valor={cont("validar")} max={total} cor="#c09840" />
+            <Barra label="Entregue" valor={cont("entregue")} max={total} cor="#10b981" />
+            <Barra label="Repost" valor={cont("repost")} max={total} cor="#6366f1" />
+          </div>
+        </Bloco>
+
+        {/* Formato — barras */}
         <Bloco titulo="Por formato">
-          {porFormato.slice(0, 8).map((g) => (
-            <Barra key={g.chave} label={g.chave} valor={g.total} max={total} cor="#c09840" />
-          ))}
+          <div className="space-y-3">
+            {porFormato.slice(0, 8).map((g) => (
+              <Barra key={g.chave} label={g.chave} valor={g.total} max={total} cor="#c09840" />
+            ))}
+          </div>
         </Bloco>
 
-        {/* Cronograma por mês */}
-        <Bloco titulo="Cronograma (conteúdos por mês)">
+        {/* Dia da semana — barras */}
+        <Bloco titulo="Por dia da semana">
+          <div className="space-y-3">
+            {porDia.map((d) => (
+              <Barra key={d.dia} label={d.dia} valor={d.qtd} max={maxDia} cor="#6366f1" />
+            ))}
+          </div>
+        </Bloco>
+      </div>
+
+      {/* Cronograma — largura total */}
+      <Bloco titulo="Cronograma (conteúdos por mês)">
+        <div className="space-y-3">
           {porMes.length === 0 && <p className="text-sm text-navy/40">Sem datas.</p>}
           {porMes.map(([k, v]) => {
             const [y, mo] = k.split("-");
-            const label = `${MESES[+mo - 1]}/${y.slice(2)}`;
             return (
               <div key={k}>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-medium text-navy">{label}</span>
+                  <span className="font-medium text-navy">{MESES[+mo - 1]}/{y.slice(2)}</span>
                   <span className="text-navy/50">{v.entregues}/{v.total} entregues</span>
                 </div>
                 <div className="flex h-3 overflow-hidden rounded-full bg-cream">
@@ -193,32 +276,24 @@ export function ConteudosDashboards({ conteudos }: { conteudos: Conteudo[] }) {
             );
           })}
           <p className="pt-1 text-xs text-navy/40">
-            <span className="text-emerald-500">■</span> entregue ·{" "}
-            <span className="text-gold">■</span> pendente
+            <span className="text-emerald-500">■</span> entregue · <span className="text-gold">■</span> pendente
           </p>
-        </Bloco>
-
-        {/* Por dia da semana */}
-        <Bloco titulo="Por dia da semana">
-          {porDia.map((d) => (
-            <Barra key={d.dia} label={d.dia} valor={d.qtd} max={maxDia} cor="#6366f1" />
-          ))}
-        </Bloco>
-      </div>
+        </div>
+      </Bloco>
 
       {/* Listas de prazos */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Bloco titulo={`Atrasados (${atrasados.length})`}>
-          {atrasados.length === 0 && <p className="text-sm text-navy/40">Nada atrasado. 🎉</p>}
-          {atrasados.slice(0, 8).map((c) => (
-            <ItemPrazo key={c.id} c={c} hoje={hoje} />
-          ))}
+          <div className="space-y-2">
+            {atrasados.length === 0 && <p className="text-sm text-navy/40">Nada atrasado. 🎉</p>}
+            {atrasados.slice(0, 8).map((c) => <ItemPrazo key={c.id} c={c} hoje={hoje} />)}
+          </div>
         </Bloco>
         <Bloco titulo="Próximos a publicar">
-          {proximos.length === 0 && <p className="text-sm text-navy/40">Nada agendado.</p>}
-          {proximos.slice(0, 8).map((c) => (
-            <ItemPrazo key={c.id} c={c} hoje={hoje} />
-          ))}
+          <div className="space-y-2">
+            {proximos.length === 0 && <p className="text-sm text-navy/40">Nada agendado.</p>}
+            {proximos.slice(0, 8).map((c) => <ItemPrazo key={c.id} c={c} hoje={hoje} />)}
+          </div>
         </Bloco>
       </div>
     </div>
@@ -244,24 +319,15 @@ function ItemPrazo({ c, hoje }: { c: Conteudo; hoje: string }) {
 }
 
 /* ════════════════ Calendário (Lista + Dashboards) ════════════════ */
-export default function ConteudosView({
-  conteudos,
-  pronto,
-}: {
-  conteudos: Conteudo[];
-  pronto: boolean;
-}) {
+export default function ConteudosView({ conteudos, pronto }: { conteudos: Conteudo[]; pronto: boolean }) {
   const [sub, setSub] = useState<"lista" | "dashboards">("lista");
-
   if (!pronto) {
     return (
       <div className="rounded-2xl border border-amber-300 bg-amber-50 p-6 text-sm text-amber-800">
-        A tabela <code>conteudos</code> ainda não existe (ou falta a coluna <code>semana</code>).
-        Rode o SQL indicado e recarregue.
+        A tabela <code>conteudos</code> ainda não existe. Rode o SQL indicado e recarregue.
       </div>
     );
   }
-
   return (
     <div className="space-y-5">
       <div className="inline-flex rounded-xl border border-line/50 bg-white p-1">
@@ -269,42 +335,37 @@ export default function ConteudosView({
           <button
             key={id}
             onClick={() => setSub(id)}
-            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
-              sub === id ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
-            }`}
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${sub === id ? "bg-navy text-white" : "text-navy/60 hover:text-navy"}`}
           >
             {label}
           </button>
         ))}
       </div>
-
       {sub === "lista" ? <Lista conteudos={conteudos} /> : <ConteudosDashboards conteudos={conteudos} />}
     </div>
   );
 }
 
+/* ════════════════ Lista (linhas expansíveis) ════════════════ */
 function Lista({ conteudos }: { conteudos: Conteudo[] }) {
   const router = useRouter();
   const hoje = hojeISO();
   const [filtroStatus, setFiltroStatus] = useState<"todos" | ConteudoStatus>("todos");
   const [filtroTipo, setFiltroTipo] = useState<string>("todos");
   const [busca, setBusca] = useState("");
+  const [aberto, setAberto] = useState<string | null>(null);
   const [editando, setEditando] = useState<Conteudo | null>(null);
   const [criando, setCriando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  const tipos = useMemo(
-    () => [...new Set(conteudos.map((c) => c.tipo).filter(Boolean) as string[])].sort(),
-    [conteudos]
-  );
+  const tipos = useMemo(() => [...new Set(conteudos.map((c) => c.tipo).filter(Boolean) as string[])].sort(), [conteudos]);
   const filtrados = useMemo(() => {
     return conteudos.filter((c) => {
       if (filtroStatus !== "todos" && c.status !== filtroStatus) return false;
       if (filtroTipo !== "todos" && c.tipo !== filtroTipo) return false;
       if (busca) {
         const q = busca.toLowerCase();
-        const alvo = `${c.nome} ${c.nomenclatura ?? ""} ${c.legenda ?? ""}`.toLowerCase();
-        if (!alvo.includes(q)) return false;
+        if (!`${c.nome} ${c.nomenclatura ?? ""} ${c.legenda ?? ""} ${c.hashtags ?? ""}`.toLowerCase().includes(q)) return false;
       }
       return true;
     });
@@ -327,24 +388,16 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
     router.refresh();
   }
 
-  const Trunc = ({ v, w = 200 }: { v: string | null; w?: number }) =>
-    v ? (
-      <div className="truncate text-navy/70" style={{ maxWidth: w }} title={v}>{v}</div>
-    ) : (
-      <span className="text-navy/30">—</span>
-    );
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
         <div className="flex flex-wrap gap-1.5">
           {(["todos", ...STATUS_ORDER] as const).map((s) => (
             <button
               key={s}
               onClick={() => setFiltroStatus(s)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                filtroStatus === s ? "bg-navy text-white" : "border border-line/50 text-navy/70 hover:bg-cream"
-              }`}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${filtroStatus === s ? "bg-navy text-white" : "border border-line/50 text-navy/70 hover:bg-cream"}`}
             >
               {s === "todos" ? "Todos" : STATUS_INFO[s].label}
             </button>
@@ -354,60 +407,86 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
           <option value="todos">Todos os tipos</option>
           {tipos.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar..." className="min-w-[140px] flex-1 rounded-xl border border-line/50 px-3 py-2 text-sm outline-none focus:border-gold" />
+        <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, legenda, hashtag..." className="min-w-[160px] flex-1 rounded-xl border border-line/50 px-3 py-2 text-sm outline-none focus:border-gold" />
         <button onClick={() => setCriando(true)} className="rounded-xl bg-gold px-4 py-2 text-sm font-bold text-navy-deep transition hover:brightness-110">+ Novo</button>
       </div>
 
       <p className="text-sm text-navy/50">{filtrados.length} de {conteudos.length} conteúdos</p>
       {erro && <p className="text-sm text-red-600">{erro}</p>}
 
-      <div className="overflow-x-auto rounded-2xl border border-line/40 bg-white">
-        <table className="w-full min-w-[1400px] text-left text-sm">
-          <thead className="border-b border-line/40 bg-cream/60 text-navy/70">
-            <tr>
-              {["Semana","Data","Dia","Horário","Tipo","Formato","Nomenclatura","Nome do conteúdo","Story#","Status","Link","Legenda","Hashtags","Notas",""].map((h) => (
-                <th key={h} className="whitespace-nowrap px-3 py-3 font-semibold">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtrados.length === 0 && (
-              <tr><td colSpan={15} className="px-4 py-10 text-center text-navy/50">Nenhum conteúdo.</td></tr>
-            )}
-            {filtrados.map((c) => {
-              const d = diasAteData(c.data, hoje);
-              const atrasado = d !== null && d < 0 && pendente(c.status);
-              return (
-                <tr key={c.id} className="border-b border-line/20 align-top last:border-0">
-                  <td className="px-3 py-3 text-navy/70">{c.semana || "—"}</td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <span className={atrasado ? "font-semibold text-red-600" : "text-navy/70"}>{fmtData(c.data)}{atrasado && " ⚠"}</span>
-                  </td>
-                  <td className="px-3 py-3 text-navy/70">{c.dia || "—"}</td>
-                  <td className="whitespace-nowrap px-3 py-3 text-navy/70">{c.horario || "—"}</td>
-                  <td className="px-3 py-3 text-navy/70">{c.tipo || "—"}</td>
-                  <td className="px-3 py-3 text-navy/70">{c.formato || "—"}</td>
-                  <td className="whitespace-nowrap px-3 py-3 font-semibold text-gold">{c.nomenclatura || "—"}</td>
-                  <td className="px-3 py-3"><div className="min-w-[200px] font-medium text-navy">{c.nome}</div></td>
-                  <td className="px-3 py-3 text-navy/70">{c.story_num || "—"}</td>
-                  <td className="px-3 py-3">
-                    <select value={c.status} onChange={(e) => mudarStatus(c, e.target.value as ConteudoStatus)} className="rounded-lg border border-line/50 bg-white px-2 py-1 text-xs font-semibold outline-none" style={{ color: STATUS_INFO[c.status].cor }}>
-                      {STATUS_ORDER.map((s) => <option key={s} value={s}>{STATUS_INFO[s].label}</option>)}
-                    </select>
-                  </td>
-                  <td className="px-3 py-3">{c.link ? <a href={c.link} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">abrir</a> : <span className="text-navy/30">—</span>}</td>
-                  <td className="px-3 py-3"><Trunc v={c.legenda} w={260} /></td>
-                  <td className="px-3 py-3"><Trunc v={c.hashtags} w={180} /></td>
-                  <td className="px-3 py-3"><Trunc v={c.notas} w={160} /></td>
-                  <td className="whitespace-nowrap px-3 py-3 text-right">
-                    <button onClick={() => setEditando(c)} className="text-sm text-gold hover:underline">Editar</button>
-                    <button onClick={() => excluir(c)} className="ml-3 text-sm text-red-500 hover:underline">Excluir</button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="divide-y divide-line/30 overflow-hidden rounded-2xl border border-line/40 bg-white">
+        {filtrados.length === 0 && <p className="px-4 py-10 text-center text-navy/50">Nenhum conteúdo.</p>}
+        {filtrados.map((c) => {
+          const d = diasAteData(c.data, hoje);
+          const atrasado = d !== null && d < 0 && pendente(c.status);
+          const open = aberto === c.id;
+          return (
+            <div key={c.id}>
+              {/* Linha principal */}
+              <div
+                onClick={() => setAberto(open ? null : c.id)}
+                className="flex cursor-pointer items-center gap-3 px-3 py-3 transition hover:bg-cream/40 sm:px-4"
+              >
+                {/* data */}
+                <div className="w-12 flex-shrink-0 text-center">
+                  <div className={`text-sm font-bold ${atrasado ? "text-red-600" : "text-navy"}`}>{fmtData(c.data)}</div>
+                  <div className="text-[10px] uppercase text-navy/40">{c.dia || ""}</div>
+                </div>
+                {/* nome */}
+                <div className="min-w-0 flex-1">
+                  <p className={`truncate font-medium ${c.status === "entregue" ? "text-navy/50" : "text-navy"}`}>
+                    {c.nomenclatura && <span className="font-bold text-gold">{c.nomenclatura} · </span>}
+                    {c.nome}
+                  </p>
+                  <p className="truncate text-xs text-navy/50">
+                    {[c.tipo, c.formato, c.horario].filter(Boolean).join(" · ") || "—"}
+                  </p>
+                </div>
+                {/* status inline */}
+                <select
+                  value={c.status}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => mudarStatus(c, e.target.value as ConteudoStatus)}
+                  className="flex-shrink-0 rounded-lg border border-line/50 bg-white px-2 py-1 text-xs font-semibold outline-none"
+                  style={{ color: STATUS_INFO[c.status].cor }}
+                >
+                  {STATUS_ORDER.map((s) => <option key={s} value={s}>{STATUS_INFO[s].label}</option>)}
+                </select>
+                <span className={`flex-shrink-0 text-navy/30 transition ${open ? "rotate-180" : ""}`}>⌄</span>
+              </div>
+
+              {/* Painel expandido */}
+              {open && (
+                <div className="bg-cream/30 px-4 pb-4 pt-1 text-sm sm:px-6">
+                  <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Detalhe rotulo="Semana" valor={c.semana} />
+                    <Detalhe rotulo="Data" valor={fmtDataLonga(c.data)} />
+                    <Detalhe rotulo="Dia / Horário" valor={[c.dia, c.horario].filter(Boolean).join(" ") || "—"} />
+                    <Detalhe rotulo="Tipo" valor={c.tipo} />
+                    <Detalhe rotulo="Formato" valor={c.formato} />
+                    <Detalhe rotulo="Story #" valor={c.story_num} />
+                  </div>
+
+                  {c.link && (
+                    <p className="mt-3">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-navy/50">Link: </span>
+                      <a href={c.link} target="_blank" rel="noopener noreferrer" className="break-all text-gold hover:underline">{c.link}</a>
+                    </p>
+                  )}
+
+                  {c.legenda && <BlocoTexto rotulo="Legenda" valor={c.legenda} />}
+                  {c.hashtags && <BlocoTexto rotulo="Hashtags" valor={c.hashtags} />}
+                  {c.notas && <BlocoTexto rotulo="Notas" valor={c.notas} />}
+
+                  <div className="mt-4 flex gap-2">
+                    <button onClick={() => setEditando(c)} className="rounded-lg bg-navy px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-125">Editar</button>
+                    <button onClick={() => excluir(c)} className="rounded-lg border border-red-300 px-4 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-50">Excluir</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {(criando || editando) && (
@@ -421,15 +500,39 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
   );
 }
 
-function ConteudoForm({
-  conteudo,
-  onClose,
-  onSaved,
-}: {
-  conteudo: Conteudo | null;
-  onClose: () => void;
-  onSaved: () => void;
-}) {
+function Detalhe({ rotulo, valor }: { rotulo: string; valor: string | null }) {
+  return (
+    <div>
+      <span className="text-xs font-semibold uppercase tracking-wide text-navy/50">{rotulo}: </span>
+      <span className="text-navy/80">{valor || "—"}</span>
+    </div>
+  );
+}
+
+function BlocoTexto({ rotulo, valor }: { rotulo: string; valor: string }) {
+  const [copiado, setCopiado] = useState(false);
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(valor);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 1500);
+    } catch {
+      /* ignore */
+    }
+  }
+  return (
+    <div className="mt-3">
+      <div className="mb-1 flex items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-navy/50">{rotulo}</span>
+        <button onClick={copiar} className="text-xs text-gold hover:underline">{copiado ? "copiado!" : "copiar"}</button>
+      </div>
+      <p className="max-h-48 overflow-y-auto whitespace-pre-wrap rounded-lg border border-line/40 bg-white p-3 text-navy/80">{valor}</p>
+    </div>
+  );
+}
+
+/* ════════════════ Form ════════════════ */
+function ConteudoForm({ conteudo, onClose, onSaved }: { conteudo: Conteudo | null; onClose: () => void; onSaved: () => void }) {
   const [f, setF] = useState({
     nome: conteudo?.nome ?? "",
     semana: conteudo?.semana ?? "",
@@ -457,11 +560,7 @@ function ConteudoForm({
     setSalvando(true);
     try {
       const url = conteudo ? `/api/admin/conteudos/${conteudo.id}` : "/api/admin/conteudos";
-      const res = await fetch(url, {
-        method: conteudo ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
-      });
+      const res = await fetch(url, { method: conteudo ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
       if (!res.ok) { const d = await res.json().catch(() => null); throw new Error(d?.error ?? "Falha ao salvar."); }
       onSaved();
     } catch (err) {
