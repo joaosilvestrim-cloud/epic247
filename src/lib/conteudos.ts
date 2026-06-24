@@ -2,6 +2,13 @@
 
 export type ConteudoStatus = "a_produzir" | "validar" | "entregue" | "repost";
 
+export interface Anexo {
+  nome: string;
+  url: string;
+  path: string;
+  tamanho?: number;
+}
+
 export interface Conteudo {
   id: string;
   semana: string | null;
@@ -18,6 +25,7 @@ export interface Conteudo {
   legenda: string | null;
   hashtags: string | null;
   notas: string | null;
+  anexos: Anexo[] | null;
   ordem: number | null;
   created_at: string;
   updated_at: string;

@@ -84,6 +84,7 @@ out.push("  data date, dia text, horario text, tipo text, formato text,");
 out.push("  nomenclatura text, nome text not null, story_num text,");
 out.push("  status text not null default 'a_produzir',");
 out.push("  link text, legenda text, hashtags text, notas text,");
+out.push("  anexos jsonb not null default '[]',");
 out.push("  ordem int default 0,");
 out.push("  created_at timestamptz not null default now(),");
 out.push("  updated_at timestamptz not null default now()");

@@ -8,6 +8,7 @@ create table public.conteudos (
   nomenclatura text, nome text not null, story_num text,
   status text not null default 'a_produzir',
   link text, legenda text, hashtags text, notas text,
+  anexos jsonb not null default '[]',
   ordem int default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

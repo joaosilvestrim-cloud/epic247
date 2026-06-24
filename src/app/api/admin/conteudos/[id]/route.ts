@@ -43,6 +43,7 @@ export async function PATCH(
 
   if (typeof b.nome === "string") patch.nome = b.nome.trim();
   if (isStatus(b.status)) patch.status = b.status;
+  if (Array.isArray(b.anexos)) patch.anexos = b.anexos;
   for (const c of CAMPOS) {
     if (c in b) patch[c] = b[c] ? b[c] : null;
   }

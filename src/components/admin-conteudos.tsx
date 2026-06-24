@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getBrowserClient } from "@/lib/supabase-browser";
 import {
   STATUS_INFO,
   STATUS_ORDER,
   diasAteData,
   pendente,
+  type Anexo,
   type Conteudo,
   type ConteudoStatus,
 } from "@/lib/conteudos";
@@ -598,6 +600,15 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
                     {[c.tipo, c.formato, c.horario].filter(Boolean).join(" · ") || "—"}
                   </p>
                 </div>
+                {/* indicador de anexos */}
+                {(c.anexos?.length ?? 0) > 0 && (
+                  <span
+                    title={`${c.anexos!.length} anexo(s)`}
+                    className="flex flex-shrink-0 items-center gap-0.5 rounded-full bg-navy/5 px-2 py-0.5 text-xs font-semibold text-navy/60"
+                  >
+                    📎 {c.anexos!.length}
+                  </span>
+                )}
                 {/* status inline */}
                 <select
                   value={c.status}
@@ -634,6 +645,8 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
                   {c.hashtags && <BlocoTexto rotulo="Hashtags" valor={c.hashtags} />}
                   {c.notas && <BlocoTexto rotulo="Notas" valor={c.notas} />}
 
+                  <AnexosBox conteudo={c} onChange={() => router.refresh()} />
+
                   <div className="mt-4 flex gap-2">
                     <button onClick={() => setEditando(c)} className="rounded-lg bg-navy px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-125">Editar</button>
                     <button onClick={() => excluir(c)} className="rounded-lg border border-red-300 px-4 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-50">Excluir</button>
@@ -652,6 +665,128 @@ function Lista({ conteudos }: { conteudos: Conteudo[] }) {
           onSaved={() => { setCriando(false); setEditando(null); router.refresh(); }}
         />
       )}
+    </div>
+  );
+}
+
+function formatarTamanho(b?: number) {
+  if (!b) return "";
+  if (b < 1024) return `${b} B`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
+  return `${(b / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function AnexosBox({ conteudo, onChange }: { conteudo: Conteudo; onChange: () => void }) {
+  const anexos: Anexo[] = conteudo.anexos ?? [];
+  const [enviando, setEnviando] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function enviar(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setErro(null);
+    setEnviando(true);
+    try {
+      const supabase = getBrowserClient();
+      const novos: Anexo[] = [...anexos];
+      for (const file of files) {
+        setStatus(`Enviando ${file.name}...`);
+        const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `conteudos/${conteudo.id}/${Date.now()}-${safe}`;
+        const r = await fetch("/api/admin/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path }),
+        });
+        if (!r.ok) {
+          const d = await r.json().catch(() => null);
+          throw new Error(d?.error ?? "Falha ao preparar upload.");
+        }
+        const { token, path: signedPath, publicUrl } = await r.json();
+        const { error } = await supabase.storage.from("assets").uploadToSignedUrl(signedPath, token, file);
+        if (error) throw new Error(error.message);
+        novos.push({ nome: file.name, url: publicUrl, path: signedPath, tamanho: file.size });
+      }
+      setStatus("Salvando...");
+      const s = await fetch(`/api/admin/conteudos/${conteudo.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ anexos: novos }),
+      });
+      if (!s.ok) throw new Error("Falha ao salvar anexos.");
+      setStatus(null);
+      onChange();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro no upload.");
+      setStatus(null);
+    } finally {
+      setEnviando(false);
+      e.target.value = "";
+    }
+  }
+
+  async function remover(a: Anexo) {
+    if (!confirm(`Remover "${a.nome}"?`)) return;
+    setErro(null);
+    try {
+      const novos = anexos.filter((x) => x.path !== a.path);
+      await fetch("/api/admin/conteudos/" + conteudo.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ anexos: novos }),
+      });
+      await fetch("/api/admin/delete-file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: a.path }),
+      }).catch(() => {});
+      onChange();
+    } catch {
+      setErro("Falha ao remover.");
+    }
+  }
+
+  function ehImagem(a: Anexo) {
+    return /\.(png|jpe?g|gif|webp|avif)$/i.test(a.nome);
+  }
+
+  return (
+    <div className="mt-4">
+      <div className="mb-1 flex items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-navy/50">
+          Anexos {anexos.length > 0 && `(${anexos.length})`}
+        </span>
+      </div>
+
+      {anexos.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {anexos.map((a) => (
+            <div key={a.path} className="flex items-center gap-2 rounded-lg border border-line/40 bg-white p-2">
+              {ehImagem(a) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={a.url} alt={a.nome} className="h-12 w-12 flex-shrink-0 rounded object-cover" />
+              ) : (
+                <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-cream text-xl">📄</span>
+              )}
+              <div className="min-w-0 max-w-[160px]">
+                <a href={a.url} target="_blank" rel="noopener noreferrer" className="block truncate text-sm font-medium text-navy hover:text-gold" title={a.nome}>
+                  {a.nome}
+                </a>
+                <span className="text-xs text-navy/40">{formatarTamanho(a.tamanho)}</span>
+              </div>
+              <button onClick={() => remover(a)} className="flex-shrink-0 text-sm text-red-500 hover:text-red-700" title="Remover">✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-line bg-white px-4 py-2 text-sm font-medium text-navy/70 transition hover:border-gold hover:text-navy">
+        <span>＋ Enviar arquivo</span>
+        <input type="file" multiple onChange={enviar} disabled={enviando} className="hidden" />
+      </label>
+      {status && <span className="ml-3 text-sm text-gold">{status}</span>}
+      {erro && <p className="mt-1 text-sm text-red-600">{erro}</p>}
     </div>
   );
 }
