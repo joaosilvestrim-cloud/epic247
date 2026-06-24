@@ -769,11 +769,20 @@ function AnexosBox({ conteudo, onChange }: { conteudo: Conteudo; onChange: () =>
               ) : (
                 <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-cream text-xl">📄</span>
               )}
-              <div className="min-w-0 max-w-[160px]">
+              <div className="min-w-0 max-w-[170px]">
                 <a href={a.url} target="_blank" rel="noopener noreferrer" className="block truncate text-sm font-medium text-navy hover:text-gold" title={a.nome}>
                   {a.nome}
                 </a>
-                <span className="text-xs text-navy/40">{formatarTamanho(a.tamanho)}</span>
+                <div className="flex items-center gap-2 text-xs">
+                  {a.tamanho ? <span className="text-navy/40">{formatarTamanho(a.tamanho)}</span> : null}
+                  <a
+                    href={`${a.url}${a.url.includes("?") ? "&" : "?"}download=${encodeURIComponent(a.nome)}`}
+                    download={a.nome}
+                    className="font-semibold text-gold hover:underline"
+                  >
+                    ⬇ baixar
+                  </a>
+                </div>
               </div>
               <button onClick={() => remover(a)} className="flex-shrink-0 text-sm text-red-500 hover:text-red-700" title="Remover">✕</button>
             </div>
