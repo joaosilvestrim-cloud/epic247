@@ -222,6 +222,7 @@ function CalendarioEditorial({ conteudos }: { conteudos: Conteudo[] }) {
               const posts = porData.get(cell) ?? [];
               const diaNum = +cell.slice(8, 10);
               const hoje = cell === hojeStr;
+              const temAnexo = posts.some((p) => (p.anexos?.length ?? 0) > 0);
               return (
                 <button
                   key={i}
@@ -230,8 +231,11 @@ function CalendarioEditorial({ conteudos }: { conteudos: Conteudo[] }) {
                     diaSel === cell ? "border-gold ring-1 ring-gold" : "border-line/30"
                   } ${posts.length ? "bg-white hover:border-gold/60" : "bg-cream/20"}`}
                 >
-                  <div className={`mb-1 text-xs font-bold ${hoje ? "inline-flex h-5 w-5 items-center justify-center rounded-full bg-navy text-white" : "text-navy/60"}`}>
-                    {diaNum}
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className={hoje ? "inline-flex h-5 w-5 items-center justify-center rounded-full bg-navy text-xs font-bold text-white" : "text-xs font-bold text-navy/60"}>
+                      {diaNum}
+                    </span>
+                    {temAnexo && <span className="text-[10px]" title="Há anexos neste dia">📎</span>}
                   </div>
                   <div className="space-y-1">
                     {posts.slice(0, 3).map((p) => (
@@ -273,9 +277,19 @@ function CalendarioEditorial({ conteudos }: { conteudos: Conteudo[] }) {
             {selPosts.map((p) => (
               <div key={p.id} className="flex items-start gap-2 text-sm">
                 <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: STATUS_INFO[p.status].cor }} />
-                <div>
+                <div className="min-w-0">
                   <span className="font-medium text-navy">{p.nomenclatura ? `${p.nomenclatura} · ` : ""}{p.nome}</span>
                   <span className="ml-2 text-xs text-navy/50">{[p.horario, p.tipo, STATUS_INFO[p.status].label].filter(Boolean).join(" · ")}</span>
+                  {(p.anexos?.length ?? 0) > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                      {p.anexos!.map((a) => (
+                        <span key={a.path} className="inline-flex items-center gap-1 text-xs">
+                          <a href={a.url} target="_blank" rel="noopener noreferrer" className="max-w-[160px] truncate text-navy/60 hover:text-gold" title={a.nome}>📎 {a.nome}</a>
+                          <a href={`${a.url}${a.url.includes("?") ? "&" : "?"}download=${encodeURIComponent(a.nome)}`} download={a.nome} className="font-semibold text-gold hover:underline">⬇</a>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
