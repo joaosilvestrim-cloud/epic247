@@ -23,6 +23,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://energia.epic247.com.br"),
   title: "EPIC247 · Módulo Energia",
   description:
     "Você sabe muito, planeja bem e mesmo assim não sai do lugar. Não é falta de disciplina. É falta de combustível. Descubra qual dos 5 Drenos está sugando sua energia.",
@@ -31,6 +32,14 @@ export const metadata: Metadata = {
     description:
       "Descubra em 2 minutos qual dos 5 Drenos está sugando sua energia, e o que mudar primeiro.",
     type: "website",
+    locale: "pt_BR",
+    siteName: "EPIC247",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EPIC247 · Módulo Energia",
+    description:
+      "Descubra em 2 minutos qual dos 5 Drenos está sugando sua energia, e o que mudar primeiro.",
   },
 };
 
