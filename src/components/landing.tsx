@@ -16,7 +16,7 @@ import type { SiteSettings } from "@/lib/settings";
 import { trackInitiateCheckout } from "@/lib/analytics";
 import BrandLogo from "./brand-logo";
 
-const CHECKOUT_URL = "#oferta"; // Troque pela URL real do checkout (Hotmart/Kiwify).
+const CHECKOUT_URL = "https://pay.kiwify.com.br/vJBeZ8S"; // Checkout Kiwify — Módulo Energia
 
 /* ───────────────────────── helpers de animação ───────────────────────── */
 
@@ -114,7 +114,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   { q: "E se eu não gostar?", a: "Você tem 14 dias de garantia incondicional. Se não fizer sentido, pedimos o reembolso e devolvemos 100% do valor, sem perguntas." },
   { q: "Preciso de algum equipamento ou app pago?", a: "Não. Tudo o que você precisa está dentro da plataforma EPIC247, acessível pelo navegador do celular ou computador." },
   { q: "Serve para qualquer idade?", a: "Os princípios servem para adultos em geral. Em caso de condições de saúde específicas, consulte seu médico antes de mudanças na rotina." },
-  { q: "Quem é a responsável pelo método?", a: "A Ju Ferreira, psicóloga com mais de 15 anos de clínica, que desenvolveu o método a partir do atendimento a pessoas capazes, porém travadas por falta de energia." },
+  { q: "Quem é a responsável pelo método?", a: "A Ju Ferreira, engenheira de formação e mestre em Administração, que desenvolveu o Protocolo EPIC247 resolvendo o próprio problema: alto desempenho por fora e exaustão por dentro. Método, não teoria." },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -508,7 +508,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-cream px-6 py-24">
         <div className="mx-auto max-w-3xl">
           <Reveal>
-            <div className="flex flex-col items-center gap-8 text-center sm:flex-row sm:text-left">
+            <div className="flex flex-col items-center text-center">
               <div className="h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-navy to-gold p-1">
                 {settings.juPhotoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -521,21 +521,33 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   <div className="h-full w-full rounded-full bg-navy" />
                 )}
               </div>
-              <div>
-                <h2 className="font-display text-2xl font-bold text-navy">
-                  Ju Ferreira
-                </h2>
-                <p className="mt-1 font-medium text-gold">
-                  Psicóloga · <Counter to={15} prefix="+" suffix=" anos" /> de clínica
-                </p>
-                <p className="mt-4 text-navy/80">
-                  O Módulo Energia nasceu de mais de uma década atendendo pessoas
-                  inteligentes e capazes que estavam travadas, não por falta de
-                  conhecimento, mas por falta de energia para executar o que já sabiam.
-                </p>
-              </div>
+              <h2 className="mt-6 font-display text-3xl font-bold text-navy">
+                Sobre Ju Ferreira
+              </h2>
+              <p className="mt-1 font-medium text-gold">
+                Engenheira · Mestre em Administração
+              </p>
             </div>
           </Reveal>
+
+          <div className="mx-auto mt-8 max-w-2xl space-y-4 text-lg leading-relaxed text-navy/80">
+            {[
+              "Ju Ferreira é engenheira de formação.",
+              "Não à toa. Durante anos, ela acreditou que a solução para qualquer problema era mais esforço, mais método, mais controle. Era o tipo de pessoa que sofria se tirava 9 em vez de 10, não por ego, mas porque achava que precisava.",
+              "O resultado foi previsível: alto desempenho por fora, exaustão crônica por dentro. Estava sempre fazendo, mas raramente chegando.",
+              "O ponto de virada não foi um livro, nem uma palestra. Foi perceber que o obstáculo não era falta de método. Era excesso de trave interna.",
+              "A partir daí, começou a construir o que viria a ser o Protocolo EPIC247: não como professora ensinando teoria, mas como engenheira resolvendo um problema real. O dela.",
+              "Organizou o que aprendeu na prática. Testou. Ajustou. Eliminou o que não resistia ao dia ruim. Manteve o que funcionava mesmo quando a motivação tinha ido embora.",
+              "O resultado é este protocolo. Sequencial, executável, baseado em como as pessoas realmente funcionam, não como deveriam funcionar.",
+              "Hoje, além do EPIC247, Ju atua na intersecção de saúde, educação e tecnologia, é mestre em Administração e mãe de duas meninas gêmeas que, segundo ela, ensinam mais sobre resiliência do que qualquer módulo do protocolo.",
+            ].map((p, i) => (
+              <Reveal key={i} delay={0.03 * i}>
+                <p className={i === 0 ? "font-display text-xl font-semibold text-navy" : ""}>
+                  {p}
+                </p>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
