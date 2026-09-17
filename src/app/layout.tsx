@@ -9,11 +9,13 @@ export const viewport: Viewport = {
   themeColor: "#0f1c34",
 };
 
+// Variavel, para o opsz da Fraunces funcionar: em tamanho grande o desenho
+// fica mais delicado, em tamanho pequeno mais robusto.
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   display: "swap",
-  weight: ["400", "500", "600", "700", "900"],
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
 const inter = Inter({
@@ -23,7 +25,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://energia.epic247.com.br"),
+  metadataBase: new URL("https://epic247.com.br"),
   title: "EPIC247 · Módulo Energia",
   description:
     "Você sabe muito, planeja bem e mesmo assim não sai do lugar. Não é falta de disciplina. É falta de combustível. Descubra qual dos 5 Drenos está sugando sua energia.",

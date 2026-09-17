@@ -14,6 +14,14 @@ import {
 import { DRENOS_POR_HIERARQUIA } from "@/lib/drenos";
 import type { SiteSettings } from "@/lib/settings";
 import { trackInitiateCheckout } from "@/lib/analytics";
+import {
+  GARANTIA_DIAS,
+  SHOW_ADMIN_NO_RODAPE,
+  SHOW_DEPOIMENTOS,
+  SHOW_HERO_VIDEO,
+  SHOW_ORDER_BUMP_NA_LP,
+  SHOW_PLATAFORMA_BATERIA_VITAL,
+} from "@/lib/flags";
 import BrandLogo from "./brand-logo";
 
 const CHECKOUT_URL = "https://pay.kiwify.com.br/vJBeZ8S"; // Checkout Kiwify — Módulo Energia
@@ -89,7 +97,7 @@ function CTAButton({
       onClick={() => trackInitiateCheckout({ value: 97, currency: "BRL" })}
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.97 }}
-      className={`group relative inline-flex max-w-full items-center justify-center overflow-hidden text-balance rounded-2xl bg-gold px-6 py-4 text-center text-base font-bold leading-snug text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 sm:px-9 sm:text-lg ${className}`}
+      className={`group relative inline-flex max-w-full items-center justify-center overflow-hidden text-balance rounded-2xl bg-gold px-6 py-4 text-center text-[15px] font-semibold uppercase leading-snug tracking-[0.08em] text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 sm:px-9 ${className}`}
     >
       <span className="relative z-10">{children}</span>
       <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -99,20 +107,20 @@ function CTAButton({
 
 /* ───────────────────────── FAQ ───────────────────────── */
 
-const FAQ_ITEMS: { q: string; a: string }[] = [
-  { q: "O que é exatamente o Módulo Energia?", a: "É o primeiro módulo do Protocolo EPIC247: um sistema prático para reconstruir sua energia a partir da biologia (sono, alimentação, estresse, foco e movimento), com Manual, Workbook e acesso à plataforma que monitora sua Bateria Vital." },
+const FAQ_ITEMS: { q: string; a: string; oculto?: boolean }[] = [
+  { q: "O que é exatamente o Módulo Energia?", a: "É o primeiro módulo do Protocolo EPIC247: um sistema prático para reconstruir sua energia a partir da biologia (sono, alimentação, estresse, foco e movimento), com Manual, Workbook e o Livro Energia." },
   { q: "Preciso fazer o quiz antes de comprar?", a: "Não. O quiz é um diagnóstico gratuito que ajuda a identificar seu Dreno Dominante, mas você pode adquirir o Módulo Energia diretamente." },
-  { q: "Quanto tempo por dia preciso dedicar?", a: "Pouquíssimo. O método é baseado em micro-hábitos e em um check-in diário de menos de 60 segundos. A ideia é o mínimo viável, não mais uma rotina pesada." },
+  { q: "Quanto tempo por dia preciso dedicar?", a: "Pouquíssimo. O método é baseado em micro-hábitos: uma mudança por semana, no seu ritmo. A ideia é o mínimo viável, não mais uma rotina pesada." },
   { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam mais disposição já nas primeiras duas semanas ao corrigir o Dreno Dominante. A consistência é o que consolida a mudança." },
   { q: "Isso substitui acompanhamento médico ou psicológico?", a: "Não. O Módulo Energia é educacional e comportamental. Ele não substitui diagnóstico, tratamento ou acompanhamento de profissionais de saúde." },
   { q: "Funciona para quem tem rotina muito corrida?", a: "Sim, foi desenhado justamente para isso. Você muda um hábito por semana, no seu ritmo, sem precisar reorganizar a vida inteira." },
   { q: "Como recebo o acesso depois da compra?", a: "O acesso à plataforma é liberado imediatamente após a confirmação do pagamento, no e-mail cadastrado no checkout." },
   { q: "Por quanto tempo tenho acesso?", a: "O acesso ao conteúdo do Módulo Energia é vitalício, incluindo as atualizações." },
-  { q: "O que é a Bateria Vital?", a: "É um indicador (0 a 100%) que a plataforma calcula a partir do seu check-in diário, mostrando sua capacidade de execução naquele dia e a evolução ao longo do tempo." },
-  { q: "Tem material físico?", a: "O conteúdo é digital. No checkout você pode adicionar o livro físico Energia como order bump, por um valor adicional." },
+  { q: "O que é a Bateria Vital?", a: "É um indicador (0 a 100%) que a plataforma calcula a partir do seu check-in diário, mostrando sua capacidade de execução naquele dia e a evolução ao longo do tempo.", oculto: !SHOW_PLATAFORMA_BATERIA_VITAL },
+  { q: "Tem material físico?", a: "O conteúdo é digital. No checkout você pode adicionar o livro físico Energia por um valor adicional e receber em casa." },
   { q: "Posso pagar parcelado?", a: "Sim, o checkout oferece as opções de parcelamento no cartão, além de Pix e boleto." },
-  { q: "E se eu não gostar?", a: "Você tem 14 dias de garantia incondicional. Se não fizer sentido, pedimos o reembolso e devolvemos 100% do valor, sem perguntas." },
-  { q: "Preciso de algum equipamento ou app pago?", a: "Não. Tudo o que você precisa está dentro da plataforma EPIC247, acessível pelo navegador do celular ou computador." },
+  { q: "E se eu não gostar?", a: `Você tem ${GARANTIA_DIAS} dias de garantia incondicional. Se não fizer sentido, você pode solicitar o cancelamento pela própria plataforma de pagamento e devolvemos 100% do valor, sem perguntas.` },
+  { q: "Preciso de algum equipamento ou app pago?", a: "Não. Tudo o que você precisa está na área de membros, acessível pelo navegador do celular ou computador." },
   { q: "Serve para qualquer idade?", a: "Os princípios servem para adultos em geral. Em caso de condições de saúde específicas, consulte seu médico antes de mudanças na rotina." },
   { q: "Quem é a responsável pelo método?", a: "A Ju Ferreira, engenheira de formação e mestre em Administração, que desenvolveu o Protocolo EPIC247 resolvendo o próprio problema: alto desempenho por fora e exaustão por dentro. Método, não teoria." },
 ];
@@ -163,8 +171,8 @@ function FaqList() {
   return (
     <Reveal>
       <div className="rounded-2xl border border-line/40 bg-offwhite px-6">
-        {FAQ_ITEMS.map((item) => (
-          <FaqItem key={item.q} {...item} />
+        {FAQ_ITEMS.filter((item) => !item.oculto).map((item) => (
+          <FaqItem key={item.q} q={item.q} a={item.a} />
         ))}
       </div>
     </Reveal>
@@ -272,7 +280,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-balance font-display text-4xl font-black leading-[1.08] sm:text-6xl"
+            className="text-balance font-display text-[2.25rem] font-semibold leading-[1.08] sm:text-[3.5rem]"
           >
             Você sabe muito, planeja bem, e mesmo assim não sai do lugar.
             <span className="mt-4 block text-gold-gradient">
@@ -280,7 +288,8 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             </span>
           </motion.h1>
 
-          {/* VSL */}
+          {/* VSL — oculta no Ciclo 1 (SHOW_HERO_VIDEO) */}
+          {SHOW_HERO_VIDEO && (
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -306,6 +315,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
               </div>
             )}
           </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -315,7 +325,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
           >
             <CTAButton>QUERO O MÓDULO ENERGIA · R$97</CTAButton>
             <p className="mt-4 text-sm text-white/50">
-              Acesso imediato · Garantia incondicional de 14 dias
+              Acesso imediato · Garantia incondicional de {GARANTIA_DIAS} dias
             </p>
             <Link
               href="/quiz"
@@ -336,7 +346,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-offwhite px-6 py-24">
         <div className="mx-auto max-w-2xl">
           <Reveal>
-            <h2 className="font-display text-3xl font-bold text-navy sm:text-4xl">
+            <h2 className="font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
               Você já tentou. Várias vezes.
             </h2>
           </Reveal>
@@ -354,7 +364,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
               </p>
             </Reveal>
             <Reveal delay={0.15}>
-              <p className="rounded-2xl border-l-4 border-gold bg-cream p-6 font-display text-xl font-semibold text-navy">
+              <p className="rounded-2xl border-l-4 border-gold bg-cream p-6 text-[1.375rem] font-semibold leading-snug text-navy">
                 Você não desmoronou porque é fraco. Desmoronou porque estava tentando
                 construir em cima de uma fundação sem energia.
               </p>
@@ -367,7 +377,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-cream px-6 py-24">
         <div className="mx-auto max-w-3xl">
           <Reveal>
-            <h2 className="font-display text-3xl font-bold text-navy sm:text-4xl">
+            <h2 className="font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
               O erro não é mental. É biológico.
             </h2>
           </Reveal>
@@ -394,7 +404,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             ].map((stat, i) => (
               <Reveal key={i} delay={0.1 * i}>
                 <div className="h-full rounded-2xl border border-line/40 bg-offwhite p-6">
-                  <div className="font-display text-3xl font-black text-gold">
+                  <div className="font-display text-[2rem] font-semibold text-gold">
                     {stat.num}
                   </div>
                   <p className="mt-2 text-sm text-navy/70">{stat.desc}</p>
@@ -414,7 +424,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         <div className="absolute -right-20 top-10 h-80 w-80 rounded-full bg-gold/15 blur-[120px] animate-float-blob" />
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <Reveal>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">
+            <h2 className="font-display text-[1.75rem] font-medium sm:text-[2.25rem]">
               Os 5 Drenos de Energia
             </h2>
             <p className="mt-4 text-white/70">
@@ -435,7 +445,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   <span className="text-xs font-semibold text-gold-soft">
                     0{i + 1}
                   </span>
-                  <h3 className="mt-1 font-display font-bold">{dreno.nome}</h3>
+                  <h3 className="mt-1 font-display text-[1.125rem] font-semibold">{dreno.nome}</h3>
                 </motion.div>
               </Reveal>
             ))}
@@ -452,7 +462,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-offwhite px-6 py-24">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <h2 className="font-display text-3xl font-bold text-navy sm:text-4xl">
+            <h2 className="font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
               O que você recebe
             </h2>
           </Reveal>
@@ -470,7 +480,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   <span className="text-xs font-semibold uppercase tracking-wide text-gold">
                     {item.tag}
                   </span>
-                  <h3 className="mt-2 font-display text-lg font-bold text-navy">
+                  <h3 className="mt-2 font-display text-[1.25rem] font-semibold text-navy">
                     {item.titulo}
                   </h3>
                   <p className="mt-2 text-sm text-navy/70">{item.desc}</p>
@@ -480,7 +490,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
           </div>
 
           <Reveal>
-            <h3 className="mt-20 font-display text-2xl font-bold text-navy">
+            <h3 className="mt-20 font-display text-[1.5rem] font-medium text-navy">
               Os 4 Princípios do Método
             </h3>
           </Reveal>
@@ -493,7 +503,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             ].map((principio, i) => (
               <Reveal key={principio} delay={0.06 * i}>
                 <div className="flex items-start gap-4 rounded-xl border border-line/30 bg-offwhite p-5">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy font-display text-sm font-bold text-gold">
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy font-display text-sm font-semibold text-gold">
                     {i + 1}
                   </span>
                   <p className="font-medium text-navy">{principio}</p>
@@ -521,7 +531,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   <div className="h-full w-full rounded-full bg-navy" />
                 )}
               </div>
-              <h2 className="mt-6 font-display text-3xl font-bold text-navy">
+              <h2 className="mt-6 font-display text-[1.75rem] font-medium text-navy">
                 Sobre Ju Ferreira
               </h2>
               <p className="mt-1 font-medium text-gold">
@@ -542,7 +552,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
               "Hoje, além do EPIC247, Ju atua na intersecção de saúde, educação e tecnologia, é mestre em Administração e mãe de duas meninas gêmeas que, segundo ela, ensinam mais sobre resiliência do que qualquer módulo do protocolo.",
             ].map((p, i) => (
               <Reveal key={i} delay={0.03 * i}>
-                <p className={i === 0 ? "font-display text-xl font-semibold text-navy" : ""}>
+                <p className={i === 0 ? "text-[1.375rem] font-semibold leading-snug text-navy" : ""}>
                   {p}
                 </p>
               </Reveal>
@@ -551,36 +561,38 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         </div>
       </section>
 
-      {/* ───────────── Prova Social ───────────── */}
-      <section className="bg-offwhite px-6 py-24">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <h2 className="text-center font-display text-3xl font-bold text-navy sm:text-4xl">
-              O que muda em <Counter to={30} suffix=" dias" />
-            </h2>
-          </Reveal>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {[
-              { nome: "Mariana, 34", texto: "Parei de tentar me forçar. Cuidei do sono primeiro e em duas semanas minha capacidade de focar voltou sozinha." },
-              { nome: "Rafael, 41", texto: "Achei que era preguiça. Era cansaço crônico. O diagnóstico me mostrou exatamente onde estava o vazamento." },
-              { nome: "Carla, 29", texto: "Um micro-hábito por semana. Parece pouco, mas foi a primeira coisa em anos que eu consegui manter." },
-            ].map((dep, i) => (
-              <Reveal key={dep.nome} delay={0.08 * i}>
-                <figure className="h-full rounded-2xl border border-line/40 bg-cream p-6">
-                  <div className="mb-3 text-2xl text-gold">&ldquo;</div>
-                  <blockquote className="text-navy/80">{dep.texto}</blockquote>
-                  <figcaption className="mt-4 text-sm font-semibold text-navy">
-                    {dep.nome}
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
+      {/* ───────────── Prova Social · oculta no Ciclo 1 (SHOW_DEPOIMENTOS) ───────────── */}
+      {SHOW_DEPOIMENTOS && (
+        <section className="bg-offwhite px-6 py-24">
+          <div className="mx-auto max-w-4xl">
+            <Reveal>
+              <h2 className="text-center font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
+                O que muda em <Counter to={30} suffix=" dias" />
+              </h2>
+            </Reveal>
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+              {[
+                { nome: "Mariana, 34", texto: "Parei de tentar me forçar. Cuidei do sono primeiro e em duas semanas minha capacidade de focar voltou sozinha." },
+                { nome: "Rafael, 41", texto: "Achei que era preguiça. Era cansaço crônico. O diagnóstico me mostrou exatamente onde estava o vazamento." },
+                { nome: "Carla, 29", texto: "Um micro-hábito por semana. Parece pouco, mas foi a primeira coisa em anos que eu consegui manter." },
+              ].map((dep, i) => (
+                <Reveal key={dep.nome} delay={0.08 * i}>
+                  <figure className="h-full rounded-2xl border border-line/40 bg-cream p-6">
+                    <div className="mb-3 text-2xl text-gold">&ldquo;</div>
+                    <blockquote className="text-navy/80">{dep.texto}</blockquote>
+                    <figcaption className="mt-4 text-sm font-semibold text-navy">
+                      {dep.nome}
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
+            <p className="mt-4 text-center text-xs text-line">
+              Depoimentos ilustrativos, substitua por depoimentos reais com autorização.
+            </p>
           </div>
-          <p className="mt-4 text-center text-xs text-line">
-            Depoimentos ilustrativos, substitua por depoimentos reais com autorização.
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ───────────── Oferta consolidada ───────────── */}
       <section
@@ -591,14 +603,14 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         <div className="absolute left-1/2 top-0 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-gold/15 blur-[120px] animate-pulse-glow" />
         <div className="relative z-10 mx-auto max-w-xl text-center">
           <Reveal>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">
+            <h2 className="font-display text-[1.75rem] font-medium sm:text-[2.25rem]">
               Módulo Energia · Acesso completo
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mt-10 rounded-3xl border border-gold/30 bg-white/[0.04] p-8 shadow-[0_0_80px_-24px] shadow-gold/40 backdrop-blur">
               <p className="text-white/50 line-through">De R$197</p>
-              <p className="mt-1 font-display text-6xl font-black text-gold-gradient">
+              <p className="mt-1 font-display text-[3.5rem] font-semibold text-gold-gradient">
                 R$97
               </p>
               <p className="mt-2 text-sm text-white/60">pagamento único</p>
@@ -610,8 +622,10 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                   "Manual de Energia Vital (Teoria)",
                   "Workbook de Energia (Prática)",
                   "Livro Energia (Aprofundamento)",
-                  "Acesso à plataforma de monitoramento da Bateria Vital",
-                  "Garantia incondicional de 14 dias",
+                  ...(SHOW_PLATAFORMA_BATERIA_VITAL
+                    ? ["Acesso à plataforma de monitoramento da Bateria Vital"]
+                    : []),
+                  `Garantia incondicional de ${GARANTIA_DIAS} dias`,
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
                     <span className="mt-0.5 text-gold">✓</span>
@@ -626,12 +640,14 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                 </CTAButton>
               </div>
 
-              <div className="mt-6 rounded-xl border border-gold/30 bg-gold/10 p-4 text-left text-sm">
-                <p className="font-semibold text-gold-soft">Order Bump no checkout</p>
-                <p className="mt-1 text-white/70">
-                  Adicione o Livro Físico Energia por apenas +R$67.
-                </p>
-              </div>
+              {SHOW_ORDER_BUMP_NA_LP && (
+                <div className="mt-6 rounded-xl border border-gold/30 bg-gold/10 p-4 text-left text-sm">
+                  <p className="font-semibold text-gold-soft">Order Bump no checkout</p>
+                  <p className="mt-1 text-white/70">
+                    Adicione o Livro Físico Energia por apenas +R$67.
+                  </p>
+                </div>
+              )}
             </div>
           </Reveal>
         </div>
@@ -646,13 +662,14 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
                 🛡️
               </div>
               <div>
-                <h2 className="font-display text-2xl font-bold text-navy">
-                  Garantia incondicional de 14 dias
+                <h2 className="font-display text-[1.5rem] font-medium text-navy">
+                  Garantia incondicional de {GARANTIA_DIAS} dias
                 </h2>
                 <p className="mt-2 text-navy/70">
-                  Experimente o Módulo Energia por 14 dias. Se não fizer sentido para
-                  você, basta pedir o reembolso, devolvemos 100% do valor, sem
-                  perguntas e sem burocracia. O risco é todo nosso.
+                  Experimente o Módulo Energia por {GARANTIA_DIAS} dias. Se não fizer
+                  sentido para você, é só solicitar o cancelamento dentro da própria
+                  plataforma de pagamento, devolvemos 100% do valor, sem perguntas e
+                  sem burocracia. O risco é todo nosso.
                 </p>
               </div>
             </div>
@@ -664,14 +681,14 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-offwhite px-6 py-24">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <h2 className="text-center font-display text-3xl font-bold text-navy sm:text-4xl">
+            <h2 className="text-center font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
               Para quem é (e para quem não é)
             </h2>
           </Reveal>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <Reveal>
               <div className="h-full rounded-2xl border border-gold/40 bg-cream p-6">
-                <h3 className="font-display text-lg font-bold text-navy">
+                <h3 className="font-display text-[1.25rem] font-semibold text-navy">
                   ✓ É para você se…
                 </h3>
                 <ul className="mt-4 space-y-3 text-navy/80">
@@ -691,7 +708,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             </Reveal>
             <Reveal delay={0.1}>
               <div className="h-full rounded-2xl border border-line/40 bg-offwhite p-6">
-                <h3 className="font-display text-lg font-bold text-navy">
+                <h3 className="font-display text-[1.25rem] font-semibold text-navy">
                   ✗ Não é para você se…
                 </h3>
                 <ul className="mt-4 space-y-3 text-navy/70">
@@ -717,7 +734,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
       <section className="bg-cream px-6 py-24">
         <div className="mx-auto max-w-2xl">
           <Reveal>
-            <h2 className="text-center font-display text-3xl font-bold text-navy sm:text-4xl">
+            <h2 className="text-center font-display text-[1.75rem] font-medium text-navy sm:text-[2.25rem]">
               Perguntas frequentes
             </h2>
           </Reveal>
@@ -733,7 +750,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
         <div className="absolute left-1/2 top-1/2 h-72 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/15 blur-[120px] animate-pulse-glow" />
         <div className="relative z-10 mx-auto max-w-2xl">
           <Reveal>
-            <h2 className="text-balance font-display text-3xl font-black leading-tight sm:text-5xl">
+            <h2 className="text-balance font-display text-[1.75rem] font-semibold leading-tight sm:text-[2.75rem]">
               Sua energia é a fundação de tudo.
               <span className="mt-2 block text-gold-gradient">Comece a reconstruí-la hoje.</span>
             </h2>
@@ -742,7 +759,7 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             <div className="mt-10">
               <CTAButton>QUERO O MÓDULO ENERGIA · R$97</CTAButton>
               <p className="mt-4 text-sm text-white/50">
-                Acesso imediato · Garantia de 14 dias
+                Acesso imediato · Garantia de {GARANTIA_DIAS} dias
               </p>
               <Link
                 href="/quiz"
@@ -765,11 +782,13 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
             Fazer o diagnóstico dos 5 Drenos
           </Link>
         </p>
-        <p className="mt-4 text-xs text-white/20">
-          <Link href="/admin" className="hover:text-white/50">
-            Admin
-          </Link>
-        </p>
+        {SHOW_ADMIN_NO_RODAPE && (
+          <p className="mt-4 text-xs text-white/20">
+            <Link href="/admin" className="hover:text-white/50">
+              Admin
+            </Link>
+          </p>
+        )}
       </footer>
     </main>
   );

@@ -59,8 +59,8 @@ export function getReport(id: DrenoId): DrenoReport {
       {
         titulo: "O próximo passo",
         paragrafos: [
-          "Este relatório é o ponto de partida. O Módulo Energia te dá o sistema completo, Manual, Workbook e a plataforma que monitora sua Bateria Vital dia a dia, para transformar estes passos em resultado real.",
-          "Acesse: energia.epic247.com.br (Módulo Energia · R$97).",
+          "Este relatório é o ponto de partida. O Módulo Energia te dá o sistema completo, Manual, Workbook e o Livro Energia, para transformar estes passos em resultado real.",
+          "Acesse: epic247.com.br (Módulo Energia · R$97).",
         ],
       },
     ],

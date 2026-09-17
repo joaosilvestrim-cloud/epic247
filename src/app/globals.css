@@ -33,8 +33,18 @@ body {
   background-color: var(--color-offwhite);
   color: var(--color-navy);
   font-family: var(--font-sans);
+  /* Corpo em 17px (hierarquia definida em 17/09/2026) */
+  font-size: 17px;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* A Fraunces e variavel: deixa o opsz trabalhar sozinho, assim o titulo
+   grande sai mais delicado e o pequeno mais robusto. */
+.font-display {
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
 }
 
 /* ── Utilitários ─────────────────────────────────────────────── */

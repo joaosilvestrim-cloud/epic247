@@ -24,7 +24,7 @@ export default function ObrigadoPage() {
           ✓
         </motion.div>
 
-        <h1 className="font-display text-3xl font-black sm:text-4xl">
+        <h1 className="font-display text-[1.75rem] font-semibold sm:text-[2.25rem]">
           Compra confirmada!
         </h1>
         <p className="mt-4 text-lg text-white/70">
@@ -33,11 +33,11 @@ export default function ObrigadoPage() {
         </p>
 
         <div className="mt-8 rounded-2xl border border-gold/30 bg-white/[0.04] p-6 text-left backdrop-blur">
-          <h2 className="font-display text-lg font-bold">Próximos passos</h2>
+          <h2 className="font-display text-[1.25rem] font-semibold">Próximos passos</h2>
           <ol className="mt-3 space-y-2 text-white/80">
             <li>1. Verifique seu e-mail (e a caixa de spam) com o acesso.</li>
-            <li>2. Faça o login na plataforma e complete o onboarding rápido.</li>
-            <li>3. Faça seu primeiro check-in e veja sua Bateria Vital.</li>
+            <li>2. Faça o login na área de membros com o e-mail da compra.</li>
+            <li>3. Comece pelo Manual de Energia Vital e siga para o Workbook.</li>
           </ol>
         </div>
 

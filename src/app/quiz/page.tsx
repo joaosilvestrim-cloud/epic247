@@ -178,7 +178,7 @@ function Intro({ onStart }: { onStart: () => void }) {
       <span className="text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
         Diagnóstico EPIC247
       </span>
-      <h1 className="mt-4 text-balance font-display text-3xl font-black leading-tight sm:text-5xl">
+      <h1 className="mt-4 text-balance font-display text-[1.75rem] font-semibold leading-tight sm:text-[2.75rem]">
         Você sabe muito, planeja bem
         <br />e executa pouco?
       </h1>
@@ -401,7 +401,7 @@ function Captura({
       <span className="mt-6 inline-block text-xs font-semibold uppercase tracking-[0.25em] text-epic-accent">
         Diagnóstico concluído
       </span>
-      <h1 className="mt-3 text-balance font-display text-3xl font-black leading-tight">
+      <h1 className="mt-3 text-balance font-display text-[1.75rem] font-semibold leading-tight">
         {dreno.headline}
       </h1>
       <p
@@ -492,7 +492,7 @@ function Relatorio({
           Seu relatório interativo
         </span>
         <h1
-          className="mt-3 font-display text-3xl font-black leading-tight"
+          className="mt-3 font-display text-[1.75rem] font-semibold leading-tight"
           style={{ color: dominante.cor }}
         >
           {dominante.headline}
@@ -572,7 +572,7 @@ function Relatorio({
                 className="h-3 w-3 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: sel.cor }}
               />
-              <h3 className="font-display text-xl font-bold" style={{ color: sel.cor }}>
+              <h3 className="font-display text-[1.375rem] font-semibold" style={{ color: sel.cor }}>
                 {sel.nome}
               </h3>
             </div>
@@ -678,7 +678,7 @@ function Relatorio({
         transition={{ delay: 0.4 }}
         className="mt-8 rounded-2xl border border-epic-amber/30 bg-epic-amber/10 p-6 text-center"
       >
-        <h2 className="font-display text-xl font-bold">
+        <h2 className="font-display text-[1.375rem] font-semibold">
           Pronto para recarregar de verdade?
         </h2>
         <p className="mt-2 text-white/70">

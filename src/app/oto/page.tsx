@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { trackInitiateCheckout } from "@/lib/analytics";
+import { GARANTIA_DIAS } from "@/lib/flags";
 
 const DURACAO_MS = 30 * 60 * 1000; // 30 minutos
 const STORAGE_KEY = "epic_oto_start";
@@ -47,7 +48,7 @@ export default function OtoPage() {
           Oferta única · só nesta página
         </span>
 
-        <h1 className="mt-6 text-balance font-display text-3xl font-black leading-tight sm:text-4xl">
+        <h1 className="mt-6 text-balance font-display text-[1.75rem] font-semibold leading-tight sm:text-[2.25rem]">
           Acelere seus resultados com o Protocolo EPIC247 completo
         </h1>
         <p className="mt-4 text-white/70">
@@ -62,7 +63,7 @@ export default function OtoPage() {
             <span className="text-xs uppercase tracking-widest text-white/50">
               Esta oferta expira em
             </span>
-            <span className="mt-1 font-display text-5xl font-black tabular-nums text-gold">
+            <span className="mt-1 font-display text-[3rem] font-semibold tabular-nums text-gold">
               {restante === null ? "30:00" : fmt(restante)}
             </span>
           </div>
@@ -81,9 +82,9 @@ export default function OtoPage() {
         {/* Oferta */}
         {!expirado && (
           <div className="mt-8 rounded-3xl border border-gold/30 bg-white/[0.04] p-8 shadow-[0_0_80px_-24px] shadow-gold/40 backdrop-blur">
-            <h2 className="font-display text-2xl font-bold">Protocolo EPIC247</h2>
+            <h2 className="font-display text-[1.5rem] font-medium">Protocolo EPIC247</h2>
             <p className="mt-2 text-white/60 line-through">De R$497</p>
-            <p className="mt-1 font-display text-6xl font-black text-gold-gradient">
+            <p className="mt-1 font-display text-[3.5rem] font-semibold text-gold-gradient">
               R$270
             </p>
             <p className="mt-2 text-sm text-white/60">pagamento único · só agora</p>
@@ -96,7 +97,7 @@ export default function OtoPage() {
               SIM, QUERO O PROTOCOLO · R$270
             </a>
             <p className="mt-4 text-xs text-white/40">
-              Garantia de 14 dias também se aplica a esta oferta.
+              Garantia de {GARANTIA_DIAS} dias também se aplica a esta oferta.
             </p>
           </div>
         )}
