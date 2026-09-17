@@ -2,6 +2,15 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/analytics";
+import { getTracking } from "@/lib/settings";
+
+/**
+ * As tags de rastreamento vem do banco (aba Marketing do /admin). Sem isto,
+ * as paginas estaticas (quiz, obrigado, oto) congelariam o pixel no momento
+ * do deploy e uma troca no painel so valeria no proximo build. Com ISR de
+ * 60s, o que o marketing salvar entra no ar em ate um minuto.
+ */
+export const revalidate = 60;
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -45,15 +54,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // IDs de rastreamento vem do banco (aba Marketing do /admin), com a env
+  // como fallback. Trocar um pixel nao exige deploy.
+  const tracking = await getTracking();
+
   return (
     <html lang="pt-BR" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
-        <Analytics />
+        <Analytics tracking={tracking} />
         {children}
       </body>
     </html>

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { getMetaCapiToken, getTracking } from "./settings";
 
 // Conversions API (servidor) do Meta. Envia eventos direto para o Graph,
 // complementando o Pixel do navegador (melhor atribuição, resiste a adblock).
@@ -21,8 +22,8 @@ export async function sendMetaEvent(
   eventName: string,
   opts: MetaEventOptions
 ): Promise<void> {
-  const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const token = process.env.META_CAPI_TOKEN;
+  const { metaPixelId: pixel } = await getTracking();
+  const token = await getMetaCapiToken();
   if (!pixel || !token) return; // não configurado: no-op
 
   const userData: Record<string, unknown> = {};

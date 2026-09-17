@@ -1,6 +1,10 @@
 import { isAdmin, adminConfigurado } from "@/lib/admin-auth";
 import { getServiceClient } from "@/lib/supabase";
-import { getSettings } from "@/lib/settings";
+import {
+  getSettings,
+  getTracking,
+  getMetaCapiTokenConfigurado,
+} from "@/lib/settings";
 import type { Conteudo } from "@/lib/conteudos";
 import AdminLogin from "@/components/admin-login";
 import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
@@ -40,11 +44,15 @@ export default async function AdminPage() {
   }
 
   const settings = await getSettings();
+  const tracking = await getTracking();
+  const capiTokenConfigurado = await getMetaCapiTokenConfigurado();
 
   return (
     <AdminDashboard
       leads={leads}
       settings={settings}
+      tracking={tracking}
+      capiTokenConfigurado={capiTokenConfigurado}
       supabaseReady={Boolean(supabase)}
       conteudos={conteudos}
       conteudosReady={conteudosReady}
