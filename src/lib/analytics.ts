@@ -3,6 +3,8 @@
 // Wrappers para disparar eventos no Meta Pixel (fbq) e GA4 (gtag) no client.
 // Seguros: se os scripts não estiverem carregados, viram no-op.
 
+import { registrarEvento } from "./origem";
+
 type Props = Record<string, unknown>;
 
 interface WindowWithTrackers extends Window {
@@ -30,6 +32,7 @@ export function trackLead(props?: Props) {
 export function trackInitiateCheckout(props?: Props) {
   fbq("InitiateCheckout", props);
   ga("begin_checkout", props);
+  registrarEvento("checkout");
 }
 
 export function trackViewContent(props?: Props) {

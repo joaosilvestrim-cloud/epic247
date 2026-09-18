@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/analytics";
+import OrigemTracker from "@/components/origem-tracker";
 import { getTracking } from "@/lib/settings";
 
 /**
@@ -67,6 +68,7 @@ export default async function RootLayout({
     <html lang="pt-BR" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
         <Analytics tracking={tracking} />
+        <OrigemTracker />
         {children}
       </body>
     </html>

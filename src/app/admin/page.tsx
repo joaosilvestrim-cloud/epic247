@@ -6,6 +6,7 @@ import {
   getMetaCapiTokenConfigurado,
 } from "@/lib/settings";
 import type { Conteudo } from "@/lib/conteudos";
+import { getResumoOrigem } from "@/lib/origem-resumo";
 import AdminLogin from "@/components/admin-login";
 import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
 
@@ -46,6 +47,7 @@ export default async function AdminPage() {
   const settings = await getSettings();
   const tracking = await getTracking();
   const capiTokenConfigurado = await getMetaCapiTokenConfigurado();
+  const resumoOrigem = await getResumoOrigem();
 
   return (
     <AdminDashboard
@@ -53,6 +55,7 @@ export default async function AdminPage() {
       settings={settings}
       tracking={tracking}
       capiTokenConfigurado={capiTokenConfigurado}
+      resumoOrigem={resumoOrigem}
       supabaseReady={Boolean(supabase)}
       conteudos={conteudos}
       conteudosReady={conteudosReady}

@@ -11,8 +11,9 @@ import {
 } from "@/lib/settings";
 import type { Conteudo } from "@/lib/conteudos";
 import ConteudosView, { ConteudosAnalytics } from "./admin-conteudos";
+import type { PeriodoOrigem, ResumoOrigem } from "@/lib/origem-resumo";
 
-type Aba = "visao" | "calendario" | "leads" | "midias" | "marketing";
+type Aba = "visao" | "calendario" | "leads" | "origem" | "midias" | "marketing";
 
 export interface LeadRow {
   id: string;
@@ -22,6 +23,8 @@ export interface LeadRow {
   dreno_secundario: DrenoId | null;
   scores: Record<string, number> | null;
   origem: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
   created_at: string;
 }
 
@@ -38,6 +41,7 @@ export default function AdminDashboard({
   settings,
   tracking,
   capiTokenConfigurado,
+  resumoOrigem,
   supabaseReady,
   conteudos,
   conteudosReady,
@@ -46,6 +50,7 @@ export default function AdminDashboard({
   settings: SiteSettings;
   tracking: TrackingSettings;
   capiTokenConfigurado: boolean;
+  resumoOrigem: ResumoOrigem;
   supabaseReady: boolean;
   conteudos: Conteudo[];
   conteudosReady: boolean;
@@ -70,6 +75,7 @@ export default function AdminDashboard({
     { id: "visao", label: "Visão geral" },
     { id: "calendario", label: "Calendário" },
     { id: "leads", label: "Leads" },
+    { id: "origem", label: "Origem" },
     { id: "midias", label: "Mídias" },
     { id: "marketing", label: "Marketing" },
   ];
@@ -184,6 +190,7 @@ export default function AdminDashboard({
                     <th className="px-4 py-3 font-semibold">Data</th>
                     <th className="px-4 py-3 font-semibold">Nome</th>
                     <th className="px-4 py-3 font-semibold">E-mail</th>
+                    <th className="px-4 py-3 font-semibold">Origem</th>
                     <th className="px-4 py-3 font-semibold">Dominante</th>
                     <th className="px-4 py-3 font-semibold">Secundário</th>
                     <th className="px-4 py-3 font-semibold">Bateria</th>
@@ -192,7 +199,7 @@ export default function AdminDashboard({
                 <tbody>
                   {leads.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-navy/50">
+                      <td colSpan={7} className="px-4 py-8 text-center text-navy/50">
                         Nenhuma resposta ainda.
                       </td>
                     </tr>
@@ -206,6 +213,9 @@ export default function AdminDashboard({
                         </td>
                         <td className="px-4 py-3">{l.nome || "—"}</td>
                         <td className="px-4 py-3">{l.email}</td>
+                        <td className="whitespace-nowrap px-4 py-3 text-navy/70">
+                          {l.utm_source ? nomeFonte(l.utm_source, l.utm_medium ?? "") : "—"}
+                        </td>
                         <td className="px-4 py-3">
                           <span
                             className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
@@ -230,6 +240,9 @@ export default function AdminDashboard({
             </div>
           </section>
         )}
+
+        {/* Origem do tráfego */}
+        {aba === "origem" && <OrigemView resumo={resumoOrigem} />}
 
         {/* Mídias do site */}
         {aba === "midias" && (
@@ -759,6 +772,194 @@ function CampoTagCard({
 
       {status && <p className="mt-2 text-sm text-gold">{status}</p>}
       {erro && <p className="mt-2 text-sm text-red-600">{erro}</p>}
+    </div>
+  );
+}
+
+/* ───────────────────────── Origem ───────────────────────── */
+
+const NOMES_FONTE: Record<string, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  meta: "Meta (Instagram ou Facebook)",
+  google: "Google",
+  youtube: "YouTube",
+  linkedin: "LinkedIn",
+  whatsapp: "WhatsApp",
+  tiktok: "TikTok",
+  x: "X (Twitter)",
+  email: "E-mail",
+};
+
+const NOMES_MEIO: Record<string, string> = {
+  bio: "link da bio",
+  stories: "stories",
+  story: "stories",
+  referral: "link",
+  organic: "busca",
+  clique: "clique",
+  cpc: "anúncio",
+  paid: "anúncio",
+  ads: "anúncio",
+};
+
+/** "instagram" + "bio" vira "Instagram · link da bio". */
+function nomeFonte(source: string, medium: string): string {
+  if (source === "direto") return "Acesso direto";
+  if (source === "(sem origem)") return "Sem origem (antes do rastreio)";
+  const fonte = NOMES_FONTE[source] ?? source;
+  const meio = medium ? NOMES_MEIO[medium] ?? medium : "";
+  return meio ? `${fonte} · ${meio}` : fonte;
+}
+
+function taxa(parte: number, todo: number): string {
+  if (!todo) return "—";
+  const v = (parte / todo) * 100;
+  return `${v < 10 ? v.toFixed(1) : Math.round(v)}%`;
+}
+
+function OrigemView({ resumo }: { resumo: ResumoOrigem }) {
+  const [periodo, setPeriodo] = useState<PeriodoOrigem>("30");
+
+  if (!resumo.pronto) {
+    return (
+      <section className="mt-8 rounded-2xl border border-gold/40 bg-cream p-6">
+        <h2 className="font-display text-[1.5rem] font-medium">
+          Falta um passo no banco
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-navy/70">
+          O rastreio de origem precisa de uma tabela nova no Supabase. Abra o SQL
+          Editor, cole o conteúdo do arquivo{" "}
+          <code className="rounded bg-white px-1.5 py-0.5 text-xs">
+            supabase/003_origem.sql
+          </code>{" "}
+          e clique em Run. Depois é só recarregar esta página.
+        </p>
+      </section>
+    );
+  }
+
+  const linhas = resumo.periodos[periodo];
+  const tot = linhas.reduce(
+    (a, l) => ({
+      visitantes: a.visitantes + l.visitantes,
+      leads: a.leads + l.leads,
+      checkouts: a.checkouts + l.checkouts,
+    }),
+    { visitantes: 0, leads: 0, checkouts: 0 }
+  );
+
+  const periodos: { id: PeriodoOrigem; label: string }[] = [
+    { id: "7", label: "7 dias" },
+    { id: "30", label: "30 dias" },
+    { id: "tudo", label: "Tudo" },
+  ];
+
+  const cards = [
+    { label: "Visitantes", valor: String(tot.visitantes) },
+    { label: "Leads do quiz", valor: String(tot.leads), sub: `${taxa(tot.leads, tot.visitantes)} dos visitantes` },
+    {
+      label: "Cliques em comprar",
+      valor: String(tot.checkouts),
+      sub: `${taxa(tot.checkouts, tot.visitantes)} dos visitantes`,
+    },
+  ];
+
+  return (
+    <div className="mt-8 space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-[1.5rem] font-medium">
+            De onde vêm as pessoas
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm text-navy/60">
+            Cada visita é contada uma vez por sessão. A origem fica guardada por 30
+            dias, então quem clica na bio e volta depois digitando o endereço
+            continua contando para o Instagram.
+          </p>
+        </div>
+        <div className="flex rounded-xl border border-line/50 bg-white p-1">
+          {periodos.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPeriodo(p.id)}
+              className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+                periodo === p.id ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        {cards.map((c) => (
+          <div key={c.label} className="rounded-2xl border border-line/40 bg-white p-6">
+            <p className="text-sm text-navy/60">{c.label}</p>
+            <p className="mt-1 font-display text-4xl font-semibold text-navy">{c.valor}</p>
+            {c.sub && <p className="mt-1 text-sm text-navy/50">{c.sub}</p>}
+          </div>
+        ))}
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border border-line/40 bg-white">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-line/40 bg-cream/60 text-navy/70">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Origem</th>
+              <th className="px-4 py-3 text-right font-semibold">Visitantes</th>
+              <th className="px-4 py-3 text-right font-semibold">Leads</th>
+              <th className="px-4 py-3 text-right font-semibold">Visitante → lead</th>
+              <th className="px-4 py-3 text-right font-semibold">Cliques em comprar</th>
+              <th className="px-4 py-3 text-right font-semibold">Visitante → clique</th>
+            </tr>
+          </thead>
+          <tbody>
+            {linhas.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-navy/50">
+                  Nenhuma visita registrada neste período.
+                </td>
+              </tr>
+            )}
+            {linhas.map((l) => (
+              <tr
+                key={`${l.utm_source}|${l.utm_medium}`}
+                className="border-b border-line/20 last:border-0"
+              >
+                <td className="px-4 py-3 font-medium">
+                  {nomeFonte(l.utm_source, l.utm_medium)}
+                </td>
+                <td className="px-4 py-3 text-right tabular-nums">{l.visitantes}</td>
+                <td className="px-4 py-3 text-right tabular-nums">{l.leads}</td>
+                <td className="px-4 py-3 text-right tabular-nums text-navy/60">
+                  {taxa(l.leads, l.visitantes)}
+                </td>
+                <td className="px-4 py-3 text-right tabular-nums">{l.checkouts}</td>
+                <td className="px-4 py-3 text-right tabular-nums text-navy/60">
+                  {taxa(l.checkouts, l.visitantes)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <section className="rounded-2xl border border-line/40 bg-white p-6">
+        <h3 className="font-display text-[1.25rem] font-semibold">E as vendas?</h3>
+        <p className="mt-2 max-w-3xl text-sm text-navy/70">
+          A compra acontece no Kiwify, fora do site. Por isso o botão de compra leva a
+          origem junto no link. No painel do Kiwify, o relatório de vendas filtrado
+          por UTM mostra quantas vendas vieram de cada origem desta tabela.
+        </p>
+        <p className="mt-3 max-w-3xl text-sm text-navy/70">
+          Para separar cada post ou campanha, use links diferentes. Por exemplo:{" "}
+          <code className="rounded bg-cream px-1.5 py-0.5 text-xs">
+            epic247.com.br/?utm_source=instagram&amp;utm_medium=stories&amp;utm_campaign=live1
+          </code>
+        </p>
+      </section>
     </div>
   );
 }

@@ -5,6 +5,13 @@ import { generateDrenoReportPdf } from "@/lib/pdf-report";
 import { getReportPdfUrl, getReportFileName } from "@/lib/report-files";
 import { sendReportEmail } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { cookies } from "next/headers";
+import {
+  COOKIE_ORIGEM,
+  COOKIE_VISITANTE,
+  parseOrigem,
+  parseVisitante,
+} from "@/lib/origem";
 
 const DRENO_IDS: DrenoId[] = ["sono", "combustivel", "cortisol", "atencao", "movimento"];
 
@@ -38,14 +45,35 @@ export async function POST(request: Request) {
   // 1) Persistir o lead (se o Supabase estiver configurado)
   const supabase = getServiceClient();
   if (supabase) {
-    const { error } = await supabase.from("leads").insert({
+    const base = {
       nome: nomeStr,
       email,
       dreno_dominante: dominante,
       dreno_secundario: isDrenoId(secundario) ? secundario : null,
       scores: scores ?? null,
       origem: "quiz_5_drenos",
-    });
+    };
+
+    // De onde a pessoa veio (cookie gravado na primeira visita).
+    const jar = await cookies();
+    const o = parseOrigem(jar.get(COOKIE_ORIGEM)?.value);
+    const comOrigem = {
+      ...base,
+      utm_source: o?.utm_source ?? null,
+      utm_medium: o?.utm_medium ?? null,
+      utm_campaign: o?.utm_campaign ?? null,
+      utm_content: o?.utm_content ?? null,
+      referrer: o?.referrer ?? null,
+      visitante_id: parseVisitante(jar.get(COOKIE_VISITANTE)?.value),
+    };
+
+    let { error } = await supabase.from("leads").insert(comOrigem);
+    if (error && /column|utm_|referrer|visitante_id/i.test(error.message)) {
+      // As colunas de origem ainda não existem (supabase/003_origem.sql não
+      // rodou). Grava o lead sem elas: perder a origem é aceitável, perder
+      // o lead não.
+      ({ error } = await supabase.from("leads").insert(base));
+    }
     if (error) {
       console.error("[lead] erro ao inserir:", error.message);
       // Não interrompe o fluxo do usuário; segue para e-mail/tracking.

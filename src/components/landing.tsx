@@ -22,6 +22,7 @@ import {
   SHOW_ORDER_BUMP_NA_LP,
   SHOW_PLATAFORMA_BATERIA_VITAL,
 } from "@/lib/flags";
+import { checkoutComOrigem } from "@/lib/origem";
 import BrandLogo from "./brand-logo";
 
 const CHECKOUT_URL = "https://pay.kiwify.com.br/vJBeZ8S"; // Checkout Kiwify — Módulo Energia
@@ -91,10 +92,24 @@ function CTAButton({
   children: React.ReactNode;
   className?: string;
 }) {
+  const ehCheckout = href === CHECKOUT_URL;
+  // Leva a origem (utm) até o Kiwify, para o relatório de vendas de lá
+  // mostrar de onde veio cada compra. Só dá para ler o cookie no navegador.
+  const [link, setLink] = useState(href);
+  useEffect(() => {
+    if (ehCheckout) setLink(checkoutComOrigem(href));
+  }, [ehCheckout, href]);
+
   return (
     <motion.a
-      href={href}
-      onClick={() => trackInitiateCheckout({ value: 97, currency: "BRL" })}
+      href={link}
+      // Só o botão de compra conta como InitiateCheckout. Antes o botão que
+      // leva ao quiz também disparava o evento e sujava os dados do Meta.
+      onClick={
+        ehCheckout
+          ? () => trackInitiateCheckout({ value: 97, currency: "BRL" })
+          : undefined
+      }
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.97 }}
       className={`group relative inline-flex max-w-full items-center justify-center overflow-hidden text-balance rounded-2xl bg-gold px-6 py-4 text-center text-[15px] font-semibold uppercase leading-snug tracking-[0.08em] text-navy-deep shadow-[0_10px_40px_-10px] shadow-gold/70 sm:px-9 ${className}`}
