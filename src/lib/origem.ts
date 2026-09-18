@@ -9,6 +9,16 @@
 export const COOKIE_ORIGEM = "epic_origem";
 export const COOKIE_VISITANTE = "epic_vid";
 
+/** Eventos aceitos pela rota /api/origem. */
+export const TIPOS_EVENTO = [
+  "visita",
+  "checkout",
+  "oferta_vista",
+  "quiz_inicio",
+  "quiz_etapa",
+] as const;
+export type TipoEvento = (typeof TIPOS_EVENTO)[number];
+
 export interface Origem {
   utm_source: string;
   utm_medium: string;
@@ -168,9 +178,9 @@ export function checkoutComOrigem(base: string): string {
 }
 
 /** Registra um evento de origem no nosso banco (navegador, best-effort). */
-export function registrarEvento(tipo: "visita" | "checkout"): void {
+export function registrarEvento(tipo: TipoEvento, extra?: { etapa?: number }): void {
   if (typeof window === "undefined") return;
-  const body = JSON.stringify({ tipo, pagina: window.location.pathname });
+  const body = JSON.stringify({ tipo, pagina: window.location.pathname, ...extra });
   try {
     // sendBeacon sobrevive à troca de página (clique que leva ao Kiwify).
     if (tipo === "checkout" && navigator.sendBeacon) {
@@ -186,4 +196,20 @@ export function registrarEvento(tipo: "visita" | "checkout"): void {
   } catch {
     /* rastreio nunca pode quebrar a página */
   }
+}
+
+/**
+ * Registra o evento só uma vez por sessão do navegador (navegador).
+ * Serve para "viu a oferta", que dispararia a cada rolagem.
+ */
+export function registrarUmaVez(tipo: TipoEvento): void {
+  if (typeof window === "undefined") return;
+  const chave = `epic_evt_${tipo}`;
+  try {
+    if (sessionStorage.getItem(chave)) return;
+    sessionStorage.setItem(chave, "1");
+  } catch {
+    /* storage bloqueado: registra mesmo assim */
+  }
+  registrarEvento(tipo);
 }

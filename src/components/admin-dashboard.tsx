@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase-browser";
 import { DRENOS, type DrenoId } from "@/lib/drenos";
@@ -11,7 +11,12 @@ import {
 } from "@/lib/settings";
 import type { Conteudo } from "@/lib/conteudos";
 import ConteudosView, { ConteudosAnalytics } from "./admin-conteudos";
-import type { PeriodoOrigem, ResumoOrigem } from "@/lib/origem-resumo";
+import type {
+  DetalheOrigem,
+  PeriodoOrigem,
+  ResumoOrigem,
+} from "@/lib/origem-resumo";
+import { QUIZ_QUESTIONS } from "@/lib/quiz-data";
 
 type Aba = "visao" | "calendario" | "leads" | "origem" | "midias" | "marketing";
 
@@ -946,6 +951,8 @@ function OrigemView({ resumo }: { resumo: ResumoOrigem }) {
         </table>
       </div>
 
+      <DetalheOrigemView periodo={periodo} linhas={linhas} />
+
       <section className="rounded-2xl border border-line/40 bg-white p-6">
         <h3 className="font-display text-[1.25rem] font-semibold">E as vendas?</h3>
         <p className="mt-2 max-w-3xl text-sm text-navy/70">
@@ -959,6 +966,382 @@ function OrigemView({ resumo }: { resumo: ResumoOrigem }) {
             epic247.com.br/?utm_source=instagram&amp;utm_medium=stories&amp;utm_campaign=live1
           </code>
         </p>
+      </section>
+    </div>
+  );
+}
+
+/* ─────────────── Origem: funil, abandono do quiz e perfil ─────────────── */
+
+const NOMES_PERFIL: Record<string, Record<string, string>> = {
+  dispositivo: { celular: "Celular", computador: "Computador", tablet: "Tablet" },
+  app: {
+    instagram: "Navegador do Instagram",
+    facebook: "Navegador do Facebook",
+    tiktok: "Navegador do TikTok",
+    linkedin: "Navegador do LinkedIn",
+    navegador: "Navegador normal (Chrome, Safari...)",
+  },
+  sistema: {
+    ios: "iPhone / iPad",
+    android: "Android",
+    windows: "Windows",
+    mac: "Mac",
+    chromeos: "Chromebook",
+    linux: "Linux",
+  },
+};
+
+const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+function Barra({
+  label,
+  valor,
+  max,
+  sub,
+  destaque = false,
+}: {
+  label: string;
+  valor: number;
+  max: number;
+  sub?: string;
+  destaque?: boolean;
+}) {
+  const pct = max ? Math.max(2, Math.round((valor / max) * 100)) : 0;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3 text-sm">
+        <span className={destaque ? "font-semibold text-navy" : "text-navy/80"}>{label}</span>
+        <span className="tabular-nums text-navy/60">
+          <strong className="text-navy">{valor}</strong>
+          {sub ? ` · ${sub}` : ""}
+        </span>
+      </div>
+      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-line/20">
+        <div
+          className={`h-full rounded-full ${destaque ? "bg-red-400" : "bg-gold"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CartaoPerfil({
+  titulo,
+  linhas,
+  vazio = "Sem dados ainda.",
+}: {
+  titulo: string;
+  linhas: { label: string; valor: number }[];
+  vazio?: string;
+}) {
+  const total = linhas.reduce((a, l) => a + l.valor, 0);
+  const max = Math.max(0, ...linhas.map((l) => l.valor));
+  return (
+    <div className="rounded-2xl border border-line/40 bg-white p-5">
+      <h4 className="font-semibold text-navy">{titulo}</h4>
+      <div className="mt-4 space-y-3">
+        {linhas.length === 0 && <p className="text-sm text-navy/50">{vazio}</p>}
+        {linhas.map((l) => (
+          <Barra
+            key={l.label}
+            label={l.label}
+            valor={l.valor}
+            max={max}
+            sub={taxa(l.valor, total)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DetalheOrigemView({
+  periodo,
+  linhas,
+}: {
+  periodo: PeriodoOrigem;
+  linhas: { utm_source: string; utm_medium: string }[];
+}) {
+  // "" = todas as origens; senão "source|medium".
+  const [fonte, setFonte] = useState("");
+  const [dados, setDados] = useState<DetalheOrigem | null>(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    setCarregando(true);
+    setErro(false);
+    const q = new URLSearchParams({ periodo });
+    if (fonte) {
+      const [s, m] = fonte.split("|");
+      q.set("source", s);
+      q.set("medium", m ?? "");
+    }
+    fetch(`/api/admin/origem?${q}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d: DetalheOrigem) => ativo && setDados(d))
+      .catch(() => ativo && setErro(true))
+      .finally(() => ativo && setCarregando(false));
+    return () => {
+      ativo = false;
+    };
+  }, [periodo, fonte]);
+
+  const opcoes = linhas.filter((l) => l.utm_source !== "(sem origem)");
+
+  const cabecalho = (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 className="font-display text-[1.5rem] font-medium">O caminho das pessoas</h2>
+        <p className="mt-1 max-w-2xl text-sm text-navy/60">
+          Do primeiro acesso até o clique em comprar. Filtre por origem para comparar
+          quem vem do Instagram com quem vem de outros lugares.
+        </p>
+      </div>
+      <select
+        value={fonte}
+        onChange={(e) => setFonte(e.target.value)}
+        className="rounded-xl border border-line/50 bg-white px-3 py-2 text-sm font-semibold text-navy"
+      >
+        <option value="">Todas as origens</option>
+        {opcoes.map((l) => (
+          <option key={`${l.utm_source}|${l.utm_medium}`} value={`${l.utm_source}|${l.utm_medium}`}>
+            {nomeFonte(l.utm_source, l.utm_medium)}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  if (carregando && !dados) {
+    return (
+      <section className="space-y-4">
+        {cabecalho}
+        <p className="text-sm text-navy/50">Carregando...</p>
+      </section>
+    );
+  }
+
+  if (erro) {
+    return (
+      <section className="space-y-4">
+        {cabecalho}
+        <p className="text-sm text-red-600">Não foi possível carregar os dados agora.</p>
+      </section>
+    );
+  }
+
+  if (!dados?.pronto) {
+    return (
+      <section className="rounded-2xl border border-gold/40 bg-cream p-6">
+        <h2 className="font-display text-[1.5rem] font-medium">Falta um passo no banco</h2>
+        <p className="mt-2 max-w-2xl text-sm text-navy/70">
+          O funil, o abandono do quiz e o perfil das visitas precisam do arquivo{" "}
+          <code className="rounded bg-white px-1.5 py-0.5 text-xs">
+            supabase/004_funil.sql
+          </code>
+          . Cole no SQL Editor do Supabase, clique em Run e recarregue esta página.
+        </p>
+      </section>
+    );
+  }
+
+  // ── Funil ──
+  const funil = dados.funil;
+  const topo = funil[0]?.pessoas ?? 0;
+  // Maior perda entre etapas seguidas da jornada principal (até o e-mail).
+  let piorFunil = -1;
+  let maiorPerdaFunil = 0;
+  for (let i = 1; i < funil.length - 1; i++) {
+    const perda = funil[i - 1].pessoas - funil[i].pessoas;
+    if (perda > maiorPerdaFunil) {
+      maiorPerdaFunil = perda;
+      piorFunil = i;
+    }
+  }
+
+  // ── Quiz ──
+  const porEtapa = new Map(dados.quiz.map((q) => [q.etapa, q.pessoas]));
+  const inicioQuiz = funil.find((f) => f.ordem === 3)?.pessoas ?? 0;
+  const etapasQuiz = QUIZ_QUESTIONS.map((q, i) => ({
+    n: i + 1,
+    pergunta: q.pergunta,
+    pessoas: porEtapa.get(i + 1) ?? 0,
+  }));
+  let piorQuizN = 0;
+  let piorQuizPerda = 0;
+  for (let i = 0; i < etapasQuiz.length; i++) {
+    const antes = i === 0 ? inicioQuiz : etapasQuiz[i - 1].pessoas;
+    const perdeu = antes - etapasQuiz[i].pessoas;
+    if (perdeu > piorQuizPerda) {
+      piorQuizPerda = perdeu;
+      piorQuizN = etapasQuiz[i].n;
+    }
+  }
+  const piorQuiz = piorQuizN
+    ? { n: piorQuizN, perdeu: piorQuizPerda, pergunta: etapasQuiz[piorQuizN - 1].pergunta }
+    : null;
+  const maxQuiz = Math.max(inicioQuiz, ...etapasQuiz.map((e) => e.pessoas));
+
+  // ── Perfil ──
+  const dim = (d: string) =>
+    dados.perfil
+      .filter((p) => p.dimensao === d)
+      .sort((a, b) => b.visitantes - a.visitantes);
+  const rotulo = (d: string, v: string) =>
+    NOMES_PERFIL[d]?.[v] ?? (v === "desconhecido" ? "Não identificado" : v);
+  const cartao = (d: string, limite = 8) =>
+    dim(d)
+      .slice(0, limite)
+      .map((p) => ({ label: rotulo(d, p.valor), valor: p.visitantes }));
+
+  const horas = Array.from({ length: 24 }, (_, h) => ({
+    h,
+    v: dim("hora").find((p) => Number(p.valor) === h)?.visitantes ?? 0,
+  }));
+  const maxHora = Math.max(0, ...horas.map((x) => x.v));
+  const dias = DIAS_SEMANA.map((nome, d) => ({
+    nome,
+    v: dim("dia_semana").find((p) => Number(p.valor) === d)?.visitantes ?? 0,
+  }));
+  const maxDia = Math.max(0, ...dias.map((x) => x.v));
+  const melhorHora = maxHora ? horas.find((x) => x.v === maxHora)?.h : null;
+  const melhorDia = maxDia ? dias.find((x) => x.v === maxDia)?.nome : null;
+
+  return (
+    <div className={`space-y-8 transition-opacity ${carregando ? "opacity-50" : ""}`}>
+      {cabecalho}
+
+      {/* Funil */}
+      <section className="rounded-2xl border border-line/40 bg-white p-6">
+        <h3 className="font-display text-[1.25rem] font-semibold">Funil</h3>
+        <p className="mt-1 text-sm text-navy/60">
+          Pessoas, não cliques. O clique em comprar não depende do quiz: dá para
+          comprar direto pela página.
+        </p>
+        <div className="mt-5 space-y-4">
+          {funil.map((f, i) => (
+            <Barra
+              key={f.ordem}
+              label={f.etapa}
+              valor={f.pessoas}
+              max={topo}
+              sub={i === 0 ? undefined : `${taxa(f.pessoas, topo)} de quem visitou`}
+              destaque={i === piorFunil}
+            />
+          ))}
+        </div>
+        {piorFunil > 0 && (
+          <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            A maior perda está entre <strong>{funil[piorFunil - 1].etapa}</strong> e{" "}
+            <strong>{funil[piorFunil].etapa}</strong>: {maiorPerdaFunil}{" "}
+            {maiorPerdaFunil === 1 ? "pessoa ficou" : "pessoas ficaram"} pelo caminho.
+          </p>
+        )}
+      </section>
+
+      {/* Abandono do quiz */}
+      <section className="rounded-2xl border border-line/40 bg-white p-6">
+        <h3 className="font-display text-[1.25rem] font-semibold">Abandono do quiz</h3>
+        <p className="mt-1 text-sm text-navy/60">
+          Quantas pessoas responderam cada pergunta. A barra vermelha é onde mais
+          gente desistiu.
+        </p>
+        {inicioQuiz === 0 ? (
+          <p className="mt-4 text-sm text-navy/50">Ninguém começou o quiz neste período.</p>
+        ) : (
+          <>
+            <div className="mt-5 space-y-2.5">
+              <Barra label="Começou" valor={inicioQuiz} max={maxQuiz} />
+              {etapasQuiz.map((e) => (
+                <Barra
+                  key={e.n}
+                  label={`Pergunta ${e.n}`}
+                  valor={e.pessoas}
+                  max={maxQuiz}
+                  sub={taxa(e.pessoas, inicioQuiz)}
+                  destaque={piorQuiz?.n === e.n}
+                />
+              ))}
+            </div>
+            {piorQuiz && (
+              <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                <strong>Pergunta {piorQuiz.n}</strong> perdeu {piorQuiz.perdeu}{" "}
+                {piorQuiz.perdeu === 1 ? "pessoa" : "pessoas"}: “{piorQuiz.pergunta}”
+              </p>
+            )}
+          </>
+        )}
+      </section>
+
+      {/* Perfil */}
+      <section>
+        <h3 className="font-display text-[1.25rem] font-semibold">Quem são os visitantes</h3>
+        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CartaoPerfil titulo="Aparelho" linhas={cartao("dispositivo")} />
+          <CartaoPerfil titulo="Onde abriu o link" linhas={cartao("app")} />
+          <CartaoPerfil titulo="Sistema" linhas={cartao("sistema")} />
+          <CartaoPerfil titulo="Estados" linhas={cartao("estado")} />
+          <CartaoPerfil titulo="Cidades" linhas={cartao("cidade")} />
+          <CartaoPerfil titulo="Países" linhas={cartao("pais", 5)} />
+        </div>
+      </section>
+
+      {/* Horários */}
+      <section className="rounded-2xl border border-line/40 bg-white p-6">
+        <h3 className="font-display text-[1.25rem] font-semibold">Quando as visitas chegam</h3>
+        <p className="mt-1 text-sm text-navy/60">
+          Horário de Brasília.
+          {melhorHora != null && melhorDia && (
+            <>
+              {" "}
+              O pico é <strong>{melhorDia}</strong>, e o horário mais forte é{" "}
+              <strong>
+                {String(melhorHora).padStart(2, "0")}h às{" "}
+                {String((melhorHora + 1) % 24).padStart(2, "0")}h
+              </strong>
+              . Bom sinal para a hora de postar.
+            </>
+          )}
+        </p>
+
+        <div className="mt-6 flex h-36 items-end gap-1">
+          {horas.map((x) => (
+            <div key={x.h} className="flex h-full flex-1 flex-col items-center justify-end">
+              <div
+                title={`${x.h}h: ${x.v} visitas`}
+                className={`w-full rounded-t ${x.v === maxHora && maxHora ? "bg-gold" : "bg-navy/25"}`}
+                style={{ height: `${maxHora ? Math.max(2, (x.v / maxHora) * 100) : 2}%` }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="mt-1 flex gap-1 text-[10px] text-navy/40">
+          {horas.map((x) => (
+            <span key={x.h} className="flex-1 text-center">
+              {x.h % 3 === 0 ? `${x.h}h` : ""}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-8 grid grid-cols-7 gap-2">
+          {dias.map((d) => (
+            <div key={d.nome} className="text-center">
+              <div className="flex h-24 items-end">
+                <div
+                  title={`${d.nome}: ${d.v} visitas`}
+                  className={`w-full rounded-t ${d.v === maxDia && maxDia ? "bg-gold" : "bg-navy/25"}`}
+                  style={{ height: `${maxDia ? Math.max(3, (d.v / maxDia) * 100) : 3}%` }}
+                />
+              </div>
+              <p className="mt-1 text-xs font-semibold text-navy/70">{d.nome}</p>
+              <p className="text-xs tabular-nums text-navy/50">{d.v}</p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

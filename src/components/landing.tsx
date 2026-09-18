@@ -22,7 +22,7 @@ import {
   SHOW_ORDER_BUMP_NA_LP,
   SHOW_PLATAFORMA_BATERIA_VITAL,
 } from "@/lib/flags";
-import { checkoutComOrigem } from "@/lib/origem";
+import { checkoutComOrigem, registrarUmaVez } from "@/lib/origem";
 import BrandLogo from "./brand-logo";
 
 const CHECKOUT_URL = "https://pay.kiwify.com.br/vJBeZ8S"; // Checkout Kiwify — Módulo Energia
@@ -249,6 +249,23 @@ export default function Landing({ settings }: { settings: SiteSettings }) {
   const scaleX = useTransform(barWidth, [0, 1], [0, 1]);
   const [scrolled, setScrolled] = useState(false);
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 40));
+
+  // Funil do admin: a pessoa rolou até ver o preço e o que está incluso.
+  useEffect(() => {
+    const oferta = document.getElementById("oferta");
+    if (!oferta || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (entradas) => {
+        if (entradas.some((e) => e.isIntersecting)) {
+          registrarUmaVez("oferta_vista");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    obs.observe(oferta);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <main className="overflow-x-clip bg-offwhite">

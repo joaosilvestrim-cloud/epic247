@@ -18,6 +18,7 @@ import {
 } from "@/components/quiz-visuals";
 import { playStart, playTick, playComplete } from "@/lib/sound";
 import { trackLead } from "@/lib/analytics";
+import { registrarEvento } from "@/lib/origem";
 
 type Etapa = "intro" | "perguntas" | "captura" | "relatorio";
 
@@ -53,6 +54,7 @@ export default function QuizPage() {
 
   function iniciar() {
     if (som) playStart();
+    registrarEvento("quiz_inicio");
     setEtapa("perguntas");
   }
 
@@ -63,6 +65,8 @@ export default function QuizPage() {
 
     setTravado(true);
     setRespostas(novas);
+    // Funil do admin: até qual pergunta a pessoa chegou.
+    registrarEvento("quiz_etapa", { etapa: indice + 1 });
     if (som) playTick();
     if (peso > 0) setFlash({ peso, key: questao.id });
 
