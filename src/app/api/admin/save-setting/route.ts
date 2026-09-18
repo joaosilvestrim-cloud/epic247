@@ -66,10 +66,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Valor inválido." }, { status: 400 });
   }
 
-  const limpo = value.trim();
+  let limpo = value.trim();
   const regra = REGRAS[key];
   if (limpo && regra && !regra.teste.test(limpo)) {
-    return NextResponse.json({ error: regra.ajuda }, { status: 400 });
+    // Quem é de marketing cola o código inteiro que a plataforma entrega.
+    // Tenta tirar o ID de dentro dele antes de recusar.
+    const extraido = extrairId(key, limpo);
+    if (!extraido || !regra.teste.test(extraido)) {
+      return NextResponse.json({ error: regra.ajuda }, { status: 400 });
+    }
+    limpo = extraido;
   }
 
   const { error } = await supabase
@@ -83,5 +89,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  // Devolve o valor salvo para o painel mostrar o ID que foi extraído.
+  return NextResponse.json({ ok: true, value: limpo });
+}
+
+/**
+ * Padrões para achar o ID dentro do snippet que cada plataforma entrega
+ * (o `<script>` do Pixel, o `gtag.js`, o código do GTM etc.).
+ */
+const EXTRATORES: Record<string, RegExp[]> = {
+  [SETTING_KEYS.metaPixelId]: [
+    /fbq\(\s*['"]init['"]\s*,\s*['"](\d{10,20})['"]/,
+    /facebook\.com\/tr\?id=(\d{10,20})/,
+  ],
+  [SETTING_KEYS.ga4Id]: [/\b(G-[A-Z0-9]{6,12})\b/i],
+  [SETTING_KEYS.gtmId]: [/\b(GTM-[A-Z0-9]{4,10})\b/i],
+  [SETTING_KEYS.googleAdsId]: [/\b(AW-\d{8,14})\b/i],
+  [SETTING_KEYS.tiktokPixelId]: [/ttq\.load\(\s*['"]([A-Z0-9]{15,30})['"]/i],
+  [SETTING_KEYS.linkedinPartnerId]: [
+    /_linkedin_partner_id\s*=\s*["'](\d{4,12})["']/,
+    /\bpid=(\d{4,12})\b/,
+  ],
+};
+
+function extrairId(key: string, texto: string): string | null {
+  for (const padrao of EXTRATORES[key] ?? []) {
+    const achou = texto.match(padrao);
+    if (achou) return achou[1];
+  }
+  return null;
 }

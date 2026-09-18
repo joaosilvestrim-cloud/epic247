@@ -527,7 +527,7 @@ function MarketingView({
       label: "Google Tag Manager",
       exemplo: "GTM-ABC1234",
       ajuda:
-        "O coringa. Com o GTM ligado, você cadastra qualquer outra tag pelo painel do próprio Google, sem precisar de nada aqui.",
+        "O coringa. Com o GTM ligado, você cadastra qualquer outra tag pelo painel do próprio Google. Pode colar o código inteiro ou só o GTM-.",
       valor: tracking.gtmId,
     },
     {
@@ -535,14 +535,14 @@ function MarketingView({
       label: "Pixel do Meta (Facebook e Instagram)",
       exemplo: "1234567890123456",
       ajuda:
-        "Só números. Está no Gerenciador de Eventos do Business Manager, em Fontes de dados.",
+        "Pode colar o código inteiro que o Meta entrega, ou só o número. Está no Gerenciador de Eventos, em Fontes de dados.",
       valor: tracking.metaPixelId,
     },
     {
       chave: SETTING_KEYS.ga4Id,
       label: "Google Analytics 4",
       exemplo: "G-ABC123XYZ",
-      ajuda: "Começa com G-. Fica em Admin, Fluxos de dados, no painel do GA4.",
+      ajuda: "Começa com G-. Pode colar o código inteiro do gtag. Fica em Admin, Fluxos de dados, no GA4.",
       valor: tracking.ga4Id,
     },
   ];
@@ -680,8 +680,9 @@ function CampoTagCard({
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [salvo, setSalvo] = useState(jaConfigurado || Boolean(campo.valor));
+  const [base, setBase] = useState(campo.valor ?? "");
 
-  const sujo = valor !== (campo.valor ?? "");
+  const sujo = valor !== base;
 
   async function salvar() {
     setErro(null);
@@ -695,9 +696,22 @@ function CampoTagCard({
       });
       const d = await r.json().catch(() => null);
       if (!r.ok) throw new Error(d?.error ?? "Falha ao salvar.");
-      setStatus(valor.trim() ? "Salvo ✓" : "Tag desligada ✓");
-      setSalvo(Boolean(valor.trim()));
-      if (campo.segredo) setValor("");
+      const final: string = typeof d?.value === "string" ? d.value : valor.trim();
+      const extraiu = final !== valor.trim();
+      setStatus(
+        !final
+          ? "Tag desligada ✓"
+          : extraiu && !campo.segredo
+            ? `Salvo ✓ ID ${final} tirado do código colado`
+            : "Salvo ✓"
+      );
+      setSalvo(Boolean(final));
+      if (campo.segredo) {
+        setValor("");
+      } else {
+        setValor(final);
+        setBase(final);
+      }
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Erro ao salvar.");
     } finally {
