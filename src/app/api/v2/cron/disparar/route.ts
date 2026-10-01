@@ -21,5 +21,8 @@ async function executar(req: Request) {
   }
 }
 
+// Até 40 envios por rodada, cada um com uma chamada ao Resend.
+export const maxDuration = 60;
+
 export const GET = executar;
 export const POST = executar;

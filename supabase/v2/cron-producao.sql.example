@@ -1,0 +1,24 @@
+-- Agendador da fila de e-mails em produção (rodar UMA vez no SQL Editor do Supabase).
+-- Não fica em supabase/v2/0xx_*.sql porque leva o segredo e só vale para produção.
+-- Antes: trocar <CRON_SECRET> pelo mesmo valor da variável CRON_SECRET da Vercel.
+
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+-- A cada 10 minutos: dispara a fila e marca inativos de 30 dias.
+select cron.schedule(
+  'epic-disparar-fila',
+  '*/10 * * * *',
+  $$
+  select net.http_post(
+    url := 'https://epic247.com.br/api/v2/cron/disparar',
+    headers := jsonb_build_object('Authorization', 'Bearer <CRON_SECRET>', 'Content-Type', 'application/json'),
+    timeout_milliseconds := 60000
+  );
+  $$
+);
+
+-- Conferir:       select * from cron.job;
+-- Últimas rodadas: select status, return_message, start_time from cron.job_run_details order by start_time desc limit 10;
+-- Respostas HTTP:  select status_code, content, created from net._http_response order by created desc limit 10;
+-- Desligar:        select cron.unschedule('epic-disparar-fila');

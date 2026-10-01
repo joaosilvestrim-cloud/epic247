@@ -62,6 +62,11 @@ export default function AdminDashboard({
 }) {
   const router = useRouter();
   const [aba, setAba] = useState<Aba>("visao");
+  // Link direto para uma aba (ex.: /admin#marketing, usado pelo admin 2.0).
+  useEffect(() => {
+    const h = window.location.hash.slice(1);
+    if (["visao", "calendario", "leads", "origem", "midias", "marketing"].includes(h)) setAba(h as Aba);
+  }, []);
 
   const distribuicao = DRENO_IDS.map((id) => ({
     id,

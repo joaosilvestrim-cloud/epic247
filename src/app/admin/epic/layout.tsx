@@ -38,6 +38,8 @@ export default async function AdminEpicLayout({ children }: { children: React.Re
           ))}
         </nav>
         <div className="mt-8 border-t border-papel/10 pt-4 text-xs text-papel/50">
+          <a href="/admin#marketing" className="hover:text-papel">Pixel e tags de marketing</a>
+          <br />
           <Link href="/admin" className="hover:text-papel">Admin do site atual (Ciclo 1)</Link>
           <br />
           <Link href="/" className="hover:text-papel">Ver o site</Link>
