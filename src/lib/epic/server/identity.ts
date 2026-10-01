@@ -87,23 +87,31 @@ export async function leadAtual(q: Q): Promise<string | null> {
   return leadVivo(q, id);
 }
 
+/**
+ * Atividade relevante (visita, Mapa, abertura ou clique de e-mail, compra):
+ * renova last_activity_at e encerra a reativação de quem estava inativo
+ * (Matriz AUT_INACTIVE_30D: saída; Funis §23).
+ */
+export async function registrarAtividade(q: Q, lead: string) {
+  const [era] = await q<{ inactive_flag: boolean }>(
+    `update leads set last_activity_at = now(), inactive_flag = false, inactive_since = null
+     where lead_id = $1 returning (select inactive_flag from leads where lead_id = $1) as inactive_flag`,
+    [lead]
+  );
+  if (era?.inactive_flag) {
+    await q(
+      `update messages set status = 'cancelled', skip_reason = 'voltou_a_atividade'
+       where lead_id = $1 and status = 'scheduled' and automation_id = 'AUT_INACTIVE_30D'`,
+      [lead]
+    );
+  }
+}
+
 /** Lê ou cria o lead anônimo e grava o cookie. */
 export async function garantirLead(q: Q, toque: Atribuicao | null): Promise<string> {
   const existente = await leadAtual(q);
   if (existente) {
-    // Atividade nova encerra a reativação (Matriz AUT_INACTIVE_30D: saída).
-    const [era] = await q<{ inactive_flag: boolean }>(
-      `update leads set last_activity_at = now(), inactive_flag = false, inactive_since = null
-       where lead_id = $1 returning (select inactive_flag from leads where lead_id = $1) as inactive_flag`,
-      [existente]
-    );
-    if (era?.inactive_flag) {
-      await q(
-        `update messages set status = 'cancelled', skip_reason = 'voltou_a_atividade'
-         where lead_id = $1 and status = 'scheduled' and automation_id = 'AUT_INACTIVE_30D'`,
-        [existente]
-      );
-    }
+    await registrarAtividade(q, existente);
     await (await cookies()).set(COOKIE_LEAD, existente, cookieOpts(UM_ANO));
     return existente;
   }

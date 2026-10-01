@@ -223,11 +223,21 @@ async function decidir(q: Q, m: Mensagem, p: PerfilLead | null): Promise<Decisao
   if (motivo) return { acao: "pular", motivo };
 
   // Frequência: no máximo 1 não transacional por dia (Modelo de Dados §25).
+  // Quem continua inativo depois da reativação recebe no máximo 1 por semana
+  // (Matriz AUT_INACTIVE_30D: "após ausência de reação, reduzir frequência").
   if (m.priority >= 4) {
+    const [ina] = await q<{ reduzir: boolean }>(
+      `select l.inactive_flag and exists (
+         select 1 from messages x where x.lead_id = l.lead_id and x.automation_id = 'AUT_INACTIVE_30D'
+           and x.step = 'E3' and x.status = 'sent') as reduzir
+       from leads l where l.lead_id = $1`,
+      [m.lead_id]
+    );
+    const janela = ina?.reduzir && m.automation_id !== "AUT_INACTIVE_30D" ? "7 days" : "20 hours";
     const [recente] = await q(
       `select 1 from messages where lead_id = $1 and status = 'sent' and priority >= 4
-         and sent_at > now() - interval '20 hours'`,
-      [m.lead_id]
+         and sent_at > now() - $2::interval`,
+      [m.lead_id, janela]
     );
     if (recente) return m.postponed_count >= 2 ? { acao: "pular", motivo: "frequencia" } : { acao: "adiar" };
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withTx } from "@/lib/epic/server/db";
 import { registrarEvento } from "@/lib/epic/server/events";
+import { registrarAtividade } from "@/lib/epic/server/identity";
 import { logErro } from "@/lib/epic/server/http";
 import { conferirSvix } from "@/lib/epic/svix";
 
@@ -56,6 +57,8 @@ export async function POST(req: Request) {
         [emailId]
       );
       if (!m) return;
+      // Abrir ou clicar é atividade: renova o lead e encerra a reativação (Funis §23).
+      if (ev.type === "email.opened" || ev.type === "email.clicked") await registrarAtividade(q, m.lead_id);
       // Eventos de sucesso da entrega do resultado (Matriz, AUT_MAP_RESULT_DELIVERY).
       if (antes?.template_key === "map_result") {
         if (ev.type === "email.opened" && !antes.opened_at) {
