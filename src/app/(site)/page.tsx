@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { C, Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import IdeiasLista from "@/components/epic/IdeiasLista";
+import JsonLd from "@/components/epic/JsonLd";
+import { ORGANIZACAO, WEBSITE } from "@/lib/epic/seo";
 import Retorno from "@/components/epic/Retorno";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { temCopy } from "@/lib/epic/content/copy";
@@ -12,6 +14,7 @@ import { dimensionPath, dimensoesVisiveis } from "@/lib/epic/site";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
+export const metadata = { alternates: { canonical: "/" } };
 
 // Tensão-mãe (Posicionamento §2): as formas que a distância assume. Aprovado.
 const TENSOES = [
@@ -33,6 +36,8 @@ export default async function Home() {
   return (
     <>
       <Visualizacao nome="ViewHome" />
+      <JsonLd dados={ORGANIZACAO} />
+      <JsonLd dados={WEBSITE} />
       <Retorno />
 
       {/* 1 · Hero */}

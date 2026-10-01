@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BotaoCheckout from "@/components/epic/BotaoCheckout";
+import JsonLd from "@/components/epic/JsonLd";
+import { produtoLd } from "@/lib/epic/seo";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import { MANIFESTO } from "@/lib/epic/content/home";
@@ -28,6 +30,7 @@ export default async function ProtocoloPage() {
   return (
     <>
       <Visualizacao nome="ViewProtocolOffer" dados={{ product_id: "protocol" }} />
+      {p && <JsonLd dados={produtoLd(p, "/protocolo", String(metadata.description))} />}
 
       <section className="grao border-b border-linha">
         <Container className="pb-20 pt-14 sm:pt-20">

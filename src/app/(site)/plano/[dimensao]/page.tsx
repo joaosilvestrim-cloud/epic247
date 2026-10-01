@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BotaoCheckout from "@/components/epic/BotaoCheckout";
+import JsonLd from "@/components/epic/JsonLd";
+import { produtoLd } from "@/lib/epic/seo";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, DraftRibbon, TextCTA } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
@@ -40,6 +42,7 @@ export default async function PlanoPage({ params, searchParams }: Props) {
   return (
     <>
       <Visualizacao nome="ViewPlanOffer" dados={{ product_id: p.product_id, dimension: dimensao }} />
+      <JsonLd dados={produtoLd(p, `/plano/${dimensao}`, `Plano de 7 dias personalizado a partir das suas respostas no Mapa de ${d.name}.`)} />
       {!vendavel(p) && <DraftRibbon texto="Rascunho. Este produto ainda não está à venda (sem checkout ativo)." />}
       <section className="grao border-b border-linha">
         <Container className="grid gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
