@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import IdeiasLista from "@/components/epic/IdeiasLista";
+import Retorno from "@/components/epic/Retorno";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, DraftRibbon, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import { copyText, IS_PRODUCTION, temCopy } from "@/lib/epic/content/copy";
@@ -58,6 +59,7 @@ export default async function DimensaoPage({ params }: Params) {
     <>
       <Visualizacao nome="ViewDimensionPage" dados={{ dimension: dimensao }} />
       {d.page === "draft" && <DraftRibbon />}
+      <Retorno />
 
       {/* 1 · Hero */}
       <section className="grao border-b border-linha">

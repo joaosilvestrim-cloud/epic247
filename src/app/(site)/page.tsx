@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { C, Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import IdeiasLista from "@/components/epic/IdeiasLista";
+import Retorno from "@/components/epic/Retorno";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { temCopy } from "@/lib/epic/content/copy";
 import { DIMENSAO_CONTEUDO } from "@/lib/epic/content/dimensoes";
@@ -32,6 +33,7 @@ export default async function Home() {
   return (
     <>
       <Visualizacao nome="ViewHome" />
+      <Retorno />
 
       {/* 1 · Hero */}
       <section className="grao border-b border-linha">

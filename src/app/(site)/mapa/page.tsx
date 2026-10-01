@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import MapRunner from "@/components/epic/MapRunner";
+import Retorno from "@/components/epic/Retorno";
 import { Container } from "@/components/epic/ui";
 import { FRICCAO } from "@/lib/epic/maps";
 
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 
 export default function MapaFriccaoPage() {
   return (
+    <>
+    <Retorno esconderMapa="/mapa" />
     <section className="grao min-h-[70vh]">
       <Container className="py-16 sm:py-24">
         <MapRunner
@@ -28,5 +31,6 @@ export default function MapaFriccaoPage() {
         />
       </Container>
     </section>
+    </>
   );
 }
