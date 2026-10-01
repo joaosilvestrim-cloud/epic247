@@ -1,4 +1,4 @@
-import { BAND_LABEL } from "@/lib/epic/maps/engine";
+import { rotuloFaixa } from "@/lib/epic/maps/engine";
 import type { AxisScore, Axis } from "@/lib/epic/maps/types";
 
 /**
@@ -10,10 +10,13 @@ export default function EixosMapa({
   eixos,
   rotulos,
   destaque,
+  mapa,
 }: {
   eixos: AxisScore[];
   rotulos: Axis[];
   destaque: string[];
+  /** O rótulo da faixa mais alta muda por Mapa (Energia usa "ponto de atenção"). */
+  mapa?: string;
 }) {
   return (
     <ol className="divide-y divide-linha border-y border-linha">
@@ -31,7 +34,7 @@ export default function EixosMapa({
             </span>
             <span className={`text-sm sm:text-right ${principal ? "font-semibold text-tinta" : "text-mineral-escuro"}`}>
               {/* Faixa pelo critério do documento; o destaque é escrito, não só cor. */}
-              {principal && e.band !== "priority" ? `${BAND_LABEL[e.band]} · principal` : BAND_LABEL[e.band]}
+              {principal && e.band !== "priority" ? `${rotuloFaixa(e.band, mapa)} · principal` : rotuloFaixa(e.band, mapa)}
             </span>
           </li>
         );

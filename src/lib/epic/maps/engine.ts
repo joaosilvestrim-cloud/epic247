@@ -24,12 +24,21 @@ export function bandFor(score: number): Band {
 }
 
 /** Rótulos públicos das faixas. Nunca exibir o número como nota. */
+/**
+ * Rótulos públicos das faixas. Os documentos dos Mapas pedem "principal
+ * ponto de fricção" para a faixa mais alta; o de Energia pede "principal
+ * ponto de atenção" (use rotuloFaixa com o Mapa).
+ */
 export const BAND_LABEL: Record<Band, string> = {
   stable: "Mais estável",
   observe: "Vale observar",
   attention: "Merece atenção",
-  priority: "Principal ponto de atenção",
+  priority: "Principal ponto de fricção",
 };
+
+export function rotuloFaixa(band: Band, mapa?: string): string {
+  return band === "priority" && mapa === "energia" ? "Principal ponto de atenção" : BAND_LABEL[band];
+}
 
 /**
  * Respostas: id da pergunta → valor escolhido na escala

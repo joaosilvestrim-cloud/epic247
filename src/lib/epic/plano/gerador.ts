@@ -5,11 +5,13 @@
 
 import type { DimensionId } from "../dimensions";
 import { DIMENSIONS } from "../dimensions";
-import { BAND_LABEL } from "../maps/engine";
+import { rotuloFaixa } from "../maps/engine";
 import type { DimensionalMapConfig, DimensionalResult } from "../maps/types";
 import { CONTEUDO_PLANO } from "./conteudo";
+import { ESTRUTURA_PLANO, tipoDoBloco, type TipoBloco } from "./estrutura";
 
-export const PLAN_TEMPLATE_VERSION = "1.0";
+// 1.1: blocos na estrutura própria de cada dimensão (seção 10 de cada Mapa).
+export const PLAN_TEMPLATE_VERSION = "1.1";
 
 export interface DiaPlano {
   dia: number;
@@ -37,6 +39,8 @@ export interface Plano {
   revisaoDia7: string[];
   proximoPasso: string;
   conteudoCompleto: boolean;
+  /** Blocos na ordem do documento da dimensão (a partir da versão 1.1). */
+  estrutura?: { titulo: string; tipo: TipoBloco }[];
 }
 
 /** Afirmação em que a pessoa mais pontuou dentro do eixo dominante. */
@@ -68,8 +72,9 @@ export function gerarPlano(
   const c = CONTEUDO_PLANO[d][r.primary];
   const completo = Boolean(c.movimentos);
 
+  // Rascunho até o texto da dimensão vir (sem repetir o primeiro movimento do dia 1).
   const movimentos = c.movimentos ?? [
-    perfil.firstMove,
+    "Escolha um dos campos deste Plano, preencha e transforme o que escreveu em uma ação de 10 minutos.",
     `Ao fim de cada dia, anote um momento em que o padrão “${rotulo(r.primary)}” apareceu.`,
     `Escolha uma situação da semana para testar uma resposta diferente da habitual.`,
   ];
@@ -93,7 +98,7 @@ export function gerarPlano(
       chave: r.primary,
       nome: rotulo(r.primary),
       nomeEditorial: perfil.editorialName ?? null,
-      faixa: BAND_LABEL[r.primaryBand],
+      faixa: rotuloFaixa(r.primaryBand, cfg.mapType),
     },
     secundario: { chave: r.secondary, nome: rotulo(r.secondary) },
     sinalMaisForte: sinalMaisForte(cfg, r.primary, respostas),
@@ -114,5 +119,6 @@ export function gerarPlano(
     ],
     proximoPasso: `Aprofundar com o Kit ${nome}: Manual + Workbook + ferramentas práticas.`,
     conteudoCompleto: completo,
+    estrutura: ESTRUTURA_PLANO[d].map((titulo) => ({ titulo, tipo: tipoDoBloco(titulo) })),
   };
 }

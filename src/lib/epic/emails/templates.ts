@@ -24,6 +24,12 @@ export interface DadosEmail {
     resultadoUrl: string;
     friccao: boolean;
     relacionadas?: { nome: string; quando: string; url: string }[];
+    /** Leitura das cinco áreas, com o rótulo de faixa do Mapa. */
+    areas?: { nome: string; faixa: string }[];
+    sinais?: string[];
+    perguntaObservacao?: string;
+    /** Dois conteúdos editoriais recomendados da mesma dimensão (seção 9). */
+    conteudos?: { titulo: string; url: string }[];
     ferramenta?: string | null;
     fechamento?: string;
   };
@@ -96,9 +102,14 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
         destaque(m.titulo),
         ...se(m.reconhecimento, citacao(m.reconhecimento!)),
         t(m.interpretacao),
+        ...se(m.secundarioNome && !m.friccao, t(`A segunda área com mais fricção no seu mapa: ${m.secundarioNome}.`)),
+        ...se(m.areas?.length, t("A leitura das cinco áreas:"), lista((m.areas ?? []).map((a) => `${a.nome}: ${a.faixa}`))),
+        ...se(m.sinais?.length, t("Sinais do dia a dia que costumam acompanhar esse padrão:"), lista(m.sinais ?? [])),
+        ...se(m.perguntaObservacao, t("Uma pergunta para observar nos próximos dias:"), citacao(m.perguntaObservacao ?? "")),
         t("Seu primeiro movimento:"),
         destaque(m.primeiroMovimento),
         botao("Ver meu mapa completo", m.resultadoUrl),
+        ...se(m.conteudos?.length, t("Para continuar pensando nisso:"), { tipo: "links", links: (m.conteudos ?? []).map((c) => ({ texto: c.titulo, href: c.url })) } as BlocoEmail),
         ...se(
           m.friccao && d.mapaUrl,
           t(`O próximo passo é entender o que está acontecendo dentro de ${d.dimensaoNome}.`),
@@ -197,6 +208,19 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
       blocos: [...(e.corpo ? blocosDoTexto(e.corpo) : e.resumo ? [t(e.resumo)] : []), botao("Ler no site", e.url)],
     };
   },
+
+  map_available: (d) => ({
+    assunto: `O Mapa de ${d.cruzada?.nome ?? d.dimensaoNome} está no ar`,
+    preheader: "Você pediu para ser avisado.",
+    aprovado: false,
+    blocos: [
+      t(ola(d)),
+      t(`Quando você fez o Mapa de Fricção, o seu principal ponto de fricção apareceu em ${d.cruzada?.nome ?? d.dimensaoNome}. Na época, o Mapa aprofundado dessa dimensão ainda não estava pronto.`),
+      t("Agora está. São 15 perguntas, cerca de 4 minutos, e o resultado aparece na hora."),
+      botao(`Fazer o Mapa de ${d.cruzada?.nome ?? d.dimensaoNome}`, d.cruzada?.url ?? d.mapaUrl ?? `${d.mapaFriccaoUrl}`),
+      pequeno(AVISO_MAPA),
+    ],
+  }),
 
   cross_dimension: (d) => {
     const c = d.cruzada!;

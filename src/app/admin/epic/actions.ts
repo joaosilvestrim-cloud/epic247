@@ -6,7 +6,9 @@ import { exigirAdmin } from "@/lib/epic/server/admin";
 import { withTx } from "@/lib/epic/server/db";
 import { dispararFila } from "@/lib/epic/server/dispatcher";
 import { registrarEvento } from "@/lib/epic/server/events";
+import { isDimensionId } from "@/lib/epic/dimensions";
 import { gerarCodigo } from "@/lib/epic/server/editorial";
+import { mapaVisivel } from "@/lib/epic/site";
 import { processarWebhook } from "@/lib/epic/server/webhooks";
 
 // Server Actions do /admin/epic. Cada uma confere o admin por conta própria:
@@ -371,4 +373,30 @@ export async function enviarNewsletter(f: FormData) {
   });
   revalidatePath(`/admin/epic/ideias/${id}`);
   redirect(n < 0 ? `/admin/epic/ideias/${id}?erro=nao_enviavel` : `/admin/epic/ideias/${id}?enviada=${n}`);
+}
+
+// ── Aviso de Mapa disponível (Mapa de Fricção §7) ──
+export async function avisarMapaDisponivel(f: FormData) {
+  await exigirAdmin();
+  const dim = s(f, "dimensao", 30);
+  if (!dim || !isDimensionId(dim) || !mapaVisivel(dim)) redirect("/admin/epic/mapas?erro=mapa_fora_do_ar");
+  const n = await withTx(async (q) => {
+    const r = await q(
+      `insert into messages (lead_id, automation_id, automation_version, step, template_key, priority, scheduled_for,
+         context, dedupe_key)
+       select l.lead_id, 'AUT_MAP_AVAILABLE', '1.0', 'D0', 'map_available', 2, now(),
+              jsonb_build_object('related', $1::text), l.lead_id || ':map_available:' || $1
+       from leads l
+       where l.merged_into is null and l.email is not null and l.email_bounced_at is null and l.unsubscribed_at is null
+         and (select f.primary_dimension from map_results f where f.lead_id = l.lead_id and f.map_type = 'friccao'
+                and f.status = 'completed' order by f.completed_at desc limit 1) = $1
+         and not exists (select 1 from map_results m where m.lead_id = l.lead_id and m.map_type = $1 and m.status = 'completed')
+       on conflict (dedupe_key) do nothing
+       returning message_id`,
+      [dim]
+    );
+    return r.length;
+  });
+  revalidatePath("/admin/epic/mapas");
+  redirect(`/admin/epic/mapas?avisados=${n}&dim=${dim}`);
 }

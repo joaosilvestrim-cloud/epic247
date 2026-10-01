@@ -7,10 +7,11 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export interface BlocoEmail {
-  tipo: "texto" | "destaque" | "citacao" | "botao" | "lista" | "pequeno";
+  tipo: "texto" | "destaque" | "citacao" | "botao" | "lista" | "pequeno" | "links";
   texto?: string;
   itens?: string[];
   href?: string;
+  links?: { texto: string; href: string }[];
 }
 
 export function renderEmail(opts: {
@@ -34,6 +35,10 @@ export function renderEmail(opts: {
             .join("")}</ol>`;
         case "botao":
           return `<p style="margin:24px 0 28px"><a href="${esc(b.href!)}" style="display:inline-block;background:#2b2a28;color:#f1e8dc;text-decoration:none;font-weight:600;font-size:15px;padding:14px 24px;border-radius:6px">${esc(b.texto!)}</a></p>`;
+        case "links":
+          return `<ul style="margin:0 0 18px;padding-left:20px;color:#2b2a28;font-size:15px;line-height:1.6">${b.links!
+            .map((l) => `<li style="margin-bottom:6px"><a href="${esc(l.href)}" style="color:#2b2a28">${esc(l.texto)}</a></li>`)
+            .join("")}</ul>`;
         case "pequeno":
           return `<p style="margin:0 0 12px;font-size:13px;line-height:1.5;color:#66625d">${esc(b.texto!)}</p>`;
       }
@@ -61,6 +66,7 @@ export function renderTexto(blocos: BlocoEmail[], descadastroUrl: string | null)
   const linhas = blocos.flatMap((b) => {
     if (b.tipo === "lista") return b.itens!.map((i, n) => `${n + 1}. ${i}`);
     if (b.tipo === "botao") return [`${b.texto}: ${b.href}`];
+    if (b.tipo === "links") return b.links!.map((l) => `- ${l.texto}: ${l.href}`);
     if (b.tipo === "citacao") return [`"${b.texto}"`];
     return [b.texto!];
   });

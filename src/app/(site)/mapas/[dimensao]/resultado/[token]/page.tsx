@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CapturaResultado from "@/components/epic/CapturaResultado";
+import FeedbackResultado from "@/components/epic/FeedbackResultado";
 import EixosMapa from "@/components/epic/EixosMapa";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
 import { DIMENSIONS, isDimensionId, type DimensionId } from "@/lib/epic/dimensions";
+import { relacaoDoPar } from "@/lib/epic/maps/relacoes";
 import { getDimensionalMap } from "@/lib/epic/maps";
 import type { DimensionalResult } from "@/lib/epic/maps/types";
 import { formatPrice } from "@/lib/epic/products";
@@ -95,6 +97,11 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
                   {cfg.dualMessage.replace("{A}", rotulo(r.primary)).replace("{B}", rotulo(r.secondary))}
                 </p>
               )}
+              {(r.kind === "tie" || r.kind === "close") && relacaoDoPar(dimensao, r.primary, r.secondary) && (
+                <p className="mt-3 pl-5 text-[15px] leading-relaxed text-mineral-escuro">
+                  {rotulo(r.primary)} e {rotulo(r.secondary)}: {relacaoDoPar(dimensao, r.primary, r.secondary)}
+                </p>
+              )}
               <blockquote className="mt-10 font-display text-[1.5rem] leading-snug text-grafite sm:text-[1.8rem]">
                 “{principal.recognition}”
               </blockquote>
@@ -107,7 +114,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       <section>
         <Container estreito className="py-14">
           <h2 className="mb-6 font-display text-xl italic text-mineral-escuro">As cinco áreas do seu mapa</h2>
-          <EixosMapa eixos={r.axes} rotulos={cfg.axes} destaque={r.kind === "low" ? [] : destaque} />
+          <EixosMapa eixos={r.axes} rotulos={cfg.axes} destaque={r.kind === "low" ? [] : destaque} mapa={dimensao} />
           <p className="mt-4 text-sm text-mineral-escuro">
             O mapa mostra onde existe mais fricção percebida neste momento. Não é uma nota nem uma medida de saúde.
           </p>
@@ -143,6 +150,13 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       )}
 
       {/* 6 · Captura */}
+      {/* Feedback qualitativo do resultado (seção 17 dos Mapas, Fricção §10) */}
+      <section className="border-t border-linha">
+        <Container estreito className="py-12">
+          <FeedbackResultado token={token} />
+        </Container>
+      </section>
+
       <section>
         <Container estreito className="py-14">
           <CapturaResultado token={token} mapType={dimensao} jaConhecido={Boolean(perfil?.email)} />

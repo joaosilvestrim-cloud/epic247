@@ -48,3 +48,34 @@ describe("Plano EPIC 7 Dias", () => {
     assert.equal(CONTEUDO_PLANO.coragem.decisao.movimentos, undefined);
   });
 });
+
+describe("Plano na estrutura de cada dimensão (seção 10 de cada Mapa)", () => {
+  it("segue a ordem de blocos do documento e começa pelo foco e termina no Kit", () => {
+    for (const [d, cfg] of Object.entries(DIMENSIONAL_MAPS)) {
+      const eixo = cfg.axes[0].key;
+      const plano = gerarPlano(cfg, scoreDimensional(cfg, respostasDominando(cfg, eixo)), respostasDominando(cfg, eixo));
+      const blocos = plano.estrutura!;
+      assert.equal(blocos[0].tipo, "foco", d);
+      assert.equal(blocos[blocos.length - 1].tipo, "proximo", d);
+      assert.ok(blocos.some((b) => b.tipo === "pergunta"), `${d}: pergunta de reflexão`);
+      assert.ok(blocos.some((b) => b.tipo === "revisao"), `${d}: revisão no dia 7`);
+      assert.equal(plano.versao, "1.1");
+    }
+  });
+
+  it("Coragem pede o que o documento pede (controle, prevenção, reparo, custo da inércia)", () => {
+    const cfg = DIMENSIONAL_MAPS.coragem;
+    const plano = gerarPlano(cfg, scoreDimensional(cfg, respostasDominando(cfg, "decisao")), respostasDominando(cfg, "decisao"));
+    const campos = plano.estrutura!.filter((b) => b.tipo === "campo").map((b) => b.titulo);
+    for (const t of ["O que está sob seu controle", "O que pode ser prevenido", "O que pode ser reparado", "Custo da inércia"]) {
+      assert.ok(campos.includes(t), t);
+    }
+  });
+
+  it("Excelência não tem conteúdo recomendado no documento, e o Plano respeita", () => {
+    const cfg = DIMENSIONAL_MAPS.excelencia;
+    const eixo = cfg.axes[0].key;
+    const plano = gerarPlano(cfg, scoreDimensional(cfg, respostasDominando(cfg, eixo)), respostasDominando(cfg, eixo));
+    assert.ok(!plano.estrutura!.some((b) => b.tipo === "conteudo"));
+  });
+});

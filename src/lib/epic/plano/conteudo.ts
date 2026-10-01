@@ -18,6 +18,13 @@ export interface ConteudoPerfil {
   pratica?: string;
   gatilho?: string;
   retomada?: string;
+  /**
+   * Relatório por e-mail (seção 9 de cada Mapa): "3 sinais cotidianos ligados
+   * ao padrão" e "pergunta de observação". Os documentos pedem esses itens mas
+   * não trazem o texto: entram aqui quando forem escritos e aprovados.
+   */
+  sinais?: [string, string, string];
+  perguntaObservacao?: string;
 }
 
 type Mapa = Record<string, ConteudoPerfil>;

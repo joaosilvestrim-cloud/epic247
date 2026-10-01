@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CapturaResultado from "@/components/epic/CapturaResultado";
+import FeedbackResultado from "@/components/epic/FeedbackResultado";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { DIMENSIONS, mapPath, type DimensionId } from "@/lib/epic/dimensions";
@@ -10,7 +11,7 @@ import type { FrictionResult } from "@/lib/epic/maps/types";
 import { withTx } from "@/lib/epic/server/db";
 import { recomporResultado, resultadoPorToken } from "@/lib/epic/server/mapas";
 import { perfilAtual } from "@/lib/epic/server/perfil";
-import { dimensaoVisivel, dimensionPath, mapaVisivel } from "@/lib/epic/site";
+import { dimensaoHref, dimensaoVisivel, dimensionPath, mapaVisivel } from "@/lib/epic/site";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,12 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
       ? { href: dimensionPath(p), label: `Explorar ${nome(p)} no EPIC247` }
       : null;
 
+  // Opções do resultado duplo: quem tem Mapa aprofundado no ar vem primeiro.
+  const opcoes = [p, s]
+    .map((dim) => ({ dim, href: dimensaoHref(dim), comMapa: mapaVisivel(dim) }))
+    .filter((o): o is { dim: DimensionId; href: string; comMapa: boolean } => o.href !== null)
+    .sort((a, b) => Number(b.comMapa) - Number(a.comMapa));
+
   return (
     <>
       <Visualizacao nome="ViewMapResult" dados={{ map_type: "friccao", dimension: p }} />
@@ -64,6 +71,12 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
             </p>
           )}
           <p className="mt-8 text-lg leading-relaxed text-grafite/85">{FRICCAO.results[p].interpretation}</p>
+          {/* Resultado duplo (Mapa de Fricção §6): as duas interpretações resumidas. */}
+          {proximas && (
+            <p className="mt-5 text-lg leading-relaxed text-grafite/75">
+              <span className="font-display text-grafite">{nome(s)}.</span> {FRICCAO.results[s].interpretation}
+            </p>
+          )}
         </Container>
       </section>
 
@@ -107,7 +120,25 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
       {/* Próximo passo: aprofundar na dimensão principal (Funis §9) */}
       <section>
         <Container estreito className="py-14">
-          {ctaPrincipal && (
+          {proximas && opcoes.length > 0 ? (
+            // Mapa de Fricção §6: começar pela que tem Mapa aprofundado ou pela que pesa mais agora.
+            <div>
+              <h2 className="font-display text-2xl text-grafite">Por onde você quer começar?</h2>
+              <p className="mt-2 text-grafite/75">Escolha a que parece pesar mais agora. A outra continua aqui.</p>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {opcoes.map((o) => (
+                  <Link
+                    key={o.dim}
+                    href={o.href}
+                    className="group flex flex-col justify-between gap-6 rounded-[var(--radius-epic)] border border-grafite bg-papel-claro p-6 transition-colors hover:bg-grafite hover:text-papel"
+                  >
+                    <span className="font-display text-2xl">{nome(o.dim)}</span>
+                    <span className="text-sm opacity-80">{o.comMapa ? `Fazer o Mapa de ${nome(o.dim)}` : `Conhecer ${nome(o.dim)}`} →</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : ctaPrincipal && (
             <div className="flex flex-col gap-6 rounded-[var(--radius-epic)] bg-grafite p-8 text-papel sm:flex-row sm:items-center sm:justify-between">
               <p className="max-w-md font-display text-2xl leading-snug">
                 {mapaVisivel(p)
@@ -119,11 +150,18 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
               </PrimaryCTA>
             </div>
           )}
-          {dimensaoVisivel(s) && (
+          {!proximas && dimensaoVisivel(s) && (
             <p className="mt-6">
               <TextCTA href={mapaVisivel(s) ? mapPath(s) : dimensionPath(s)}>Conhecer {nome(s)}</TextCTA>
             </p>
           )}
+        </Container>
+      </section>
+
+      {/* Feedback qualitativo do resultado (seção 17 dos Mapas, Fricção §10) */}
+      <section className="border-t border-linha">
+        <Container estreito className="py-12">
+          <FeedbackResultado token={token} />
         </Container>
       </section>
 

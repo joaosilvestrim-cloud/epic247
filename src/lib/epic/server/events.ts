@@ -15,7 +15,7 @@ export const EVENTOS_AUTOMACAO = [
   "ResultEmailSent", "MapNurtureStarted", "MapNurtureConversion", "PlanDelivered",
   "PlanDay7Completed", "KitDelivered", "ProtocolActivated", "MentoringBooked",
   "RecoveredCheckout", "CrossDimensionMapStarted", "ResumeMap", "NewsletterSignup", "ContactSubmitted",
-  "ResultEmailOpened", "ResultEmailClicked",
+  "ResultEmailOpened", "ResultEmailClicked", "ResultFeedback",
 ] as const;
 
 export type EventoCore = (typeof EVENTOS_CORE)[number];

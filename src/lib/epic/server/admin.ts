@@ -117,6 +117,10 @@ export interface ResumoMapa {
   distribuicao: { valor: string; n: number }[];
   tipos: { kind: string; n: number }[];
   abandono: { passo: number; n: number }[];
+  feedback: { perfil: string; sim: number; em_parte: number; nao: number }[];
+  comentarios: { perfil: string; resposta: string; texto: string; quando: string }[];
+  /** Só Fricção: quem fez o Mapa da dimensão indicada depois, e quem comprou. */
+  aprofundamento: { dimensao: string; concluidos: number; aprofundaram: number; compraram: number }[];
 }
 
 /** Critérios de validação dos documentos de Mapa (§17): distribuição, empates, abandono. */
@@ -143,6 +147,30 @@ export async function resumoMapas(p: Periodo): Promise<ResumoMapa[]> {
      where status = 'in_progress' and started_at >= $1 and started_at < now() - interval '1 hour' group by 1,2`,
     [d]
   );
+  const fb = await query<{ map_type: string; perfil: string; sim: string; em_parte: string; nao: string }>(
+    `select map_type, coalesce(primary_pattern, primary_dimension) perfil,
+            count(*) filter (where feedback = 'sim') sim, count(*) filter (where feedback = 'em_parte') em_parte,
+            count(*) filter (where feedback = 'nao') nao
+     from map_results where feedback is not null and completed_at >= $1 group by 1, 2`,
+    [d]
+  );
+  const coments = await query<{ map_type: string; perfil: string; resposta: string; texto: string; quando: string }>(
+    `select map_type, coalesce(primary_pattern, primary_dimension) perfil, feedback resposta, feedback_comment texto, feedback_at quando
+     from map_results where feedback_comment is not null and completed_at >= $1 order by feedback_at desc limit 60`,
+    [d]
+  );
+  const aprof = await query<{ dimensao: string; concluidos: string; aprofundaram: string; compraram: string }>(
+    `select f.primary_dimension dimensao, count(*) concluidos,
+            count(*) filter (where exists (select 1 from map_results m where m.map_type = f.primary_dimension
+               and m.started_at > f.completed_at
+               and m.lead_id in (select lead_id from leads where lead_id = f.lead_id or merged_into = f.lead_id))) aprofundaram,
+            count(*) filter (where exists (select 1 from transactions t where t.transaction_status = 'approved'
+               and t.approved_at > f.completed_at
+               and t.lead_id in (select lead_id from leads where lead_id = f.lead_id or merged_into = f.lead_id))) compraram
+     from map_results f where f.map_type = 'friccao' and f.status = 'completed' and f.completed_at >= $1
+     group by 1 order by 2 desc`,
+    [d]
+  );
   return linhas.map((l) => ({
     map_type: l.map_type,
     iniciados: Number(l.iniciados),
@@ -150,6 +178,11 @@ export async function resumoMapas(p: Periodo): Promise<ResumoMapa[]> {
     distribuicao: dist.filter((x) => x.map_type === l.map_type).map((x) => ({ valor: x.valor, n: Number(x.n) })).sort((a, b) => b.n - a.n),
     tipos: tipos.filter((x) => x.map_type === l.map_type).map((x) => ({ kind: x.kind, n: Number(x.n) })),
     abandono: aband.filter((x) => x.map_type === l.map_type).map((x) => ({ passo: x.passo, n: Number(x.n) })).sort((a, b) => a.passo - b.passo),
+    feedback: fb.filter((x) => x.map_type === l.map_type).map((x) => ({ perfil: x.perfil, sim: +x.sim, em_parte: +x.em_parte, nao: +x.nao })),
+    comentarios: coments.filter((x) => x.map_type === l.map_type).slice(0, 8).map((x) => ({ perfil: x.perfil, resposta: x.resposta, texto: x.texto, quando: x.quando })),
+    aprofundamento: l.map_type === "friccao"
+      ? aprof.map((x) => ({ dimensao: x.dimensao, concluidos: +x.concluidos, aprofundaram: +x.aprofundaram, compraram: +x.compraram }))
+      : [],
   }));
 }
 
@@ -499,4 +532,26 @@ export async function prontidao(): Promise<ItemProntidao[]> {
       detalhe: process.env.RESEND_WEBHOOK_SECRET ? "webhook do Resend configurado" : "falta RESEND_WEBHOOK_SECRET",
     },
   ];
+}
+
+/** Quem fez a Fricção, deixou e-mail e espera o Mapa da dimensão principal (Fricção §7). */
+export async function esperandoMapa(): Promise<{ dimensao: string; esperando: number; avisados: number }[]> {
+  await exigirAdmin();
+  const rows = await query<{ dimensao: string; esperando: string; avisados: string }>(
+    `with ult as (
+       select distinct on (f.lead_id) f.lead_id, f.primary_dimension dim
+       from map_results f where f.map_type = 'friccao' and f.status = 'completed'
+       order by f.lead_id, f.completed_at desc
+     )
+     select u.dim dimensao,
+            count(*) filter (where not exists (select 1 from messages m where m.lead_id = u.lead_id
+               and m.automation_id = 'AUT_MAP_AVAILABLE' and m.context->>'related' = u.dim)) esperando,
+            count(*) filter (where exists (select 1 from messages m where m.lead_id = u.lead_id
+               and m.automation_id = 'AUT_MAP_AVAILABLE' and m.context->>'related' = u.dim)) avisados
+     from ult u join leads l on l.lead_id = u.lead_id
+     where l.email is not null and l.merged_into is null
+       and not exists (select 1 from map_results m where m.lead_id = u.lead_id and m.map_type = u.dim and m.status = 'completed')
+     group by 1 order by 2 desc`
+  );
+  return rows.map((r) => ({ dimensao: r.dimensao, esperando: +r.esperando, avisados: +r.avisados }));
 }

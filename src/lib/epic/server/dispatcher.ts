@@ -4,6 +4,7 @@ import { DIMENSIONS, isDimensionId, mapPath, type DimensionId } from "../dimensi
 import { renderEmail, renderTexto, SITE_URL } from "../emails/layout";
 import { TEMPLATES, type DadosEmail } from "../emails/templates";
 import { FRICCAO, getDimensionalMap } from "../maps";
+import { rotuloFaixa } from "../maps/engine";
 import type { DimensionalResult, FrictionResult } from "../maps/types";
 import { CONTEUDO_PLANO } from "../plano/conteudo";
 import { assinar } from "./assinatura";
@@ -126,12 +127,28 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
         padraoNome: rot(dr.primary), nomeEditorial: perfilMapa.editorialName ?? null,
         secundarioNome: rot(dr.secondary), friccao: false, fechamento: cfg.closingPhrase,
         resultadoUrl: `${SITE_URL}/mapas/${salvo.map_type}/resultado/${salvo.result_token ?? token}`,
+        areas: dr.axes.map((a) => ({ nome: rot(a.key), faixa: rotuloFaixa(a.band, salvo!.map_type) })),
+        sinais: CONTEUDO_PLANO[salvo.map_type][dr.primary]?.sinais,
+        perguntaObservacao: CONTEUDO_PLANO[salvo.map_type][dr.primary]?.perguntaObservacao,
         ferramenta: CONTEUDO_PLANO[salvo.map_type][dr.primary]?.movimentos?.[0] ?? null,
         relacionadas: cfg.related.map((x) => ({
           nome: DIMENSIONS[x.dimension].name, quando: x.when, url: `${SITE_URL}/dimensoes/${x.dimension}`,
         })),
       };
     }
+  }
+
+  // Dois conteúdos editoriais publicados da dimensão (seção 9 de cada Mapa).
+  const dimConteudo = salvo ? (salvo.map_type === "friccao" ? salvo.primary_dimension : salvo.map_type) : null;
+  if (d.mapa && dimConteudo) {
+    const recs = await q<{ title: string; slug: string; content_type: string }>(
+      `select title, slug, content_type from content_items
+       where status = 'published' and published_at <= now() and dimension = $1
+       order by published_at desc limit 2`,
+      [dimConteudo]
+    );
+    const rota = (t: string) => (t === "artigo" ? "artigos" : t === "video" ? "videos" : t);
+    d.mapa.conteudos = recs.map((c) => ({ titulo: c.title, url: `${SITE_URL}/ideias/${rota(c.content_type)}/${c.slug}` }));
   }
 
   // Ofertas, já com supressão pelo estado atual.
@@ -142,8 +159,8 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
     if (!p.protocol_purchased && !temKit) d.kitUrl = await produtoVendavelUrl(q, `kit_${dim}`, `/kit/${dim}`);
   }
   // Cross-dimension: a conexão vem do próprio Mapa de origem (campo related).
-  if (typeof ctx.related === "string" && isDimensionId(ctx.related) && dim) {
-    const rel = getDimensionalMap(dim).related.find((x) => x.dimension === ctx.related);
+  if (typeof ctx.related === "string" && isDimensionId(ctx.related)) {
+    const rel = dim ? getDimensionalMap(dim).related.find((x) => x.dimension === ctx.related) : undefined;
     const alvo = ctx.related as DimensionId;
     d.cruzada = {
       nome: DIMENSIONS[alvo].name,

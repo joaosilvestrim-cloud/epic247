@@ -25,6 +25,7 @@ const TENSOES = [
   "estou cansado o tempo inteiro",
   "tenho medo de tomar uma decisão",
   "quero mudar, mas não sei por onde",
+  "quero mais, mas ainda não sei exatamente mais o quê",
 ];
 
 export default async function Home() {

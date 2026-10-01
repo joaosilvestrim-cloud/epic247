@@ -186,6 +186,15 @@ export const AUTOMACOES: Record<string, Automacao> = {
       suprimir: todas(emMentoria, (_p, _c, x) => (x.relacionadaFeita ? "ja_explorou_relacionada" : null)),
     }],
   },
+  // Aviso prometido no resultado da Fricção (Mapa de Fricção §7): "avisamos
+  // quando o Mapa estiver disponível". Disparado em lote pelo admin.
+  AUT_MAP_AVAILABLE: {
+    id: "AUT_MAP_AVAILABLE", versao: "1.0", escopo: "related",
+    etapas: [{
+      step: "D0", horas: 0, template: "map_available", prioridade: 2,
+      suprimir: (_p, _c, x) => (x.relacionadaFeita ? "ja_fez_o_mapa" : null),
+    }],
+  },
   // Plano comprado antes do Mapa: avisa quando ficou pronto.
   AUT_PLAN_READY: {
     id: "AUT_PLAN_READY", versao: "1.0", escopo: "transaction_id",
