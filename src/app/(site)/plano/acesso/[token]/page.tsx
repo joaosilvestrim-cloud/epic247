@@ -4,7 +4,7 @@ import BotaoImprimir from "@/components/epic/BotaoImprimir";
 import { Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { DIMENSIONS, mapPath } from "@/lib/epic/dimensions";
 import { withTx } from "@/lib/epic/server/db";
-import { planoPorToken } from "@/lib/epic/server/planos";
+import { planoPorToken, registrarRetornoDia7 } from "@/lib/epic/server/planos";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Seu Plano EPIC", robots: { index: false, follow: false } };
@@ -15,6 +15,7 @@ export default async function PlanoAcessoPage({ params }: Props) {
   const { token } = await params;
   const g = await withTx((q) => planoPorToken(q, token)).catch(() => null);
   if (!g) notFound();
+  if (g.content) await withTx((q) => registrarRetornoDia7(q, g)).catch(() => null);
 
   // Compra aprovada, mas o Mapa ainda não foi feito: o Plano espera por ele.
   if (g.processing_status !== "generated" || !g.content) {

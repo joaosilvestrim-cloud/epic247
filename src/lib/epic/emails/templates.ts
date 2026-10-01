@@ -28,6 +28,7 @@ export interface DadosEmail {
     fechamento?: string;
   };
   mapaUrl?: string;
+  cruzada?: { nome: string; quando: string; temMapa: boolean; url: string };
   planoUrl?: string | null;
   planoPronto?: boolean;
   planoOfertaUrl?: string | null;
@@ -160,6 +161,23 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
         ),
         t("Você pode começar por uma dimensão específica. Mas algumas mudanças exigem olhar o sistema inteiro."),
         botao("Conhecer o Protocolo EPIC247", d.protocoloUrl),
+      ],
+    };
+  },
+
+  cross_dimension: (d) => {
+    const c = d.cruzada!;
+    const quando = c.quando ? c.quando.charAt(0).toUpperCase() + c.quando.slice(1) : "";
+    return {
+      assunto: `Às vezes a fricção está em ${c.nome}`,
+      preheader: `Uma conexão que aparece em muitos Mapas de ${d.dimensaoNome ?? "uma dimensão"}.`,
+      aprovado: false,
+      blocos: [
+        t(ola(d)),
+        t(`Há alguns dias você fez o ${d.mapa?.nome ?? `Mapa de ${d.dimensaoNome}`}. Uma coisa que aparece com frequência: o que trava em ${d.dimensaoNome?.toLowerCase()} às vezes tem raiz em outra dimensão.`),
+        ...se(quando, destaque(`${c.nome}. ${quando}`)),
+        t("Não é uma nova tarefa. É só um lugar para olhar com calma, se fizer sentido para você."),
+        botao(c.temMapa ? `Fazer o Mapa de ${c.nome}` : `Conhecer ${c.nome}`, c.url),
       ],
     };
   },

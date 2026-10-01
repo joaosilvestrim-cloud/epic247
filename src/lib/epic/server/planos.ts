@@ -5,6 +5,8 @@ import { getDimensionalMap } from "../maps";
 import { scoreDimensional } from "../maps/engine";
 import { gerarPlano, PLAN_TEMPLATE_VERSION, type Plano } from "../plano/gerador";
 import type { Q } from "./db";
+import { eventIdDeTransacao } from "./checkout";
+import { registrarEvento } from "./events";
 
 // Geração e entrega do Plano EPIC 7 Dias (RF-029 a RF-031).
 // O Plano é ligado a um Mapa concluído da mesma dimensão. Se a pessoa
@@ -96,10 +98,10 @@ export async function gerarPlanosPendentes(q: Q, lead: string, dim: string, mapR
 export async function planoPorToken(q: Q, token: string) {
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
   const [row] = await q<{
-    plan_generation_id: string; processing_status: string; content: Plano | null;
+    plan_generation_id: string; lead_id: string; processing_status: string; content: Plano | null;
     product_id: string; generated_at: string | null; transaction_status: string | null;
   }>(
-    `select g.plan_generation_id, g.processing_status, g.content, g.product_id, g.generated_at,
+    `select g.plan_generation_id, g.lead_id, g.processing_status, g.content, g.product_id, g.generated_at,
             t.transaction_status
      from plan_generations g
      left join transactions t on t.provider = g.provider and t.transaction_id = g.transaction_id
@@ -107,4 +109,23 @@ export async function planoPorToken(q: Q, token: string) {
     [token]
   );
   return row ?? null;
+}
+
+/**
+ * PlanDay7Completed (Matriz, AUT_PLAN_PURCHASE): a pessoa voltou ao Plano a
+ * partir do 7º dia. É o sinal mais próximo de "percorreu os 7 dias" que o
+ * site consegue observar. Um evento por Plano.
+ */
+export async function registrarRetornoDia7(
+  q: Q,
+  g: { plan_generation_id: string; lead_id: string; product_id: string; generated_at: string | null }
+) {
+  if (!g.generated_at || Date.now() - new Date(g.generated_at).getTime() < 7 * 864e5) return;
+  await registrarEvento(q, "PlanDay7Completed", {
+    event_id: eventIdDeTransacao("plano", g.plan_generation_id, "dia7"),
+    lead_id: g.lead_id,
+    product_id: g.product_id,
+    product_type: "plan",
+    dimension: g.product_id.replace("plan_", ""),
+  });
 }

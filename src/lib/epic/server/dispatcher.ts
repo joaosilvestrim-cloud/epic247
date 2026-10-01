@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { DIMENSIONS, isDimensionId, mapPath, type DimensionId } from "../dimensions";
 import { renderEmail, renderTexto, SITE_URL } from "../emails/layout";
 import { TEMPLATES, type DadosEmail } from "../emails/templates";
@@ -6,9 +7,10 @@ import { FRICCAO, getDimensionalMap } from "../maps";
 import type { DimensionalResult, FrictionResult } from "../maps/types";
 import { CONTEUDO_PLANO } from "../plano/conteudo";
 import { assinar } from "./assinatura";
+import { mapaVisivel } from "../site";
 import { AUTOMACOES, etapaDe, type Contexto, type PerfilLead } from "./automations";
 import { withTx, type Q } from "./db";
-import { registrarEvento } from "./events";
+import { registrarEvento, type EventoNome } from "./events";
 import { recomporResultado, resultadoPorToken, type ResultadoSalvo } from "./mapas";
 import { enviarEmail } from "./resend";
 
@@ -38,6 +40,21 @@ export interface Relatorio {
   puladas: Record<string, number>;
   adiadas: number;
   falhas: number;
+}
+
+/** Envio de um modelo que comprova a execução de uma etapa (Modelo de Dados §17). */
+const EVENTO_DE_ENVIO: Record<string, EventoNome> = {
+  map_result: "ResultEmailSent",
+  plan_delivery: "PlanDelivered",
+  plan_ready: "PlanDelivered",
+  kit_delivery: "KitDelivered",
+  protocol_welcome: "ProtocolActivated",
+};
+
+/** UUID estável a partir de uma chave: o mesmo envio nunca gera dois eventos. */
+function eventoDeterministico(chave: string): string {
+  const h = createHash("sha256").update(chave).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
 
 export function urlDescadastro(leadId: string) {
@@ -124,6 +141,17 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
       d.planoOfertaUrl = await produtoVendavelUrl(q, `plan_${dim}`, `/plano/${dim}${token ? `?r=${token}` : ""}`);
     if (!p.protocol_purchased && !temKit) d.kitUrl = await produtoVendavelUrl(q, `kit_${dim}`, `/kit/${dim}`);
   }
+  // Cross-dimension: a conexão vem do próprio Mapa de origem (campo related).
+  if (typeof ctx.related === "string" && isDimensionId(ctx.related) && dim) {
+    const rel = getDimensionalMap(dim).related.find((x) => x.dimension === ctx.related);
+    const alvo = ctx.related as DimensionId;
+    d.cruzada = {
+      nome: DIMENSIONS[alvo].name,
+      quando: rel?.when ?? "",
+      temMapa: mapaVisivel(alvo),
+      url: `${SITE_URL}${mapaVisivel(alvo) ? mapPath(alvo) : `/dimensoes/${alvo}`}`,
+    };
+  }
   if (typeof ctx.plan_token === "string") {
     d.planoUrl = `${SITE_URL}/plano/acesso/${ctx.plan_token}`;
     d.planoPronto = ctx.plan_ready !== false;
@@ -160,7 +188,15 @@ async function decidir(q: Q, m: Mensagem, p: PerfilLead | null): Promise<Decisao
   }
 
   // Supressão da etapa com o estado atual.
-  const extra: { mapaAberto?: boolean; compraFeita?: boolean } = {};
+  const extra: { mapaAberto?: boolean; compraFeita?: boolean; relacionadaFeita?: boolean } = {};
+  if (typeof m.context.related === "string") {
+    const [feito] = await q(
+      `select 1 from map_results where map_type = $2 and status = 'completed'
+         and lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)`,
+      [m.lead_id, m.context.related]
+    );
+    extra.relacionadaFeita = Boolean(feito);
+  }
   if (typeof m.context.map_result_id === "string") {
     const [mr] = await q<{ status: string }>("select status from map_results where map_result_id = $1", [m.context.map_result_id]);
     extra.mapaAberto = mr?.status === "in_progress";
@@ -256,8 +292,18 @@ async function processarUma(rel: Relatorio): Promise<boolean> {
            delivery_mode = $4, error = null where message_id = $1`,
         [m.message_id, r.id, email.assunto, r.modo]
       );
-      if (m.template_key === "map_result") {
-        await registrarEvento(q, "ResultEmailSent", { lead_id: m.lead_id, props: { modo: r.modo } });
+      // Evento de execução de cada automação (Matriz de Automações, "evento de execução").
+      const execucao = EVENTO_DE_ENVIO[m.template_key];
+      if (execucao) {
+        await registrarEvento(q, execucao, {
+          event_id: eventoDeterministico(`${execucao}:${m.message_id}`),
+          lead_id: m.lead_id,
+          product_id: typeof m.context.product_id === "string" ? m.context.product_id : null,
+          transaction_id: typeof m.context.transaction_id === "string" ? m.context.transaction_id : null,
+          dimension: typeof m.context.dimension === "string" ? m.context.dimension : null,
+          map_type: typeof m.context.map_type === "string" ? m.context.map_type : null,
+          props: { modo: r.modo, message_id: m.message_id },
+        });
       }
       if (r.modo === "live") rel.enviadas++;
       else rel.simuladas++;

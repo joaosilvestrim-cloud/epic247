@@ -169,6 +169,25 @@ export async function processarEventoCheckout(q: Q, ev: EventoCheckout): Promise
     if (EVENTO_COMPRA[tipo] !== "Purchase") {
       await registrarEvento(q, EVENTO_COMPRA[tipo], { ...comum, event_id: eventIdDeTransacao(ev.provider, ev.transacaoId, tipo) });
     }
+    // Eventos de sucesso (Matriz): compra depois de e-mail da nutrição ou da recuperação de checkout.
+    const [origem] = await q<{ nutricao: boolean; recuperacao: boolean }>(
+      `select
+         exists (select 1 from messages where lead_id = $1 and automation_id = 'AUT_MAP_NURTURE'
+                 and status = 'sent' and sent_at > now() - interval '21 days') as nutricao,
+         exists (select 1 from messages where lead_id = $1 and automation_id = 'AUT_CHECKOUT_ABANDON'
+                 and status = 'sent' and context->>'product_id' = $2 and sent_at > now() - interval '14 days') as recuperacao`,
+      [lead, produto.product_id]
+    );
+    if (origem?.nutricao) {
+      await registrarEvento(q, "MapNurtureConversion", {
+        ...comum, event_id: eventIdDeTransacao(ev.provider, ev.transacaoId, "nurture_conversion"),
+      });
+    }
+    if (origem?.recuperacao) {
+      await registrarEvento(q, "RecoveredCheckout", {
+        ...comum, event_id: eventIdDeTransacao(ev.provider, ev.transacaoId, "recovered_checkout"),
+      });
+    }
     await cancelarAutomacoes(q, lead, ENCERRA_NA_COMPRA[tipo] ?? [], `comprou_${tipo}`);
 
     const ctx: Record<string, unknown> = {

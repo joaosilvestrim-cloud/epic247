@@ -165,6 +165,22 @@ try {
   confere(msgs1.some((m) => m.automation_id === "AUT_MAP_RESULT_DELIVERY"), "entrega do resultado agendada");
   confere(msgs1.some((m) => m.automation_id === "AUT_MAP_NURTURE"), "nutrição agendada (aceitou marketing)");
 
+  confere(msgs1.some((m) => m.automation_id === "AUT_CROSS_DIMENSION"), "convite de cross-dimension agendado (Matriz §13)");
+  const [ns] = await sql("select count(*)::int n from §events where lead_id = $1 and event_name = 'MapNurtureStarted'", [lead]);
+  confere(ns.n === 1, "evento MapNurtureStarted");
+
+  secao("2b. Mapa repetido com o mesmo resultado e Mapa relacionado (Matriz)");
+  const ini2 = await a.post("/api/v2/mapas/iniciar", { map_type: "energia" });
+  const fim2 = await a.post("/api/v2/mapas/concluir", { map_result_id: ini2.json?.map_result_id, answers: respostas });
+  await a.post("/api/v2/mapas/capturar", { token: fim2.json?.token, email, first_name: "QA", marketing: true });
+  const [nut] = await sql("select count(distinct context->>'map_result_id')::int n from §messages where lead_id = $1 and automation_id = 'AUT_MAP_NURTURE'", [lead]);
+  confere(nut.n === 1, "Mapa repetido sem mudança não reinicia a nutrição", `${nut.n} sequências`);
+  const [entregas] = await sql("select count(*)::int n from §messages where lead_id = $1 and automation_id = 'AUT_MAP_RESULT_DELIVERY'", [lead]);
+  confere(entregas.n === 2, "mas o resultado pedido é entregue de novo", `${entregas.n}`);
+  await a.post("/api/v2/mapas/iniciar", { map_type: "acao" });
+  const [cx] = await sql("select count(*)::int n from §events where lead_id = $1 and event_name = 'CrossDimensionMapStarted'", [lead]);
+  confere(cx.n === 1, "começar o Mapa de Ação depois do de Energia registra CrossDimensionMapStarted");
+
   // ── 3. Novo toque ──
   secao("3. Nova visita com outra campanha (RF-023, RF-024)");
   await a.post("/api/v2/sessao", { utm_source: "qa2", utm_medium: "email", utm_campaign: "c2", landing_page: "/plano/energia" });
@@ -263,7 +279,7 @@ try {
     "select count(*)::int n from §map_results where status = 'completed' and lead_id in (select lead_id from §leads where lead_id = $1 or merged_into = $1)",
     [lead]
   );
-  confere(hist.n === 2, "histórico com os dois Mapas preservados", `${hist.n}`);
+  confere(hist.n === 3, "histórico com os três Mapas preservados (Energia duas vezes e Fricção)", `${hist.n}`);
   const [l4] = await sql("select maps_completed_count, first_primary_dimension from §leads where lead_id = $1", [lead]);
   confere(l4.maps_completed_count >= 2 && l4.first_primary_dimension === "energia", "contagem de Mapas sobe e a primeira dimensão é preservada (RF-082)", JSON.stringify(l4));
   confere(b.pote.get("epic_lid") === lead, "o segundo aparelho passa a usar o lead principal");

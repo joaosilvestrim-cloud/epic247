@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { enviarFilaCrm } from "@/lib/epic/server/crm";
 import { agendarInativos, dispararFila } from "@/lib/epic/server/dispatcher";
 import { logErro } from "@/lib/epic/server/http";
 
@@ -14,7 +15,8 @@ async function executar(req: Request) {
   try {
     const inativos = await agendarInativos();
     const rel = await dispararFila(40);
-    return NextResponse.json({ ok: true, inativos, ...rel });
+    const crm = await enviarFilaCrm(50);
+    return NextResponse.json({ ok: true, inativos, ...rel, crm });
   } catch (e) {
     logErro("v2/cron/disparar", e);
     return NextResponse.json({ ok: false }, { status: 500 });

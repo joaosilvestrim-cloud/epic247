@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Q } from "./db";
+import { enfileirarCrm } from "./crm";
 
 // Taxonomia core (Modelo de Dados §15, RF-026). Só estes nomes entram.
 export const EVENTOS_CORE = [
@@ -14,6 +15,7 @@ export const EVENTOS_AUTOMACAO = [
   "ResultEmailSent", "MapNurtureStarted", "MapNurtureConversion", "PlanDelivered",
   "PlanDay7Completed", "KitDelivered", "ProtocolActivated", "MentoringBooked",
   "RecoveredCheckout", "CrossDimensionMapStarted", "ResumeMap", "NewsletterSignup", "ContactSubmitted",
+  "ResultEmailOpened", "ResultEmailClicked",
 ] as const;
 
 export type EventoCore = (typeof EVENTOS_CORE)[number];
@@ -51,13 +53,14 @@ export interface DadosEvento {
 /** Grava o evento. event_id repetido é ignorado (deduplicação, RF-028). */
 export async function registrarEvento(q: Q, nome: EventoNome, d: DadosEvento): Promise<string> {
   const id = d.event_id ?? randomUUID();
-  await q(
+  const novo = await q(
     `insert into events (event_id, event_name, lead_id, session_id, page_url, referrer,
        utm_source, utm_medium, utm_campaign, utm_content, utm_term, map_type, dimension,
        primary_pattern, secondary_pattern, product_id, product_type, product_price,
        transaction_id, question_index, props)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
-     on conflict (event_id) do nothing`,
+     on conflict (event_id) do nothing
+     returning event_id`,
     [
       id, nome, d.lead_id ?? null, d.session_id ?? null, d.page_url ?? null, d.referrer ?? null,
       d.utm_source ?? null, d.utm_medium ?? null, d.utm_campaign ?? null, d.utm_content ?? null,
@@ -67,5 +70,16 @@ export async function registrarEvento(q: Q, nome: EventoNome, d: DadosEvento): P
       d.props ? JSON.stringify(d.props) : null,
     ]
   );
+  // Só fatos novos seguem para o CRM externo (replay do mesmo evento não duplica).
+  if (novo.length) {
+    await enfileirarCrm(q, nome, id, d.lead_id, {
+      map_type: d.map_type ?? null, dimension: d.dimension ?? null,
+      primary_pattern: d.primary_pattern ?? null, secondary_pattern: d.secondary_pattern ?? null,
+      product_id: d.product_id ?? null, product_type: d.product_type ?? null,
+      product_price: d.product_price ?? null, transaction_id: d.transaction_id ?? null,
+      utm_source: d.utm_source ?? null, utm_campaign: d.utm_campaign ?? null, utm_content: d.utm_content ?? null,
+      ...(d.props?.tipo ? { tipo: d.props.tipo } : {}),
+    });
+  }
   return id;
 }

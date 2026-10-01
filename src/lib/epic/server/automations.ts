@@ -1,4 +1,5 @@
 import "server-only";
+import type { DimensionId } from "../dimensions";
 import type { Q } from "./db";
 
 // Motor de automação (Matriz de Automações e Gatilhos v1.0).
@@ -50,7 +51,11 @@ export type Contexto = Record<string, unknown> & {
   product_id?: string;
 };
 
-type Supressao = (p: PerfilLead, ctx: Contexto, extra: { mapaAberto?: boolean; compraFeita?: boolean }) => string | null;
+type Supressao = (
+  p: PerfilLead,
+  ctx: Contexto,
+  extra: { mapaAberto?: boolean; compraFeita?: boolean; relacionadaFeita?: boolean }
+) => string | null;
 
 // ── Regras de supressão reutilizáveis (Modelo de Dados §27/28) ──
 const jaComprouProtocolo: Supressao = (p) => (p.protocol_purchased ? "comprou_protocolo" : null);
@@ -172,6 +177,15 @@ export const AUTOMACOES: Record<string, Automacao> = {
       { step: "E3", horas: 192, template: "inactive_3", prioridade: 4 },
     ],
   },
+  // AUT_CROSS_DIMENSION: convite de exploração (conteúdo, não venda) para a
+  // dimensão relacionada prevista no próprio Mapa. Depois da nutrição (D9).
+  AUT_CROSS_DIMENSION: {
+    id: "AUT_CROSS_DIMENSION", versao: "1.0", escopo: "map_result_id",
+    etapas: [{
+      step: "D9", horas: 216, template: "cross_dimension", prioridade: 4,
+      suprimir: todas(emMentoria, (_p, _c, x) => (x.relacionadaFeita ? "ja_explorou_relacionada" : null)),
+    }],
+  },
   // Plano comprado antes do Mapa: avisa quando ficou pronto.
   AUT_PLAN_READY: {
     id: "AUT_PLAN_READY", versao: "1.0", escopo: "transaction_id",
@@ -182,6 +196,24 @@ export const AUTOMACOES: Record<string, Automacao> = {
     etapas: [{ step: "D0", horas: 0, template: "newsletter_welcome", prioridade: 2 }],
   },
 };
+
+/**
+ * Conexões prioritárias de cross-dimension (Matriz §13, "exemplos
+ * prioritários"). Vêm antes das conexões listadas em cada Mapa. O Mapa de
+ * Energia não tem seção de conexões no documento: a Matriz supre com Ação.
+ */
+export const CROSS_PRIORITARIO: Partial<Record<DimensionId, DimensionId[]>> = {
+  coragem: ["acao"],
+  autoconhecimento: ["planejamento"],
+  energia: ["acao"],
+  excelencia: ["energia"],
+  amor: ["autoconhecimento", "felicidade"],
+};
+
+/** Dimensões para onde um Mapa pode levar, na ordem de prioridade. */
+export function conexoesDe(mapa: DimensionId, relacionadasDoMapa: DimensionId[]): DimensionId[] {
+  return [...new Set([...(CROSS_PRIORITARIO[mapa] ?? []), ...relacionadasDoMapa])].filter((d) => d !== mapa);
+}
 
 /** Saídas (Matriz): quais automações uma compra encerra. */
 export const ENCERRA_NA_COMPRA: Record<string, string[]> = {

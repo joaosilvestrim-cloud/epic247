@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { withTx } from "@/lib/epic/server/db";
 import { dispararFila } from "@/lib/epic/server/dispatcher";
+import { registrarEvento } from "@/lib/epic/server/events";
 import { processarWebhook } from "@/lib/epic/server/webhooks";
 
 // Server Actions do /admin/epic. Cada uma confere o admin por conta própria:
@@ -86,7 +87,16 @@ export async function statusMentoria(f: FormData) {
   const id = s(f, "id", 40);
   const st = s(f, "status", 20);
   if (id && st && ["new", "in_conversation", "client", "waitlist", "disqualified"].includes(st)) {
-    await withTx((q) => q("update mentoring_applications set status = $2 where id = $1", [id, st]));
+    await withTx(async (q) => {
+      const [antes] = await q<{ lead_id: string | null; status: string }>(
+        "select lead_id, status from mentoring_applications where id = $1 for update", [id]
+      );
+      await q("update mentoring_applications set status = $2 where id = $1", [id, st]);
+      // Conversa marcada: evento de sucesso da AUT_MENTORING_INTEREST (MentoringBooked).
+      if (st === "in_conversation" && antes?.status !== "in_conversation" && antes?.lead_id) {
+        await registrarEvento(q, "MentoringBooked", { lead_id: antes.lead_id, props: { candidatura: id } });
+      }
+    });
   }
   revalidatePath("/admin/epic/caixa");
 }

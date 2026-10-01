@@ -4,12 +4,13 @@ import { isDimensionId, type DimensionId } from "../dimensions";
 import { MapAnswerError, scoreDimensional, scoreFriction } from "../maps/engine";
 import { FRICCAO, getDimensionalMap } from "../maps";
 import type { DimensionalResult, FrictionResult, MapType } from "../maps/types";
-import { agendarAutomacao } from "./automations";
+import { agendarAutomacao, conexoesDe } from "./automations";
 import { registrarConsentimento } from "./consent";
 import type { Q } from "./db";
 import { registrarEvento } from "./events";
 import { garantirLead, identificar, leadAtual, sessaoAtual, type Atribuicao } from "./identity";
 import { gerarPlanosPendentes } from "./planos";
+import { dimensaoVisivel } from "../site";
 
 export function ehMapType(v: unknown): v is MapType {
   return v === "friccao" || isDimensionId(v);
@@ -72,6 +73,26 @@ export async function iniciarMapa(
     dimension: tipo === "friccao" ? null : tipo,
     utm_source: utm.utm_source ?? null, utm_medium: utm.utm_medium ?? null,
   });
+
+  // Sucesso do cross-dimension: começou o Mapa de uma dimensão que um Mapa
+  // anterior apontou como relacionada (pelo e-mail ou pela página de resultado).
+  if (tipo !== "friccao") {
+    const anteriores = await q<{ map_type: string }>(
+      `select distinct map_type from map_results where status = 'completed' and map_type not in ('friccao', $2)
+         and lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)`,
+      [lead, tipo]
+    );
+    const origem = anteriores.find(
+      (a) =>
+        isDimensionId(a.map_type) &&
+        conexoesDe(a.map_type, getDimensionalMap(a.map_type).related.map((x) => x.dimension)).includes(tipo)
+    );
+    if (origem) {
+      await registrarEvento(q, "CrossDimensionMapStarted", {
+        lead_id: lead, session_id: sessao, map_type: tipo, dimension: tipo, props: { origem: origem.map_type },
+      });
+    }
+  }
 
   // Lembrete de abandono só para quem já é conhecido (AUT_MAP_ABANDON_IDENTIFIED).
   const [conhecido] = await q<{ email: string | null; marketing_email_allowed: boolean }>(
@@ -280,7 +301,35 @@ export async function capturarResultado(
   };
   await agendarAutomacao(q, lead, "AUT_MAP_RESULT_DELIVERY", ctx);
   if (dados.marketing && r.map_type !== "friccao") {
-    await agendarAutomacao(q, lead, "AUT_MAP_NURTURE", ctx);
+    // Mapa repetido com o mesmo resultado não reinicia a nutrição como se fosse
+    // um diagnóstico novo (Matriz, AUT_MAP_RESULT_DELIVERY, supressão).
+    const [repetido] = await q(
+      `select 1 from messages ms
+         join map_results mr on mr.map_result_id::text = ms.context->>'map_result_id'
+       where ms.lead_id = $1 and ms.automation_id = 'AUT_MAP_NURTURE' and ms.created_at > now() - interval '30 days'
+         and mr.map_type = $2 and mr.primary_pattern is not distinct from $3
+         and mr.secondary_pattern is not distinct from $4 and mr.map_result_id <> $5`,
+      [lead, r.map_type, r.primary_pattern, r.secondary_pattern, r.map_result_id]
+    );
+    if (!repetido) {
+      await agendarAutomacao(q, lead, "AUT_MAP_NURTURE", ctx);
+      await registrarEvento(q, "MapNurtureStarted", {
+        lead_id: lead, map_type: r.map_type, dimension, primary_pattern: r.primary_pattern,
+      });
+    }
+    // Cross-dimension: só a conexão prevista no Mapa, para uma dimensão que a
+    // pessoa ainda não explorou e que está publicada.
+    const relacionada = conexoesDe(r.map_type, getDimensionalMap(r.map_type).related.map((x) => x.dimension)).find((x) =>
+      dimensaoVisivel(x)
+    );
+    if (relacionada) {
+      const [jaFez] = await q(
+        `select 1 from map_results where map_type = $2 and status = 'completed'
+           and lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)`,
+        [lead, relacionada]
+      );
+      if (!jaFez) await agendarAutomacao(q, lead, "AUT_CROSS_DIMENSION", { ...ctx, related: relacionada });
+    }
   }
   return { event_id, lead };
 }

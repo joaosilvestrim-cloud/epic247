@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withTx } from "@/lib/epic/server/db";
+import { registrarEvento } from "@/lib/epic/server/events";
 import { logErro } from "@/lib/epic/server/http";
 import { conferirSvix } from "@/lib/epic/svix";
 
@@ -46,11 +47,24 @@ export async function POST(req: Request) {
 
   try {
     await withTx(async (q) => {
+      const [antes] = await q<{ message_id: string; template_key: string; opened_at: string | null; clicked_at: string | null }>(
+        "select message_id, template_key, opened_at, clicked_at from messages where provider_message_id = $1 for update",
+        [emailId]
+      );
       const [m] = await q<{ lead_id: string }>(
         `update messages set ${set} where provider_message_id = $1 returning lead_id`,
         [emailId]
       );
       if (!m) return;
+      // Eventos de sucesso da entrega do resultado (Matriz, AUT_MAP_RESULT_DELIVERY).
+      if (antes?.template_key === "map_result") {
+        if (ev.type === "email.opened" && !antes.opened_at) {
+          await registrarEvento(q, "ResultEmailOpened", { lead_id: m.lead_id, props: { message_id: antes.message_id } });
+        }
+        if (ev.type === "email.clicked" && !antes.clicked_at) {
+          await registrarEvento(q, "ResultEmailClicked", { lead_id: m.lead_id, props: { message_id: antes.message_id } });
+        }
+      }
       if (ev.type === "email.bounced") {
         // Endereço inválido: para tudo, inclusive transacional (não chega mesmo).
         await q("update leads set email_bounced_at = coalesce(email_bounced_at, now()) where lead_id = $1", [m.lead_id]);
@@ -71,6 +85,7 @@ export async function POST(req: Request) {
            where lead_id = $1 and status = 'scheduled' and priority >= 3`,
           [m.lead_id]
         );
+        await registrarEvento(q, "Unsubscribe", { lead_id: m.lead_id, props: { via: "spam" } });
       }
     });
     return NextResponse.json({ ok: true });
