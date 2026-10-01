@@ -10,5 +10,6 @@
     "rootDir": "src/lib/epic",
     "outDir": ".test-build"
   },
-  "include": ["src/lib/epic/**/*.ts"]
+  "include": ["src/lib/epic/**/*.ts"],
+  "exclude": ["src/lib/epic/server/**", "src/lib/epic/client/**"]
 }

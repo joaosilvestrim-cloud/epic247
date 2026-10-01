@@ -270,6 +270,41 @@ async function processarUma(rel: Relatorio): Promise<boolean> {
   });
 }
 
+/**
+ * Renderiza uma mensagem da fila sem enviar (pré-visualização no admin).
+ * Usa o estado atual do lead, como o disparo faria agora.
+ */
+export async function previsualizar(messageId: string): Promise<
+  { assunto: string; html: string; aprovado: boolean; decisao: string } | { erro: string }
+> {
+  return withTx(async (q) => {
+    const [m] = await q<Mensagem>(
+      `select message_id, lead_id, automation_id, step, template_key, priority, context, created_at, postponed_count
+       from messages where message_id = $1`,
+      [messageId]
+    );
+    if (!m) return { erro: "Mensagem não encontrada." };
+    const p = await perfil(q, m.lead_id);
+    if (!p) return { erro: "Lead não encontrado (anonimizado ou mesclado)." };
+    const tpl = TEMPLATES[m.template_key];
+    if (!tpl) return { erro: `Modelo ${m.template_key} não existe.` };
+    const dec = await decidir(q, m, p);
+    let email;
+    try {
+      email = tpl(await montarDados(q, m, p));
+    } catch {
+      return { erro: "Dados incompletos para montar este e-mail." };
+    }
+    const descadastro = m.priority >= 3 ? urlDescadastro(m.lead_id) : null;
+    return {
+      assunto: email.assunto,
+      aprovado: email.aprovado,
+      decisao: dec.acao === "pular" ? `seria pulada: ${dec.motivo}` : dec.acao === "adiar" ? "seria adiada (frequência)" : "seria enviada",
+      html: renderEmail({ preheader: email.preheader, blocos: email.blocos, descadastroUrl: descadastro, motivo: "Pré-visualização do admin." }),
+    };
+  });
+}
+
 /** Processa até `limite` mensagens vencidas. */
 export async function dispararFila(limite = 40): Promise<Relatorio> {
   const rel: Relatorio = { avaliadas: 0, enviadas: 0, simuladas: 0, puladas: {}, adiadas: 0, falhas: 0 };

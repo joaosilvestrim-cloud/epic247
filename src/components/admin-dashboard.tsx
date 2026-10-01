@@ -96,6 +96,12 @@ export default function AdminDashboard({
           </div>
           <div className="flex items-center gap-3">
             <a
+              href="/admin/epic"
+              className="rounded-xl border border-line/50 px-4 py-2 text-sm font-medium transition hover:bg-cream"
+            >
+              Admin 2.0
+            </a>
+            <a
               href="/"
               className="rounded-xl border border-line/50 px-4 py-2 text-sm font-medium transition hover:bg-cream"
             >
