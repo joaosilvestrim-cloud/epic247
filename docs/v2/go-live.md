@@ -16,7 +16,10 @@ Nada disto impede a virada técnica, mas define o que aparece no site.
   sem aceite de marketing (legítimo interesse): confirmar com o jurídico.
 - **Mapa de Fricção.** A correção de viés (pontuação 1.1) está pronta e
   desligada. Ver `docs/v2/vies-mapa-friccao.md`.
-- **Dimensões publicadas.** Na Onda 1, Energia e Ação. Controlado em
+- **Dimensões publicadas.** Os Mapas de Energia e Ação já estão publicados
+  (perguntas e resultados são texto FINAL pelo Blueprint §30). As páginas
+  das 10 dimensões continuam em rascunho até o texto ser aprovado. Enquanto
+  isso, o menu leva direto ao Mapa. Controlado em
   `src/lib/epic/dimensions.ts` (status de página e de Mapa).
 
 ## 2. Variáveis na Vercel (ambiente Production)
@@ -37,6 +40,8 @@ Nada disto impede a virada técnica, mas define o que aparece no site.
 | `EPIC_EMAIL_ALLOWLIST` | e-mails da equipe | Só vale no modo `simulate`: esses recebem de verdade |
 | `EPIC_TEAM_EMAIL` | e-mail da equipe | Aviso de candidatura à Mentoria e de contato |
 | `ADMIN_PASSWORD` | já existe | Mesma senha para /admin e /admin/epic |
+| `CRM_WEBHOOK_URL` | opcional | Liga o espelhamento para um CRM externo (HubSpot, RD, Make, Zapier). Sem ela, nada é enfileirado |
+| `CRM_WEBHOOK_SECRET` | texto aleatório | Assina cada envio ao CRM (`X-Epic-Signature: sha256=...`). Sem ela, usa `EPIC_SECRET` |
 | Supabase, Meta e GA4 | já existem | Pixel e tags continuam na aba Marketing do /admin |
 
 Gerar segredos: `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
@@ -122,6 +127,15 @@ Ele chama `/api/v2/cron/disparar` a cada 10 minutos.
    que o acesso foi revogado.
 6. Agendador ligado (item 5). Webhooks configurados (item 4).
 7. `EPIC_EMAIL_MODE=live` e redeploy.
+
+## 6b. Depois de ligar
+
+- O Painel do /admin/epic mostra "Pronto para tráfego pago?" com cada
+  pré-requisito do Modelo Financeiro §18 conferido no sistema. Só começar a
+  Fase 1 de mídia com a lista toda em "ok".
+- Públicos de remarketing: `docs/v2/remarketing.md`.
+- Lançar o investimento em Mídia no admin para ter CPL, CAC e ROAS.
+- Cadastrar as ideias e peças no Banco de ideias, que gera os links com utm.
 
 ## 7. Se der errado
 
