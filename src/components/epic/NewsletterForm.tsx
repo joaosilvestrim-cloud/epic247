@@ -49,7 +49,7 @@ export default function NewsletterForm({ claro = false }: { claro?: boolean }) {
           placeholder="seu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={`min-w-0 flex-1 rounded-[var(--radius-epic)] border px-3 py-2.5 text-sm focus:border-latao ${claro ? "border-linha bg-papel-claro text-grafite placeholder:text-mineral" : "border-papel/20 bg-transparent text-papel placeholder:text-papel/40"}`}
+          className={`min-w-0 flex-1 rounded-[var(--radius-epic)] border px-3 py-2.5 text-base focus:border-latao sm:text-sm ${claro ? "border-linha bg-papel-claro text-grafite placeholder:text-mineral" : "border-papel/20 bg-transparent text-papel placeholder:text-papel/40"}`}
         />
         <button
           type="submit"
