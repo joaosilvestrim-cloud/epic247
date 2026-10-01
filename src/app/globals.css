@@ -122,6 +122,22 @@ body {
   text-underline-offset: 4px;
 }
 
+/* Impressão (Plano em PDF): só o conteúdo. */
+@media print {
+  header,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    font-size: 12pt;
+  }
+  .grao::after {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

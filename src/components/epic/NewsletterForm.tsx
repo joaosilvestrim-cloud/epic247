@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { enviar } from "@/lib/epic/client/track";
 
-export default function NewsletterForm() {
+export default function NewsletterForm({ claro = false }: { claro?: boolean }) {
   const id = useId();
   const [email, setEmail] = useState("");
   const [aceite, setAceite] = useState(false);
@@ -26,7 +26,7 @@ export default function NewsletterForm() {
 
   if (estado === "ok") {
     return (
-      <p className="text-sm text-papel/85" role="status">
+      <p className={`text-sm ${claro ? "text-grafite" : "text-papel/85"}`} role="status">
         Pronto. A próxima carta chega no seu e-mail.
       </p>
     );
@@ -34,7 +34,7 @@ export default function NewsletterForm() {
 
   return (
     <form onSubmit={enviarForm} className="space-y-3" noValidate>
-      <p className="text-sm leading-relaxed text-papel/70">
+      <p className={`text-sm leading-relaxed ${claro ? "text-grafite/75" : "text-papel/70"}`}>
         Ideias para viver melhor, sem avalanche de e-mails.
       </p>
       <label htmlFor={`${id}-email`} className="sr-only">
@@ -49,19 +49,19 @@ export default function NewsletterForm() {
           placeholder="seu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="min-w-0 flex-1 rounded-[var(--radius-epic)] border border-papel/20 bg-transparent px-3 py-2.5 text-sm text-papel placeholder:text-papel/40 focus:border-latao"
+          className={`min-w-0 flex-1 rounded-[var(--radius-epic)] border px-3 py-2.5 text-sm focus:border-latao ${claro ? "border-linha bg-papel-claro text-grafite placeholder:text-mineral" : "border-papel/20 bg-transparent text-papel placeholder:text-papel/40"}`}
         />
         <button
           type="submit"
           disabled={estado === "enviando"}
-          className="rounded-[var(--radius-epic)] bg-papel px-4 text-sm font-semibold text-tinta transition-colors hover:bg-papel-claro disabled:opacity-60"
+          className={`rounded-[var(--radius-epic)] px-4 text-sm font-semibold transition-colors disabled:opacity-60 ${claro ? "bg-grafite text-papel hover:bg-tinta" : "bg-papel text-tinta hover:bg-papel-claro"}`}
         >
           {estado === "enviando" ? "..." : "Assinar"}
         </button>
       </div>
       {/* isca para robôs: invisível para pessoas */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      <label className="flex items-start gap-2 text-xs leading-snug text-papel/65">
+      <label className={`flex items-start gap-2 text-xs leading-snug ${claro ? "text-grafite/70" : "text-papel/65"}`}>
         <input
           type="checkbox"
           checked={aceite}

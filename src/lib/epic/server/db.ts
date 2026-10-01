@@ -28,17 +28,33 @@ function pool(): Pool {
       ssl: { rejectUnauthorized: false },
       max: 3,
       idleTimeoutMillis: 10_000,
-      connectionTimeoutMillis: 8_000,
+      connectionTimeoutMillis: 12_000,
+      keepAlive: true,
     });
+    // Erro numa conexão ociosa não pode derrubar o processo.
+    globalThis.__epicPool.on("error", () => {});
   }
   return globalThis.__epicPool;
 }
 
 export type Q = <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>;
 
+/**
+ * Abrir conexão com o pooler às vezes demora. Repetir aqui é seguro: nada foi
+ * executado ainda. Depois de conectado, erro de consulta nunca é repetido.
+ */
+async function conectar(): Promise<PoolClient> {
+  try {
+    return await pool().connect();
+  } catch {
+    await new Promise((r) => setTimeout(r, 300));
+    return pool().connect();
+  }
+}
+
 /** Executa fn numa transação, com o schema do ambiente. Faz rollback em erro. */
 export async function withTx<R>(fn: (q: Q, client: PoolClient) => Promise<R>): Promise<R> {
-  const client = await pool().connect();
+  const client = await conectar();
   try {
     await client.query("begin");
     await client.query(`set local search_path to ${SCHEMA}, public, extensions`);
