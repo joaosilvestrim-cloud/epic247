@@ -167,7 +167,9 @@ export async function abrirSessao(q: Q, leadId: string, t: Atribuicao, novoToque
 export async function identificar(
   q: Q,
   leadAtualId: string,
-  dados: { email: string; firstName: string | null }
+  dados: { email: string; firstName: string | null },
+  /** false em contexto sem navegador (webhook): não grava cookie. */
+  definirCookie = true
 ): Promise<string> {
   const email = dados.email.trim().toLowerCase();
   const [dono] = await q<{ lead_id: string }>(
@@ -211,7 +213,7 @@ export async function identificar(
   );
   if (estagio) await q("select promote_lifecycle($1, $2)", [destino, estagio.lifecycle_stage]);
   await q("update leads set merged_into = $1 where lead_id = $2", [destino, leadAtualId]);
-  (await cookies()).set(COOKIE_LEAD, destino, cookieOpts(UM_ANO));
+  if (definirCookie) (await cookies()).set(COOKIE_LEAD, destino, cookieOpts(UM_ANO));
   return destino;
 }
 
@@ -250,4 +252,36 @@ export const BOT_UA = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsa
 
 export function emailValido(v: unknown): v is string {
   return typeof v === "string" && v.length <= 254 && /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v.trim());
+}
+
+/** Lead vivo a partir de um id que pode ter sido absorvido. */
+export async function seguirLead(q: Q, id: string): Promise<string | null> {
+  if (!UUID.test(id)) return null;
+  return leadVivo(q, id);
+}
+
+/** Acha ou cria o lead pelo e-mail, sem cookie (webhook, importação). */
+export async function leadPorEmail(
+  q: Q,
+  email: string,
+  firstName: string | null,
+  toque: Atribuicao | null
+): Promise<string> {
+  const e = email.trim().toLowerCase();
+  const [achado] = await q<{ lead_id: string }>(
+    "select lead_id from leads where lower(email) = $1 and merged_into is null", [e]
+  );
+  if (achado) {
+    if (firstName) await q("update leads set first_name = coalesce(first_name, $2) where lead_id = $1", [achado.lead_id, firstName]);
+    return achado.lead_id;
+  }
+  const t = toque ?? { source: null, medium: null, campaign: null, content: null, term: null, landing_page: null, referrer: null };
+  const [novo] = await q<{ lead_id: string }>(
+    `insert into leads (email, first_name, first_touch_source, first_touch_medium, first_touch_campaign,
+       first_touch_content, first_touch_at, last_touch_source, last_touch_medium, last_touch_campaign,
+       last_touch_content, last_touch_at)
+     values ($1, $2, $3, $4, $5, $6, now(), $3, $4, $5, $6, now()) returning lead_id`,
+    [e, firstName, t.source, t.medium, t.campaign, t.content]
+  );
+  return novo.lead_id;
 }

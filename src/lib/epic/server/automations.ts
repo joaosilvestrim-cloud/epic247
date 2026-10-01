@@ -164,6 +164,11 @@ export const AUTOMACOES: Record<string, Automacao> = {
       { step: "E3", horas: 192, template: "inactive_3", prioridade: 4 },
     ],
   },
+  // Plano comprado antes do Mapa: avisa quando ficou pronto.
+  AUT_PLAN_READY: {
+    id: "AUT_PLAN_READY", versao: "1.0", escopo: "transaction_id",
+    etapas: [{ step: "D0", horas: 0, template: "plan_ready", prioridade: 2 }],
+  },
   AUT_NEWSLETTER_WELCOME: {
     id: "AUT_NEWSLETTER_WELCOME", versao: "1.0", escopo: "lead",
     etapas: [{ step: "D0", horas: 0, template: "newsletter_welcome", prioridade: 2 }],

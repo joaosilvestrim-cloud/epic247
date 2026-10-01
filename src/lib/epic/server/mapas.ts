@@ -9,6 +9,7 @@ import { registrarConsentimento } from "./consent";
 import type { Q } from "./db";
 import { registrarEvento } from "./events";
 import { garantirLead, identificar, leadAtual, sessaoAtual, type Atribuicao } from "./identity";
+import { gerarPlanosPendentes } from "./planos";
 
 export function ehMapType(v: unknown): v is MapType {
   return v === "friccao" || isDimensionId(v);
@@ -193,6 +194,22 @@ export async function concluirMapa(q: Q, id: string, respostasBrutas: Record<str
        and context->>'map_result_id' = $2`,
     [m.lead_id, id]
   );
+  // Plano comprado antes do Mapa (entrada não linear): gera agora e avisa.
+  if (m.map_type !== "friccao") {
+    const gerados = await gerarPlanosPendentes(q, m.lead_id, m.map_type, id);
+    if (gerados > 0) {
+      const prontos = await q<{ transaction_id: string; access_token: string }>(
+        `select g.transaction_id, g.access_token from plan_generations g join products p using (product_id)
+         where g.lead_id = $1 and p.product_dimension = $2 and g.map_result_id = $3`,
+        [m.lead_id, m.map_type, id]
+      );
+      for (const g of prontos) {
+        await agendarAutomacao(q, m.lead_id, "AUT_PLAN_READY", {
+          transaction_id: g.transaction_id, plan_token: g.access_token, dimension: m.map_type,
+        });
+      }
+    }
+  }
   return { token, map_type: m.map_type, event_id, primary: padraoP ?? dim };
 }
 
