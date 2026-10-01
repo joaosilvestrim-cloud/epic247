@@ -191,6 +191,12 @@ export const AUTOMACOES: Record<string, Automacao> = {
     id: "AUT_PLAN_READY", versao: "1.0", escopo: "transaction_id",
     etapas: [{ step: "D0", horas: 0, template: "plan_ready", prioridade: 2 }],
   },
+  // Edição da newsletter editorial enviada pelo admin (Funis §44, prioridade 5).
+  // Agendada em lote por SQL em enviarNewsletter (actions.ts), não por agendarAutomacao.
+  AUT_NEWSLETTER_EDITION: {
+    id: "AUT_NEWSLETTER_EDITION", versao: "1.0", escopo: "content_id",
+    etapas: [{ step: "E", horas: 0, template: "newsletter_edition", prioridade: 5 }],
+  },
   AUT_NEWSLETTER_WELCOME: {
     id: "AUT_NEWSLETTER_WELCOME", versao: "1.0", escopo: "lead",
     etapas: [{ step: "D0", horas: 0, template: "newsletter_welcome", prioridade: 2 }],

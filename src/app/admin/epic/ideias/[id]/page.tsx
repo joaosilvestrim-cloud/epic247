@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import CapaUpload from "@/components/epic/admin/CapaUpload";
 import { Aviso, Titulo } from "@/components/epic/admin/ui";
 import { DIMENSION_IDS, DIMENSIONS } from "@/lib/epic/dimensions";
-import { excluirConteudo, salvarConteudo } from "../../actions";
+import { enviarNewsletter, excluirConteudo, salvarConteudo } from "../../actions";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { TIPO_LABEL, TIPO_ROTA, type ItemConteudo } from "@/lib/epic/server/conteudo";
 import { query } from "@/lib/epic/server/db";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ salvo?: string; erro?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ salvo?: string; erro?: string; enviada?: string }> };
 
 /** "2026-10-05T12:00:00Z" → "2026-10-05T09:00" no horário de Brasília (campo datetime-local). */
 function paraCampo(v: string | null) {
@@ -24,10 +24,17 @@ export default async function EditorIdeiaPage({ params, searchParams }: Props) {
   if (!novo && !/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const [c] = novo
     ? [null]
-    : await query<ItemConteudo & { status: string }>("select * from content_items where id = $1", [id]);
+    : await query<ItemConteudo & { status: string; newsletter_sent_at: string | null; newsletter_recipients: number | null }>(
+        "select * from content_items where id = $1",
+        [id]
+      );
   if (!novo && !c) notFound();
   const sp = await searchParams;
   const salvo = sp.salvo === "1";
+  const [{ inscritos }] = await query<{ inscritos: number }>(
+    `select count(*)::int inscritos from lead_profile
+     where email is not null and marketing_email_allowed and unsubscribed_at is null and email_bounced_at is null`
+  );
   const noAr = c?.status === "published" && c.published_at && new Date(c.published_at) <= new Date();
 
   return (
@@ -106,6 +113,32 @@ export default async function EditorIdeiaPage({ params, searchParams }: Props) {
           <button className="w-full rounded bg-grafite px-4 py-2.5 text-papel">Salvar</button>
         </div>
       </form>
+
+      {c?.content_type === "newsletter" && (
+        <section className="mt-10 max-w-5xl rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-5 text-sm">
+          <p className="font-semibold text-grafite">Enviar esta edição por e-mail</p>
+          {sp.enviada && <p className="mt-2 text-[#4f6234]">Edição na fila para {sp.enviada} pessoa(s).</p>}
+          {sp.erro === "confirmar_envio" && <p className="mt-2 text-[#8a3f30]">Marque a confirmação para enviar.</p>}
+          {sp.erro === "nao_enviavel" && <p className="mt-2 text-[#8a3f30]">Só edições publicadas e ainda não enviadas podem sair.</p>}
+          {c.newsletter_sent_at ? (
+            <p className="mt-2 text-mineral-escuro">
+              Enviada em {new Date(c.newsletter_sent_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })} para{" "}
+              {c.newsletter_recipients} pessoa(s). Acompanhe em E-mails (automação AUT_NEWSLETTER_EDITION).
+            </p>
+          ) : c.status !== "published" ? (
+            <p className="mt-2 text-mineral-escuro">Publique a edição para poder enviar.</p>
+          ) : (
+            <form action={enviarNewsletter} className="mt-3 flex flex-wrap items-center gap-3">
+              <input type="hidden" name="id" value={c.id} />
+              <span className="text-mineral-escuro">
+                {inscritos} pessoa(s) com aceite de marketing. Sai no horário de publicação, respeitando 1 e-mail de marketing por dia.
+              </span>
+              <label className="inline-flex items-center gap-2"><input type="checkbox" name="confirmar" required /> Conferi o texto</label>
+              <button className="rounded bg-grafite px-4 py-2 text-papel">Enviar para os inscritos</button>
+            </form>
+          )}
+        </section>
+      )}
 
       {c && (
         <form action={excluirConteudo} className="mt-12 max-w-5xl border-t border-linha pt-6 text-sm">

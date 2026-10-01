@@ -29,6 +29,7 @@ export interface DadosEmail {
   };
   mapaUrl?: string;
   cruzada?: { nome: string; quando: string; temMapa: boolean; url: string };
+  edicao?: { titulo: string; resumo: string | null; corpo: string | null; url: string };
   planoUrl?: string | null;
   planoPronto?: boolean;
   planoOfertaUrl?: string | null;
@@ -56,6 +57,27 @@ const botao = (texto: string, href: string): BlocoEmail => ({ tipo: "botao", tex
 const pequeno = (texto: string): BlocoEmail => ({ tipo: "pequeno", texto });
 const lista = (itens: string[]): BlocoEmail => ({ tipo: "lista", itens });
 const se = <T,>(cond: unknown, ...b: T[]): T[] => (cond ? b : []);
+
+/**
+ * Texto do CMS (o mesmo markdown mínimo da página) em blocos de e-mail:
+ * ## e ### viram destaque, "- " vira lista, "> " vira citação.
+ * Negrito, itálico e links ficam como texto limpo.
+ */
+function blocosDoTexto(texto: string): BlocoEmail[] {
+  const limpa = (x: string) =>
+    x.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)");
+  return texto
+    .replace(/\r\n/g, "\n")
+    .split(/\n{2,}/)
+    .map((b) => b.trim())
+    .filter(Boolean)
+    .map((b) => {
+      if (/^#{2,3} /.test(b)) return destaque(limpa(b.replace(/^#{2,3} /, "")));
+      if (b.split("\n").every((l) => l.startsWith("- "))) return lista(b.split("\n").map((l) => limpa(l.slice(2))));
+      if (b.startsWith("> ")) return citacao(limpa(b.replace(/^> ?/gm, "")));
+      return t(limpa(b));
+    });
+}
 
 const AVISO_MAPA =
   "O Mapa EPIC é uma ferramenta educativa de autoavaliação. Ele sugere onde vale olhar primeiro e não substitui avaliação profissional.";
@@ -162,6 +184,17 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
         t("Você pode começar por uma dimensão específica. Mas algumas mudanças exigem olhar o sistema inteiro."),
         botao("Conhecer o Protocolo EPIC247", d.protocoloUrl),
       ],
+    };
+  },
+
+  // Escrita e aprovada pela equipe no CMS: quem envia é quem aprova.
+  newsletter_edition: (d) => {
+    const e = d.edicao!;
+    return {
+      assunto: e.titulo,
+      preheader: e.resumo ?? "Ideias para viver melhor.",
+      aprovado: true,
+      blocos: [...(e.corpo ? blocosDoTexto(e.corpo) : e.resumo ? [t(e.resumo)] : []), botao("Ler no site", e.url)],
     };
   },
 

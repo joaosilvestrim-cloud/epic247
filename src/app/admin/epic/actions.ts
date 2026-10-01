@@ -6,6 +6,7 @@ import { exigirAdmin } from "@/lib/epic/server/admin";
 import { withTx } from "@/lib/epic/server/db";
 import { dispararFila } from "@/lib/epic/server/dispatcher";
 import { registrarEvento } from "@/lib/epic/server/events";
+import { gerarCodigo } from "@/lib/epic/server/editorial";
 import { processarWebhook } from "@/lib/epic/server/webhooks";
 
 // Server Actions do /admin/epic. Cada uma confere o admin por conta própria:
@@ -234,4 +235,140 @@ export async function excluirInvestimento(f: FormData) {
   const id = s(f, "id", 40);
   if (id) await withTx((q) => q("delete from media_spend where id = $1", [id]));
   revalidatePath("/admin/epic/midia");
+}
+
+// ── Banco de ideias editoriais (Sistema Editorial §7) ──
+const ENUMS_IDEIA = {
+  estado_icp: ["funcional_exausto", "lucido_imovel", "bem_sucedido_desalinhado", "decidido_com_medo", "inquieto_em_expansao"],
+  universo: ["eu_me_vi_aqui", "ju_pensa", "historias", "cultura", "ferramentas", "movimento"],
+  gatilho: ["contradicao", "custo", "reconhecimento", "possibilidade"],
+  objetivo: ["atencao", "reconhecimento", "movimento"],
+  status: ["ideia", "producao", "publicada", "arquivada"],
+} as const;
+const enumDe = (f: FormData, k: keyof typeof ENUMS_IDEIA) => {
+  const v = s(f, k, 40);
+  return v && (ENUMS_IDEIA[k] as readonly string[]).includes(v) ? v : null;
+};
+
+export async function salvarIdeiaEditorial(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  const ideia = s(f, "ideia_mae", 500);
+  if (!ideia) redirect(`/admin/epic/editorial/${id ?? "nova"}?erro=ideia`);
+  const cta = Number(f.get("cta_nivel"));
+  const valores = [
+    ideia, s(f, "tensao", 500), s(f, "dimensao", 30), enumDe(f, "estado_icp"), enumDe(f, "universo"),
+    enumDe(f, "gatilho"), enumDe(f, "objetivo"), s(f, "formato_mae", 60), cta >= 0 && cta <= 3 ? cta : null,
+    s(f, "produto_id", 40), enumDe(f, "status") ?? "ideia", s(f, "notas", 4000),
+  ];
+  const novoId = await withTx(async (q) => {
+    if (id) {
+      await q(
+        `update editorial_ideas set ideia_mae=$2, tensao=$3, dimensao=$4, estado_icp=$5, universo=$6, gatilho=$7,
+           objetivo=$8, formato_mae=$9, cta_nivel=$10, produto_id=$11, status=$12, notas=$13, updated_at=now()
+         where id = $1`,
+        [id, ...valores]
+      );
+      return id;
+    }
+    const [r] = await q<{ id: string }>(
+      `insert into editorial_ideas (ideia_mae, tensao, dimensao, estado_icp, universo, gatilho, objetivo, formato_mae,
+         cta_nivel, produto_id, status, notas) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) returning id`,
+      valores
+    );
+    return r.id;
+  });
+  revalidatePath("/admin/epic/editorial");
+  redirect(`/admin/epic/editorial/${novoId}?salvo=1`);
+}
+
+export async function excluirIdeiaEditorial(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  if (id && f.get("confirmar") === "on") await withTx((q) => q("delete from editorial_ideas where id = $1", [id]));
+  revalidatePath("/admin/epic/editorial");
+  redirect("/admin/epic/editorial");
+}
+
+export async function adicionarDerivacao(f: FormData) {
+  await exigirAdmin();
+  const idea = s(f, "idea_id", 40);
+  const formato = s(f, "formato", 60);
+  if (!idea || !formato) return;
+  const destino = s(f, "destino", 200) ?? "/mapa";
+  await withTx(async (q) => {
+    const [i] = await q<{ dimensao: string | null }>("select dimensao from editorial_ideas where id = $1", [idea]);
+    await q(
+      `insert into editorial_derivations (idea_id, formato, canal, codigo, destino, pago, campanha)
+       values ($1, $2, $3, $4, $5, $6, $7)`,
+      [idea, formato, s(f, "canal", 30) ?? "instagram", gerarCodigo(formato, i?.dimensao ?? null),
+        destino.startsWith("/") ? destino : `/${destino}`, f.get("pago") === "on", s(f, "campanha", 120)]
+    );
+  });
+  revalidatePath(`/admin/epic/editorial/${idea}`);
+}
+
+export async function salvarMetricasDerivacao(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  const idea = s(f, "idea_id", 40);
+  if (!id) return;
+  const n = (k: string) => {
+    const v = String(f.get(k) ?? "").replace(",", ".").trim();
+    return v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
+  };
+  const data = s(f, "publicado_em", 10);
+  await withTx((q) =>
+    q(
+      `update editorial_derivations set publicado_em = $2, views = $3, retencao_3s = $4, retencao_50 = $5,
+         salvamentos = $6, compartilhamentos = $7, relatos = $8, notas = $9 where id = $1`,
+      [id, data && /^\d{4}-\d{2}-\d{2}$/.test(data) ? data : null, n("views"), n("retencao_3s"), n("retencao_50"),
+        n("salvamentos"), n("compartilhamentos"), n("relatos"), s(f, "notas", 300)]
+    )
+  );
+  if (idea) revalidatePath(`/admin/epic/editorial/${idea}`);
+}
+
+export async function excluirDerivacao(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  const idea = s(f, "idea_id", 40);
+  if (id) await withTx((q) => q("delete from editorial_derivations where id = $1", [id]));
+  if (idea) revalidatePath(`/admin/epic/editorial/${idea}`);
+}
+
+// ── Newsletter editorial (Funis §44) ──
+/**
+ * Põe uma edição publicada na fila para todos os inscritos com aceite de
+ * marketing. Cada envio passa pelas mesmas regras da fila (descadastro,
+ * e-mail inválido, 1 e-mail de marketing por dia). Uma edição sai uma vez só.
+ */
+export async function enviarNewsletter(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  if (!id || f.get("confirmar") !== "on") redirect(`/admin/epic/ideias/${id}?erro=confirmar_envio`);
+  const n = await withTx(async (q) => {
+    const [c] = await q<{ ok: boolean }>(
+      `select (content_type = 'newsletter' and status = 'published' and newsletter_sent_at is null) ok
+       from content_items where id = $1 for update`,
+      [id]
+    );
+    if (!c?.ok) return -1;
+    const enviados = await q(
+      `insert into messages (lead_id, automation_id, automation_version, step, template_key, priority, scheduled_for,
+         context, dedupe_key)
+       select lp.lead_id, 'AUT_NEWSLETTER_EDITION', '1.0', 'E', 'newsletter_edition', 5,
+              greatest(now(), (select published_at from content_items where id = $1)),
+              jsonb_build_object('content_id', $1::text), lp.lead_id || ':newsletter:' || $1
+       from lead_profile lp
+       where lp.email is not null and lp.marketing_email_allowed and lp.unsubscribed_at is null and lp.email_bounced_at is null
+       on conflict (dedupe_key) do nothing
+       returning message_id`,
+      [id]
+    );
+    await q("update content_items set newsletter_sent_at = now(), newsletter_recipients = $2 where id = $1", [id, enviados.length]);
+    return enviados.length;
+  });
+  revalidatePath(`/admin/epic/ideias/${id}`);
+  redirect(n < 0 ? `/admin/epic/ideias/${id}?erro=nao_enviavel` : `/admin/epic/ideias/${id}?enviada=${n}`);
 }

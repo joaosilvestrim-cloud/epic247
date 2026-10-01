@@ -152,6 +152,16 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
       url: `${SITE_URL}${mapaVisivel(alvo) ? mapPath(alvo) : `/dimensoes/${alvo}`}`,
     };
   }
+  if (typeof ctx.content_id === "string") {
+    const [c] = await q<{ title: string; excerpt: string | null; body: string | null; slug: string; content_type: string }>(
+      "select title, excerpt, body, slug, content_type from content_items where id = $1 and status = 'published'",
+      [ctx.content_id]
+    );
+    if (c) {
+      const rota = c.content_type === "artigo" ? "artigos" : c.content_type === "video" ? "videos" : c.content_type;
+      d.edicao = { titulo: c.title, resumo: c.excerpt, corpo: c.body, url: `${SITE_URL}/ideias/${rota}/${c.slug}` };
+    }
+  }
   if (typeof ctx.plan_token === "string") {
     d.planoUrl = `${SITE_URL}/plano/acesso/${ctx.plan_token}`;
     d.planoPronto = ctx.plan_ready !== false;

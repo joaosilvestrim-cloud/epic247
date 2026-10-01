@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Cartao, dataHora, FiltroPeriodo, pct, Secao, Selo, Tabela, Td, Titulo } from "@/components/epic/admin/ui";
+import { brl, Cartao, dataHora, FiltroPeriodo, pct, Secao, Selo, Tabela, Td, Titulo } from "@/components/epic/admin/ui";
 import { cancelarMensagem, dispararAgora } from "../actions";
-import { DIAS_PERIODO, exigirAdmin, periodoDe } from "@/lib/epic/server/admin";
+import { DIAS_PERIODO, exigirAdmin, kpisAutomacao, periodoDe } from "@/lib/epic/server/admin";
 import { query } from "@/lib/epic/server/db";
 import { AUTOMACOES } from "@/lib/epic/server/automations";
 
@@ -21,6 +21,8 @@ const NOME: Record<string, string> = {
   AUT_INACTIVE_30D: "Reativação (30 dias)",
   AUT_PLAN_READY: "Plano pronto",
   AUT_NEWSLETTER_WELCOME: "Boas-vindas da newsletter",
+  AUT_NEWSLETTER_EDITION: "Edição da newsletter",
+  AUT_CROSS_DIMENSION: "Convite para dimensão relacionada",
 };
 
 const SITUACOES = ["scheduled", "sent", "skipped", "cancelled", "failed"] as const;
@@ -41,7 +43,7 @@ export default async function EmailsPage({ searchParams }: Props) {
   const automacao = sp.a && sp.a in AUTOMACOES ? sp.a : null;
   const modo = process.env.EPIC_EMAIL_MODE === "live" ? "live" : "simulate";
 
-  const [porAutomacao, motivos, fila] = await Promise.all([
+  const [porAutomacao, motivos, fila, kpis] = await Promise.all([
     query<Record<string, string>>(
       `select automation_id,
               count(*) filter (where status = 'scheduled') fila,
@@ -69,6 +71,7 @@ export default async function EmailsPage({ searchParams }: Props) {
        order by case when m.status = 'scheduled' then 0 else 1 end, m.scheduled_for desc limit 150`,
       [desde, situacao, automacao]
     ),
+    kpisAutomacao(periodo),
   ]);
 
   const tot = (k: string) => porAutomacao.reduce((a, r) => a + Number(r[k]), 0);
@@ -123,6 +126,31 @@ export default async function EmailsPage({ searchParams }: Props) {
             </tr>
           ))}
         </Tabela>
+      </Secao>
+
+      <Secao titulo="Resultado por sequência (envios reais)">
+        <Tabela cab={["Automação", "Enviados", "Entregues", "Abertura", "Clique", "Descadastro", "Spam", "Compraram em 7 dias", "Receita"]} vazio={!kpis.length}>
+          {kpis.map((k) => (
+            <tr key={k.automation_id}>
+              <Td>
+                <span className="font-mono text-xs">{k.automation_id}</span>
+                <span className="block text-xs text-mineral-escuro">{NOME[k.automation_id] ?? ""}</span>
+              </Td>
+              <Td direita>{k.enviados}</Td>
+              <Td direita>{pct(k.entregues, k.enviados)}</Td>
+              <Td direita>{pct(k.abertos, k.enviados)}</Td>
+              <Td direita>{pct(k.cliques, k.enviados)}</Td>
+              <Td direita>{k.descadastros}</Td>
+              <Td direita>{k.spam}</Td>
+              <Td direita>{k.compradores}</Td>
+              <Td direita>{brl(k.receita)}</Td>
+            </tr>
+          ))}
+        </Tabela>
+        <p className="mt-2 text-xs text-mineral-escuro">
+          Receita atribuída ao último e-mail enviado até 7 dias antes da compra. Envios simulados ficam de fora.
+          Abertura e clique dependem do webhook do Resend.
+        </p>
       </Secao>
 
       {motivos.length > 0 && (
