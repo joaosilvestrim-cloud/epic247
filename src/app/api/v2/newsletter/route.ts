@@ -1,13 +1,14 @@
 import { registrarConsentimento } from "@/lib/epic/server/consent";
 import { withTx } from "@/lib/epic/server/db";
 import { registrarEvento } from "@/lib/epic/server/events";
-import { caiuNaIsca, ehBot, erro, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
+import { caiuNaIsca, ehBot, erro, excedeuLimite, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
 import { emailValido, garantirLead, identificar, sessaoAtual } from "@/lib/epic/server/identity";
 import { agendarAutomacao } from "@/lib/epic/server/automations";
 
 /** Inscrição na newsletter: e-mail + aceite explícito de marketing. */
 export async function POST(req: Request) {
   if (ehBot(req)) return ok();
+  if (await excedeuLimite(req, "newsletter", 5, 600)) return erro("Muitas tentativas seguidas. Espere alguns minutos e tente de novo.", 429);
   const b = await lerJson(req);
   if (!b) return erro("Requisição inválida.");
   if (caiuNaIsca(b)) return ok();

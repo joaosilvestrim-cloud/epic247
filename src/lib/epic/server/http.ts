@@ -1,5 +1,7 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { withTx } from "./db";
 import { BOT_UA } from "./identity";
 
 // Utilitários das rotas /api/v2. Erros nunca vazam detalhe nem PII (RF-067).
@@ -37,3 +39,32 @@ export function logErro(contexto: string, e: unknown) {
 }
 
 export const str = (v: unknown, n = 300) => (typeof v === "string" && v.trim() ? v.trim().slice(0, n) : null);
+
+/**
+ * Limite de requisições por IP e rota (Blueprint §29). Janela fixa no banco,
+ * porque cada função serverless tem a própria memória. O IP é guardado só
+ * como hash com o segredo do site, nunca em claro. Se o banco falhar, deixa
+ * passar: o limite protege contra abuso, não pode derrubar o formulário.
+ */
+export async function excedeuLimite(req: Request, rota: string, maximo: number, janelaSegundos: number): Promise<boolean> {
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || req.headers.get("x-real-ip") || "sem-ip";
+  const segredo = process.env.EPIC_SECRET ?? "epic247";
+  const chave = `${rota}:${createHash("sha256").update(`${segredo}:${ip}`).digest("hex").slice(0, 24)}`;
+  const janela = new Date(Math.floor(Date.now() / (janelaSegundos * 1000)) * janelaSegundos * 1000).toISOString();
+  try {
+    const n = await withTx(async (q) => {
+      const [r] = await q<{ contagem: number }>(
+        `insert into rate_limits (chave, janela, contagem) values ($1, $2, 1)
+         on conflict (chave, janela) do update set contagem = rate_limits.contagem + 1
+         returning contagem`,
+        [chave, janela]
+      );
+      // Limpeza oportunista: janelas de mais de um dia não servem para nada.
+      if (Math.random() < 0.02) await q("delete from rate_limits where janela < now() - interval '1 day'");
+      return r.contagem;
+    });
+    return n > maximo;
+  } catch {
+    return false;
+  }
+}

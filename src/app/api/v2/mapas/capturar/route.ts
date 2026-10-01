@@ -1,12 +1,13 @@
 import { MapAnswerError } from "@/lib/epic/maps/engine";
 import { withTx } from "@/lib/epic/server/db";
-import { caiuNaIsca, ehBot, erro, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
+import { caiuNaIsca, ehBot, erro, excedeuLimite, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
 import { emailValido } from "@/lib/epic/server/identity";
 import { capturarResultado } from "@/lib/epic/server/mapas";
 
 /** Captura pós-resultado (RF-016). O resultado já foi exibido antes. */
 export async function POST(req: Request) {
   if (ehBot(req)) return ok();
+  if (await excedeuLimite(req, "capturar", 10, 600)) return erro("Muitas tentativas seguidas. Espere alguns minutos e tente de novo.", 429);
   const b = await lerJson(req);
   if (!b) return erro("Requisição inválida.");
   if (caiuNaIsca(b)) return ok();

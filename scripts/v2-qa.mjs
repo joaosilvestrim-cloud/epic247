@@ -61,7 +61,11 @@ function visitante() {
       pote.set(par.slice(0, i), par.slice(i + 1));
     }
   };
-  const cab = () => ({ cookie: cookie(), "user-agent": "Mozilla/5.0 (QA EPIC247) Chrome/130", "content-type": "application/json" });
+  // IP fictício por execução: rodar o QA várias vezes não esbarra no limite de requisições.
+  const ip = `198.51.100.${Math.floor(Math.random() * 250) + 1}`;
+  const cab = () => ({
+    cookie: cookie(), "user-agent": "Mozilla/5.0 (QA EPIC247) Chrome/130", "content-type": "application/json", "x-forwarded-for": ip,
+  });
   return {
     pote,
     async post(caminho, corpo) {

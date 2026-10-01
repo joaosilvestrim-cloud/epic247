@@ -1,7 +1,7 @@
 import { PROVEDOR } from "@/lib/epic/server/checkout";
 import { withTx } from "@/lib/epic/server/db";
 import { registrarEvento } from "@/lib/epic/server/events";
-import { ehBot, erro, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
+import { ehBot, erro, excedeuLimite, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
 import { garantirLead, sessaoAtual } from "@/lib/epic/server/identity";
 import { resultadoPorToken } from "@/lib/epic/server/mapas";
 import { ofertasPermitidas, perfilAtual } from "@/lib/epic/server/perfil";
@@ -14,6 +14,7 @@ import { produto, vendavel } from "@/lib/epic/server/produtos";
  */
 export async function POST(req: Request) {
   if (ehBot(req)) return erro("Indisponível.", 403);
+  if (await excedeuLimite(req, "checkout", 20, 600)) return erro("Muitas tentativas seguidas. Espere alguns minutos e tente de novo.", 429);
   const b = await lerJson(req);
   const id = str(b?.product_id, 40);
   if (!b || !id) return erro("Produto inválido.");

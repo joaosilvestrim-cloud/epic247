@@ -2,7 +2,7 @@ import { agendarAutomacao } from "@/lib/epic/server/automations";
 import { registrarConsentimento } from "@/lib/epic/server/consent";
 import { withTx } from "@/lib/epic/server/db";
 import { registrarEvento } from "@/lib/epic/server/events";
-import { caiuNaIsca, ehBot, erro, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
+import { caiuNaIsca, ehBot, erro, excedeuLimite, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
 import { emailValido, garantirLead, identificar, sessaoAtual } from "@/lib/epic/server/identity";
 import { capacidadeMentoria } from "@/lib/epic/server/produtos";
 import { notificarEquipe } from "@/lib/epic/server/notificar";
@@ -10,6 +10,7 @@ import { notificarEquipe } from "@/lib/epic/server/notificar";
 /** Interesse / lista de espera da Mentoria (RF-034 a RF-036, AUT_MENTORING_*). */
 export async function POST(req: Request) {
   if (ehBot(req)) return ok();
+  if (await excedeuLimite(req, "mentoria", 5, 600)) return erro("Muitas tentativas seguidas. Espere alguns minutos e tente de novo.", 429);
   const b = await lerJson(req);
   if (!b) return erro("Requisição inválida.");
   if (caiuNaIsca(b)) return ok();

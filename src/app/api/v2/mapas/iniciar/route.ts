@@ -1,11 +1,12 @@
 import { withTx } from "@/lib/epic/server/db";
-import { ehBot, erro, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
+import { ehBot, erro, excedeuLimite, lerJson, logErro, ok, str } from "@/lib/epic/server/http";
 import { atribuicaoDe, origemDoToque } from "@/lib/epic/server/identity";
 import { ehMapType, iniciarMapa } from "@/lib/epic/server/mapas";
 import { mapaVisivel } from "@/lib/epic/site";
 
 export async function POST(req: Request) {
   if (ehBot(req)) return erro("Indisponível.", 403);
+  if (await excedeuLimite(req, "mapa_iniciar", 30, 600)) return erro("Muitas tentativas seguidas. Espere alguns minutos e tente de novo.", 429);
   const b = await lerJson(req);
   if (!b || !ehMapType(b.map_type)) return erro("Mapa inválido.");
   if (b.map_type !== "friccao" && !mapaVisivel(b.map_type)) return erro("Mapa indisponível.", 404);
