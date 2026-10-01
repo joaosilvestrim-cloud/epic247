@@ -72,8 +72,14 @@ export interface Automacao {
   versao: string;
   /** Precisa de aceite de marketing para as etapas de prioridade >= 4. */
   etapas: Etapa[];
-  /** Escopo da dedupe: por lead, por Mapa ou por transação. */
-  escopo: "lead" | "map_result_id" | "transaction_id" | "dimension";
+  /** Escopo da dedupe: "lead" ou uma chave do contexto (map_result_id, transaction_id, periodo...). */
+  escopo: string;
+  /**
+   * Recuperação de algo que a própria pessoa iniciou (checkout abandonado):
+   * envia sem aceite de marketing, mas respeita descadastro. Decisão a
+   * validar com o jurídico (base legal de legítimo interesse).
+   */
+  interesseLegitimo?: boolean;
 }
 
 export const AUTOMACOES: Record<string, Automacao> = {
@@ -148,7 +154,7 @@ export const AUTOMACOES: Record<string, Automacao> = {
   },
   // AUT_CHECKOUT_ABANDON: T+1h, T+24h, T+72h. Sai na compra.
   AUT_CHECKOUT_ABANDON: {
-    id: "AUT_CHECKOUT_ABANDON", versao: "1.0", escopo: "transaction_id",
+    id: "AUT_CHECKOUT_ABANDON", versao: "1.0", escopo: "transaction_id", interesseLegitimo: true,
     etapas: [
       { step: "T1h", horas: 1, template: "checkout_t1h", prioridade: 4, suprimir: (_p, _c, x) => (x.compraFeita ? "comprou" : null) },
       { step: "T24h", horas: 24, template: "checkout_t24h", prioridade: 4, suprimir: (_p, _c, x) => (x.compraFeita ? "comprou" : null) },
@@ -157,7 +163,7 @@ export const AUTOMACOES: Record<string, Automacao> = {
   },
   // AUT_INACTIVE_30D
   AUT_INACTIVE_30D: {
-    id: "AUT_INACTIVE_30D", versao: "1.0", escopo: "lead",
+    id: "AUT_INACTIVE_30D", versao: "1.0", escopo: "periodo",
     etapas: [
       { step: "E1", horas: 0, template: "inactive_1", prioridade: 4 },
       { step: "E2", horas: 96, template: "inactive_2", prioridade: 4 },

@@ -226,6 +226,7 @@ export interface ResultadoSalvo {
   result_kind: "single" | "close" | "tie" | "low";
   completed_at: string;
   answers_json: Record<string, unknown>;
+  result_token: string;
 }
 
 /** Resultado revisitável pelo token (RF-021). Token nunca expõe respostas. */
@@ -233,7 +234,7 @@ export async function resultadoPorToken(q: Q, token: string): Promise<ResultadoS
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
   const [r] = await q<ResultadoSalvo>(
     `select map_result_id, lead_id, map_type, map_version, scores, primary_dimension, secondary_dimension,
-            primary_pattern, secondary_pattern, result_kind, completed_at, answers_json
+            primary_pattern, secondary_pattern, result_kind, completed_at, answers_json, result_token
      from map_results where result_token = $1 and status = 'completed'`,
     [token]
   );

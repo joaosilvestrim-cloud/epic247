@@ -91,7 +91,19 @@ export async function leadAtual(q: Q): Promise<string | null> {
 export async function garantirLead(q: Q, toque: Atribuicao | null): Promise<string> {
   const existente = await leadAtual(q);
   if (existente) {
-    await q("update leads set last_activity_at = now() where lead_id = $1", [existente]);
+    // Atividade nova encerra a reativação (Matriz AUT_INACTIVE_30D: saída).
+    const [era] = await q<{ inactive_flag: boolean }>(
+      `update leads set last_activity_at = now(), inactive_flag = false, inactive_since = null
+       where lead_id = $1 returning (select inactive_flag from leads where lead_id = $1) as inactive_flag`,
+      [existente]
+    );
+    if (era?.inactive_flag) {
+      await q(
+        `update messages set status = 'cancelled', skip_reason = 'voltou_a_atividade'
+         where lead_id = $1 and status = 'scheduled' and automation_id = 'AUT_INACTIVE_30D'`,
+        [existente]
+      );
+    }
     await (await cookies()).set(COOKIE_LEAD, existente, cookieOpts(UM_ANO));
     return existente;
   }
