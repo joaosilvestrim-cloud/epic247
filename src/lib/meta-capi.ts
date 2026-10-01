@@ -16,6 +16,11 @@ export interface MetaEventOptions {
   sourceUrl?: string;
   clientIp?: string;
   userAgent?: string;
+  /** lead_id: vai com hash, melhora o casamento sem expor quem é. */
+  externalId?: string;
+  /** Produto comprado: permite públicos "comprou Plano" vs "comprou Kit" (Funis §42). */
+  contentIds?: string[];
+  contentCategory?: string;
 }
 
 export async function sendMetaEvent(
@@ -30,6 +35,7 @@ export async function sendMetaEvent(
   if (opts.email) userData.em = [sha256(opts.email.trim().toLowerCase())];
   if (opts.clientIp) userData.client_ip_address = opts.clientIp;
   if (opts.userAgent) userData.client_user_agent = opts.userAgent;
+  if (opts.externalId) userData.external_id = [sha256(opts.externalId)];
 
   const body = {
     data: [
@@ -41,8 +47,12 @@ export async function sendMetaEvent(
         event_id: opts.eventId,
         user_data: userData,
         custom_data:
-          opts.value != null
-            ? { value: opts.value, currency: opts.currency ?? "BRL" }
+          opts.value != null || opts.contentIds
+            ? {
+                ...(opts.value != null ? { value: opts.value, currency: opts.currency ?? "BRL" } : {}),
+                ...(opts.contentIds ? { content_ids: opts.contentIds, content_type: "product" } : {}),
+                ...(opts.contentCategory ? { content_category: opts.contentCategory } : {}),
+              }
             : undefined,
       },
     ],

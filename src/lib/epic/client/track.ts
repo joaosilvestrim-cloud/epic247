@@ -38,7 +38,8 @@ export function espelhar(nome: string, eventId: string, dados: Dados = {}) {
   if (typeof window === "undefined") return;
   const w = window as Win;
   try {
-    const params = { ...dados, event_id: eventId };
+    // content_ids é o campo que o Meta usa para públicos por produto.
+    const params = { ...dados, event_id: eventId, ...(typeof dados.product_id === "string" ? { content_ids: [dados.product_id], content_type: "product" } : {}) };
     const padrao = META_PADRAO[nome];
     if (padrao) w.fbq?.("track", padrao, params, { eventID: eventId });
     else w.fbq?.("trackCustom", nome, params, { eventID: eventId });

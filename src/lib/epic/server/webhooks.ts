@@ -36,6 +36,11 @@ export async function processarWebhook(
         eventId: resultado.eventId,
         value: resultado.valor,
         currency: "BRL",
+        externalId: resultado.leadId,
+        contentIds: resultado.productId ? [resultado.productId] : undefined,
+        // "plan_energia" → "plan/energia"; "protocol" → "protocol"
+        contentCategory: resultado.productId?.replace("_", "/"),
+        sourceUrl: "https://epic247.com.br",
       }).catch(() => {});
     }
     return { status: resultado ? "processed" : "already", resultado: resultado ?? undefined };
