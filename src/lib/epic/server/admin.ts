@@ -304,8 +304,9 @@ export const FASES_MIDIA = [
 ] as const;
 
 /** Guardrails de CPL (Financeiro §11): abaixo de 12 é a meta, 35 tende a quebrar o modelo. */
-export function sinalMidia(cpl: number | null, rpl: number | null): "verde" | "amarelo" | "vermelho" | "sem_dados" {
-  if (cpl == null) return "sem_dados";
+export function sinalMidia(cpl: number | null, rpl: number | null, investido = 0): "verde" | "amarelo" | "vermelho" | "sem_dados" {
+  // Sem lead: até o custo de um lead "que quebra o modelo" ainda é cedo; passou disso, é vermelho.
+  if (cpl == null) return investido >= 35 ? "vermelho" : "sem_dados";
   // CPL isolado não decide: com receita por lead que paga o lead, segue verde.
   if (rpl != null && rpl >= cpl && cpl <= 20) return "verde";
   if (cpl <= 12) return "verde";
@@ -357,7 +358,7 @@ export async function resumoMidia(): Promise<{ linhas: LinhaMidia[]; porFase: { 
     return {
       campanha: r.campanha, investido, visitantes: +r.visitantes, leads, compradores, receita,
       cpl, rpl, cac: compradores ? investido / compradores : null, roas: investido ? receita / investido : null,
-      sinal: sinalMidia(cpl, rpl),
+      sinal: sinalMidia(cpl, rpl, investido),
     };
   });
   return { linhas, porFase: porFase.map((f) => ({ fase: f.fase, investido: +f.investido })), total: +total };

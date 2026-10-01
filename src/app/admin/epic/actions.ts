@@ -206,3 +206,32 @@ export async function excluirConteudo(f: FormData) {
   revalidatePath("/", "layout");
   redirect("/admin/epic/ideias");
 }
+
+// ── Mídia paga (Financeiro §10) ──
+export async function salvarInvestimento(f: FormData) {
+  await exigirAdmin();
+  const ini = s(f, "period_start", 10);
+  const fim = s(f, "period_end", 10) ?? ini;
+  const valor = Number(String(f.get("amount") ?? "").replace(/\./g, "").replace(",", "."));
+  const fase = Number(f.get("fase"));
+  if (!ini || !fim || !/^\d{4}-\d{2}-\d{2}$/.test(ini) || !/^\d{4}-\d{2}-\d{2}$/.test(fim) || !(valor >= 0)) {
+    redirect("/admin/epic/midia?erro=campos");
+  }
+  await withTx((q) =>
+    q(
+      `insert into media_spend (period_start, period_end, channel, campaign, content, fase, amount, notes)
+       values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [ini, fim < ini! ? ini : fim, s(f, "channel", 30) ?? "meta", s(f, "campaign", 120), s(f, "content", 120),
+        fase >= 1 && fase <= 5 ? fase : null, valor, s(f, "notes", 300)]
+    )
+  );
+  revalidatePath("/admin/epic/midia");
+  redirect("/admin/epic/midia?ok=1");
+}
+
+export async function excluirInvestimento(f: FormData) {
+  await exigirAdmin();
+  const id = s(f, "id", 40);
+  if (id) await withTx((q) => q("delete from media_spend where id = $1", [id]));
+  revalidatePath("/admin/epic/midia");
+}

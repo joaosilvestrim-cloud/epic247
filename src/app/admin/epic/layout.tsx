@@ -13,9 +13,11 @@ const NAV = [
   { href: "/admin/epic/mapas", label: "Mapas" },
   { href: "/admin/epic/leads", label: "Leads" },
   { href: "/admin/epic/vendas", label: "Vendas" },
+  { href: "/admin/epic/midia", label: "Mídia" },
   { href: "/admin/epic/produtos", label: "Produtos" },
   { href: "/admin/epic/emails", label: "E-mails" },
-  { href: "/admin/epic/ideias", label: "Ideias" },
+  { href: "/admin/epic/editorial", label: "Banco de ideias" },
+  { href: "/admin/epic/ideias", label: "Ideias no site" },
   { href: "/admin/epic/caixa", label: "Caixa de entrada" },
 ];
 
