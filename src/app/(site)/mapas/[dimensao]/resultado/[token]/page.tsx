@@ -14,7 +14,7 @@ import { withTx } from "@/lib/epic/server/db";
 import { recomporResultado, resultadoPorToken } from "@/lib/epic/server/mapas";
 import { ofertasPermitidas, perfilAtual } from "@/lib/epic/server/perfil";
 import { listarProdutos, vendavel } from "@/lib/epic/server/produtos";
-import { dimensaoVisivel, dimensionPath } from "@/lib/epic/site";
+import { dimensaoHref } from "@/lib/epic/site";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +51,9 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
   const secundario = cfg.profiles[r.secondary];
   const rotulo = (k: string) => cfg.axes.find((a) => a.key === k)?.label ?? k;
   const destaque = r.kind === "tie" ? r.tiedTop : [r.primary];
-  const relacionadas = cfg.related.filter((x) => dimensaoVisivel(x.dimension));
+  const relacionadas = cfg.related
+    .map((x) => ({ ...x, href: dimensaoHref(x.dimension) }))
+    .filter((x): x is typeof x & { href: string } => x.href !== null);
   const data = new Date(salvo.completed_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
@@ -217,7 +219,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
             <ul className="mt-6 divide-y divide-linha border-y border-linha">
               {relacionadas.map((x) => (
                 <li key={x.dimension}>
-                  <Link href={dimensionPath(x.dimension)} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <Link href={x.href} className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
                     <span className="font-display text-lg text-grafite">{DIMENSIONS[x.dimension as DimensionId].name}</span>
                     <span className="text-[15px] text-mineral-escuro">{x.when.charAt(0).toUpperCase() + x.when.slice(1)}</span>
                   </Link>

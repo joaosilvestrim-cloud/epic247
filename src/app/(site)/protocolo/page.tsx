@@ -7,11 +7,10 @@ import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import { MANIFESTO } from "@/lib/epic/content/home";
 import { PROTOCOLO } from "@/lib/epic/content/produtos";
-import { dimensionPath } from "@/lib/epic/dimensions";
 import { formatPrice } from "@/lib/epic/products";
 import { perfilAtual } from "@/lib/epic/server/perfil";
 import { produto, vendavel } from "@/lib/epic/server/produtos";
-import { dimensoesVisiveis } from "@/lib/epic/site";
+import { dimensoesNavegaveis } from "@/lib/epic/site";
 
 export const revalidate = 60;
 
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
 
 export default async function ProtocoloPage() {
   const [p, perfil] = await Promise.all([produto("protocol"), perfilAtual()]);
-  const dims = dimensoesVisiveis();
+  const dims = dimensoesNavegaveis();
   const jaTem = Boolean(perfil?.protocol_purchased);
 
   return (
@@ -56,7 +55,7 @@ export default async function ProtocoloPage() {
             {dims.map((d) => (
               <li key={d.id} className="flex gap-4 font-display text-[1.25rem] sm:text-[1.4rem]">
                 <span className="pt-1.5 font-mono text-xs text-latao">{String(d.order).padStart(2, "0")}</span>
-                <Link href={dimensionPath(d.id)} className="hover:underline hover:decoration-latao hover:underline-offset-4">
+                <Link href={d.href} className="hover:underline hover:decoration-latao hover:underline-offset-4">
                   {d.manifestoLine}
                 </Link>
               </li>

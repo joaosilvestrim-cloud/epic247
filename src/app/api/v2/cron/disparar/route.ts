@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { enviarFilaCrm } from "@/lib/epic/server/crm";
+import { withTx } from "@/lib/epic/server/db";
 import { agendarInativos, dispararFila } from "@/lib/epic/server/dispatcher";
 import { logErro } from "@/lib/epic/server/http";
 
@@ -16,6 +17,13 @@ async function executar(req: Request) {
     const inativos = await agendarInativos();
     const rel = await dispararFila(40);
     const crm = await enviarFilaCrm(50);
+    // Registro da última rodada: o admin usa para saber se o agendador está vivo.
+    await withTx((q) =>
+      q(
+        `insert into app_settings (key, value, updated_at) values ('cron_last_run', to_jsonb(now()), now())
+         on conflict (key) do update set value = excluded.value, updated_at = now()`
+      )
+    );
     return NextResponse.json({ ok: true, inativos, ...rel, crm });
   } catch (e) {
     logErro("v2/cron/disparar", e);

@@ -1,5 +1,7 @@
 import "server-only";
 import { isAdmin } from "@/lib/admin-auth";
+import { getMetaCapiTokenConfigurado, getTracking } from "@/lib/settings";
+import { DIMENSION_IDS, DIMENSIONS } from "../dimensions";
 import { query } from "./db";
 
 // Consultas do /admin/epic. Toda função que expõe dados pessoais exige admin.
@@ -66,15 +68,15 @@ export async function painel(p: Periodo): Promise<Painel> {
   );
   const porOrigem = await query<Record<string, string>>(
     `with o as (
-       select coalesce(nullif(utm_source,''),'direto') as origem, count(distinct lead_id) as visitantes, 0 as mapas, 0 as leads, 0 as compras, 0::numeric as bruto
+       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto') as origem, count(distinct lead_id) as visitantes, 0 as mapas, 0 as leads, 0 as compras, 0::numeric as bruto
        from sessions where session_started_at >= $1 group by 1
        union all
-       select coalesce(nullif(utm_source,''),'direto'), 0, count(*), 0, 0, 0 from map_results where started_at >= $1 group by 1
+       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto'), 0, count(*), 0, 0, 0 from map_results where started_at >= $1 group by 1
        union all
        select coalesce(nullif(nullif(l.last_touch_source,''),'direct'),'direto'), 0, 0, count(distinct e.lead_id), 0, 0
        from events e join leads l using (lead_id) where e.event_name = 'SubmitMapEmail' and e.occurred_at >= $1 group by 1
        union all
-       select coalesce(nullif(utm_source,''),'direto'), 0, 0, 0, count(*), sum(amount_gross)
+       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto'), 0, 0, 0, count(*), sum(amount_gross)
        from transactions where transaction_status = 'approved' and approved_at >= $1 group by 1
      )
      select origem, sum(visitantes) visitantes, sum(mapas) mapas, sum(leads) leads, sum(compras) compras, sum(bruto) bruto
@@ -149,4 +151,334 @@ export async function resumoMapas(p: Periodo): Promise<ResumoMapa[]> {
     tipos: tipos.filter((x) => x.map_type === l.map_type).map((x) => ({ kind: x.kind, n: Number(x.n) })),
     abandono: aband.filter((x) => x.map_type === l.map_type).map((x) => ({ passo: x.passo, n: Number(x.n) })).sort((a, b) => a.passo - b.passo),
   }));
+}
+
+// ───────────── Funil, cortes e economia (Funis §30, Modelo de Dados §40, Financeiro §9/§15) ─────────────
+
+export interface Corte {
+  chave: string;
+  visitantes: number;
+  mapas: number;
+  leads: number;
+  compras: number;
+  bruto: number;
+}
+
+/** Cortes obrigatórios do dashboard: campanha e criativo (utm_content). */
+export async function cortes(p: Periodo, campo: "utm_campaign" | "utm_content"): Promise<Corte[]> {
+  await exigirAdmin();
+  const d = desde(p);
+  // Nome de coluna vem do tipo (whitelist), nunca da requisição.
+  const c = campo === "utm_campaign" ? "utm_campaign" : "utm_content";
+  const last = campo === "utm_campaign" ? "last_touch_campaign" : "last_touch_content";
+  const rows = await query<Record<string, string>>(
+    `with o as (
+       select coalesce(nullif(${c},''),'(sem)') k, count(distinct lead_id) v, 0 m, 0 l, 0 c, 0::numeric b
+       from sessions where session_started_at >= $1 group by 1
+       union all
+       select coalesce(nullif(${c},''),'(sem)'), 0, count(*), 0, 0, 0 from map_results where started_at >= $1 group by 1
+       union all
+       select coalesce(nullif(l.${last},''),'(sem)'), 0, 0, count(distinct e.lead_id), 0, 0
+       from events e join leads l using (lead_id) where e.event_name = 'SubmitMapEmail' and e.occurred_at >= $1 group by 1
+       union all
+       select coalesce(nullif(${c},''),'(sem)'), 0, 0, 0, count(*), sum(amount_gross)
+       from transactions where transaction_status = 'approved' and approved_at >= $1 group by 1
+     )
+     select k, sum(v) v, sum(m) m, sum(l) l, sum(c) c, sum(b) b from o group by 1
+     order by sum(b) desc, sum(l) desc, sum(v) desc limit 25`,
+    [d]
+  );
+  return rows.map((r) => ({ chave: r.k, visitantes: +r.v, mapas: +r.m, leads: +r.l, compras: +r.c, bruto: +(r.b ?? 0) }));
+}
+
+export interface Economia {
+  ofertas: { oferta: string; vistas: number; compras: number }[];
+  mentoriaInteresse: number;
+  ticketMedio: number;
+  caixaPorLead: number;
+  progressao: { de: string; para: string; base: number; avancaram: number }[];
+  diasMapaPrimeiraCompra: number | null;
+  diasPrimeiraSegunda: number | null;
+  porPerfil: { mapa: string; perfil: string; concluidos: number; leads: number; compradores: number }[];
+  porProduto: { produto: string; nome: string; vendas: number; bruto: number; reembolsos: number }[];
+  acumulado: Record<string, number>;
+}
+
+export async function economia(p: Periodo): Promise<Economia> {
+  await exigirAdmin();
+  const d = desde(p);
+  const ofertas = await query<{ oferta: string; vistas: string; compras: string }>(
+    `select x.oferta,
+            (select count(*) from events where event_name = x.vista and occurred_at >= $1) vistas,
+            (select count(*) from events where event_name = x.compra and occurred_at >= $1) compras
+     from (values ('Plano','ViewPlanOffer','PurchasePlan'), ('Kit','ViewKitOffer','PurchaseKit'),
+                  ('Protocolo','ViewProtocolOffer','PurchaseProtocol'), ('Mentoria','ViewMentoring','MentoringInterest'))
+          as x(oferta, vista, compra)`,
+    [d]
+  );
+  const [base] = await query<Record<string, string | null>>(
+    `select
+       (select count(distinct lead_id) from events where event_name = 'MentoringInterest' and occurred_at >= $1) mentoria,
+       (select coalesce(avg(amount_gross),0) from transactions where transaction_status = 'approved' and approved_at >= $1) ticket,
+       (select coalesce(sum(amount_received),0) from transactions where transaction_status = 'approved' and received_at <= now()) caixa,
+       (select count(*) from leads where email is not null and merged_into is null) leads_total,
+       (select avg(extract(epoch from (pc.primeira - mr.primeiro)) / 86400) from
+          (select lead_id, min(approved_at) primeira from transactions where transaction_status = 'approved' group by 1) pc
+          join (select lead_id, min(completed_at) primeiro from map_results where status = 'completed' group by 1) mr using (lead_id)
+          where pc.primeira >= mr.primeiro) dias_mapa,
+       (select avg(extract(epoch from (s.segunda - s.primeira)) / 86400) from
+          (select lead_id, min(approved_at) primeira, (array_agg(approved_at order by approved_at))[2] segunda
+           from transactions where transaction_status = 'approved' group by 1) s
+          where s.segunda is not null) dias_segunda`,
+    [d]
+  );
+  const progressao = await query<{ de: string; para: string; base: string; avancaram: string }>(
+    `with c as (
+       select t.lead_id, p.product_type tipo, min(t.approved_at) quando
+       from transactions t join products p using (product_id)
+       where t.transaction_status = 'approved' group by 1, 2
+     )
+     select x.de, x.para,
+            (select count(*) from c where c.tipo = x.de_t) base,
+            (select count(*) from c a join c b on b.lead_id = a.lead_id and b.tipo = x.para_t and b.quando > a.quando
+             where a.tipo = x.de_t) avancaram
+     from (values ('Plano','Kit','plan','kit'), ('Plano','Protocolo','plan','protocol'),
+                  ('Kit','Protocolo','kit','protocol'), ('Protocolo','Mentoria','protocol','mentoring'))
+          as x(de, para, de_t, para_t)`
+  );
+  const porPerfil = await query<{ mapa: string; perfil: string; concluidos: string; leads: string; compradores: string }>(
+    `select mr.map_type mapa, coalesce(mr.primary_pattern, mr.primary_dimension) perfil, count(*) concluidos,
+            count(distinct mr.lead_id) filter (where l.email is not null) leads,
+            count(distinct mr.lead_id) filter (where exists (
+              select 1 from transactions t where t.lead_id = mr.lead_id and t.transaction_status = 'approved'
+                and t.approved_at >= mr.completed_at)) compradores
+     from map_results mr join leads l using (lead_id)
+     where mr.status = 'completed' and mr.completed_at >= $1
+     group by 1, 2 order by 3 desc limit 40`,
+    [d]
+  );
+  const porProduto = await query<{ produto: string; nome: string; vendas: string; bruto: string; reembolsos: string }>(
+    `select t.product_id produto, coalesce(p.product_name, t.product_id) nome,
+            count(*) filter (where t.transaction_status = 'approved') vendas,
+            coalesce(sum(t.amount_gross) filter (where t.transaction_status = 'approved'), 0) bruto,
+            count(*) filter (where t.transaction_status in ('refunded','chargeback')) reembolsos
+     from transactions t left join products p using (product_id)
+     where coalesce(t.approved_at, t.created_at) >= $1 group by 1, 2 order by 4 desc`,
+    [d]
+  );
+  const acumulado = await query<{ tipo: string; n: string }>(
+    `select p.product_type tipo, count(*) n from transactions t join products p using (product_id)
+     where t.transaction_status = 'approved' group by 1`
+  );
+  const leadsTotal = Number(base.leads_total ?? 0);
+  return {
+    ofertas: ofertas.map((o) => ({ oferta: o.oferta, vistas: +o.vistas, compras: +o.compras })),
+    mentoriaInteresse: Number(base.mentoria ?? 0),
+    ticketMedio: Number(base.ticket ?? 0),
+    caixaPorLead: leadsTotal ? Number(base.caixa ?? 0) / leadsTotal : 0,
+    progressao: progressao.map((r) => ({ de: r.de, para: r.para, base: +r.base, avancaram: +r.avancaram })),
+    diasMapaPrimeiraCompra: base.dias_mapa == null ? null : Number(base.dias_mapa),
+    diasPrimeiraSegunda: base.dias_segunda == null ? null : Number(base.dias_segunda),
+    porPerfil: porPerfil.map((r) => ({ mapa: r.mapa, perfil: r.perfil, concluidos: +r.concluidos, leads: +r.leads, compradores: +r.compradores })),
+    porProduto: porProduto.map((r) => ({ produto: r.produto, nome: r.nome, vendas: +r.vendas, bruto: +r.bruto, reembolsos: +r.reembolsos })),
+    acumulado: Object.fromEntries(acumulado.map((a) => [a.tipo, +a.n])),
+  };
+}
+
+/** Cenários do Modelo Financeiro §8 (quantidade de vendas até 30/12). */
+export const CENARIOS = {
+  conservador: { plan: 100, kit: 45, protocol: 30, mentoring: 3 },
+  base: { plan: 150, kit: 65, protocol: 60, mentoring: 5 },
+  forte: { plan: 200, kit: 90, protocol: 80, mentoring: 5 },
+} as const;
+
+// ───────────── Mídia paga (Financeiro §10, §11, §16) ─────────────
+
+/** Fases de orçamento: até R$10 mil liberados por evidência. */
+export const FASES_MIDIA = [
+  { fase: 1, nome: "Descoberta", teto: 1000 },
+  { fase: 2, nome: "Aquisição", teto: 2000 },
+  { fase: 3, nome: "Remarketing", teto: 2000 },
+  { fase: 4, nome: "Oferta", teto: 2000 },
+  { fase: 5, nome: "Escala", teto: 3000 },
+] as const;
+
+/** Guardrails de CPL (Financeiro §11): abaixo de 12 é a meta, 35 tende a quebrar o modelo. */
+export function sinalMidia(cpl: number | null, rpl: number | null): "verde" | "amarelo" | "vermelho" | "sem_dados" {
+  if (cpl == null) return "sem_dados";
+  // CPL isolado não decide: com receita por lead que paga o lead, segue verde.
+  if (rpl != null && rpl >= cpl && cpl <= 20) return "verde";
+  if (cpl <= 12) return "verde";
+  if (cpl < 35) return "amarelo";
+  return "vermelho";
+}
+
+export interface LinhaMidia {
+  campanha: string;
+  investido: number;
+  visitantes: number;
+  leads: number;
+  compradores: number;
+  receita: number;
+  cpl: number | null;
+  cac: number | null;
+  roas: number | null;
+  rpl: number | null;
+  sinal: ReturnType<typeof sinalMidia>;
+}
+
+/** Junta o investimento lançado com o que cada campanha trouxe (pelo utm_campaign). */
+export async function resumoMidia(): Promise<{ linhas: LinhaMidia[]; porFase: { fase: number; investido: number }[]; total: number }> {
+  await exigirAdmin();
+  const rows = await query<Record<string, string>>(
+    `with gasto as (
+       select coalesce(nullif(campaign,''),'(sem campanha)') campanha, sum(amount) investido
+       from media_spend group by 1
+     )
+     select g.campanha, g.investido,
+            (select count(distinct lead_id) from sessions s where s.utm_campaign = g.campanha) visitantes,
+            (select count(distinct e.lead_id) from events e join leads l using (lead_id)
+              where e.event_name = 'SubmitMapEmail' and (l.first_touch_campaign = g.campanha or l.last_touch_campaign = g.campanha)) leads,
+            (select count(distinct t.lead_id) from transactions t where t.transaction_status = 'approved' and t.utm_campaign = g.campanha) compradores,
+            (select coalesce(sum(t.amount_gross),0) from transactions t where t.transaction_status = 'approved' and t.utm_campaign = g.campanha) receita
+     from gasto g order by g.investido desc`
+  );
+  const porFase = await query<{ fase: number; investido: string }>(
+    "select fase, sum(amount) investido from media_spend where fase is not null group by 1 order by 1"
+  );
+  const [{ total }] = await query<{ total: string }>("select coalesce(sum(amount),0) total from media_spend");
+  const linhas = rows.map((r) => {
+    const investido = +r.investido;
+    const leads = +r.leads;
+    const compradores = +r.compradores;
+    const receita = +r.receita;
+    const cpl = leads ? investido / leads : null;
+    const rpl = leads ? receita / leads : null;
+    return {
+      campanha: r.campanha, investido, visitantes: +r.visitantes, leads, compradores, receita,
+      cpl, rpl, cac: compradores ? investido / compradores : null, roas: investido ? receita / investido : null,
+      sinal: sinalMidia(cpl, rpl),
+    };
+  });
+  return { linhas, porFase: porFase.map((f) => ({ fase: f.fase, investido: +f.investido })), total: +total };
+}
+
+// ───────────── KPIs de automação (Funis §31) ─────────────
+
+export interface KpiAutomacao {
+  automation_id: string;
+  enviados: number;
+  entregues: number;
+  abertos: number;
+  cliques: number;
+  descadastros: number;
+  spam: number;
+  compradores: number;
+  receita: number;
+}
+
+/**
+ * Receita por sequência: compra aprovada até 7 dias depois de um e-mail
+ * enviado daquela automação (atribuição pelo último e-mail, simples e
+ * explicável). Uma compra conta para uma automação só.
+ */
+export async function kpisAutomacao(p: Periodo): Promise<KpiAutomacao[]> {
+  await exigirAdmin();
+  const d = desde(p);
+  const rows = await query<Record<string, string>>(
+    `with env as (
+       select * from messages where status = 'sent' and sent_at >= $1 and coalesce(delivery_mode,'live') = 'live'
+     ),
+     atrib as (
+       select distinct on (t.provider, t.transaction_id) t.transaction_id, t.amount_gross, t.lead_id, m.automation_id
+       from transactions t
+       join env m on m.lead_id = t.lead_id and m.sent_at <= t.approved_at and m.sent_at > t.approved_at - interval '7 days'
+       where t.transaction_status = 'approved' and t.approved_at >= $1
+       order by t.provider, t.transaction_id, m.sent_at desc
+     )
+     select e.automation_id,
+            count(*) enviados,
+            count(*) filter (where e.delivered_at is not null) entregues,
+            count(*) filter (where e.opened_at is not null) abertos,
+            count(*) filter (where e.clicked_at is not null) cliques,
+            count(*) filter (where e.complained_at is not null) spam,
+            (select count(distinct u.lead_id) from events u where u.event_name = 'Unsubscribe' and u.occurred_at >= $1
+               and exists (select 1 from env x where x.lead_id = u.lead_id and x.automation_id = e.automation_id
+                           and x.sent_at <= u.occurred_at and x.sent_at > u.occurred_at - interval '2 days')) descadastros,
+            (select count(distinct a.lead_id) from atrib a where a.automation_id = e.automation_id) compradores,
+            (select coalesce(sum(a.amount_gross),0) from atrib a where a.automation_id = e.automation_id) receita
+     from env e group by 1 order by receita desc, enviados desc`,
+    [d]
+  );
+  return rows.map((r) => ({
+    automation_id: r.automation_id, enviados: +r.enviados, entregues: +r.entregues, abertos: +r.abertos,
+    cliques: +r.cliques, descadastros: +r.descadastros, spam: +r.spam, compradores: +r.compradores, receita: +r.receita,
+  }));
+}
+
+// ───────────── Pronto para tráfego pago? (Financeiro §18) ─────────────
+
+export interface ItemProntidao {
+  item: string;
+  ok: boolean;
+  detalhe: string;
+}
+
+/** Checklist calculado do estado real: nada aqui é marcado à mão. */
+export async function prontidao(): Promise<ItemProntidao[]> {
+  await exigirAdmin();
+  const producao = process.env.NEXT_PUBLIC_EPIC_ENV === "production";
+  const mapasNoAr = DIMENSION_IDS.filter((d) => DIMENSIONS[d].map === "published");
+  const [r] = await query<Record<string, string | null>>(
+    `select
+       (select count(*) from products where active and checkout_url is not null and product_type = 'plan') planos,
+       (select count(*) from products where active and checkout_url is not null and product_type = 'kit') kits,
+       (select count(*) from products where active and checkout_url is not null and product_type = 'protocol') protocolo,
+       (select count(*) from products where active and checkout_url is not null and provider_product_id is null) sem_id,
+       (select count(*) from webhook_events where provider = 'kiwify') webhooks,
+       (select value #>> '{}' from app_settings where key = 'cron_last_run') cron,
+       (select count(*) from messages where status = 'scheduled' and scheduled_for < now() - interval '1 hour') atrasadas`
+  );
+  const tracking = await getTracking();
+  const capi = await getMetaCapiTokenConfigurado().catch(() => false);
+  const cron = r.cron ? new Date(r.cron) : null;
+  const cronVivo = Boolean(cron && Date.now() - cron.getTime() < 30 * 60 * 1000);
+  const modo = process.env.EPIC_EMAIL_MODE ?? (producao ? "live" : "simulate");
+  return [
+    { item: "Site 2.0 em produção", ok: producao, detalhe: producao ? "NEXT_PUBLIC_EPIC_ENV=production" : "ambiente de homologação" },
+    {
+      item: "Pelo menos 2 Mapas ao vivo",
+      ok: mapasNoAr.length >= 2,
+      detalhe: `Fricção + ${mapasNoAr.length} dimensional(is): ${mapasNoAr.map((d) => DIMENSIONS[d].name).join(", ") || "nenhum publicado"}`,
+    },
+    { item: "Plano EPIC à venda", ok: +r.planos! > 0, detalhe: `${r.planos} Plano(s) ativo(s) com checkout` },
+    { item: "Kit à venda", ok: +r.kits! > 0, detalhe: `${r.kits} Kit(s) ativo(s) com checkout` },
+    { item: "Protocolo à venda", ok: +r.protocolo! > 0, detalhe: +r.protocolo! > 0 ? "ativo com checkout" : "sem checkout ativo" },
+    {
+      item: "Checkout ligado ao site",
+      ok: Boolean(process.env.KIWIFY_WEBHOOK_TOKEN) && +r.sem_id! === 0 && +r.webhooks! > 0,
+      detalhe: [
+        process.env.KIWIFY_WEBHOOK_TOKEN ? "token do webhook ok" : "falta KIWIFY_WEBHOOK_TOKEN",
+        +r.sem_id! ? `${r.sem_id} produto(s) à venda sem ID da Kiwify` : "todos os produtos com ID",
+        +r.webhooks! ? `${r.webhooks} webhook(s) já recebidos` : "nenhum webhook recebido ainda",
+      ].join(" · "),
+    },
+    {
+      item: "Pixels e eventos",
+      ok: Boolean(tracking.metaPixelId) && Boolean(capi),
+      detalhe: [tracking.metaPixelId ? "Pixel Meta ok" : "sem Pixel Meta", capi ? "Conversions API ok" : "sem token da Conversions API",
+        tracking.ga4Id ? "GA4 ok" : "sem GA4"].join(" · "),
+    },
+    {
+      item: "Automação de e-mail rodando",
+      ok: modo === "live" && cronVivo && +r.atrasadas! === 0,
+      detalhe: [`modo ${modo}`, cronVivo ? "agendador ativo" : cron ? `agendador parado desde ${cron.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : "agendador nunca rodou",
+        +r.atrasadas! ? `${r.atrasadas} mensagem(ns) atrasada(s)` : "fila em dia"].join(" · "),
+    },
+    {
+      item: "Retorno do e-mail (abertura, clique, bounce)",
+      ok: Boolean(process.env.RESEND_WEBHOOK_SECRET),
+      detalhe: process.env.RESEND_WEBHOOK_SECRET ? "webhook do Resend configurado" : "falta RESEND_WEBHOOK_SECRET",
+    },
+  ];
 }

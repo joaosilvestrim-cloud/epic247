@@ -32,7 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PlanoPage({ params, searchParams }: Props) {
   const { dimensao } = await params;
   const { r } = await searchParams;
-  if (!isDimensionId(dimensao) || !dimensaoVisivel(dimensao)) notFound();
+  // O Plano nasce do Mapa: existe quando o Mapa da dimensão está no ar, mesmo
+  // que o texto da página da dimensão ainda esteja em aprovação.
+  if (!isDimensionId(dimensao) || !(dimensaoVisivel(dimensao) || mapaVisivel(dimensao))) notFound();
   const d = DIMENSIONS[dimensao];
   const [p, perfil] = await Promise.all([produto(`plan_${dimensao}`), perfilAtual()]);
   if (!p) notFound();

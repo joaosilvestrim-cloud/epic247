@@ -10,7 +10,7 @@ import { temCopy } from "@/lib/epic/content/copy";
 import { DIMENSAO_CONTEUDO } from "@/lib/epic/content/dimensoes";
 import { HOME } from "@/lib/epic/content/home";
 import { listarConteudos } from "@/lib/epic/server/conteudo";
-import { dimensionPath, dimensoesVisiveis } from "@/lib/epic/site";
+import { dimensoesNavegaveis } from "@/lib/epic/site";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
@@ -29,7 +29,7 @@ const TENSOES = [
 
 export default async function Home() {
   const [ideias, settings] = await Promise.all([listarConteudos({ limite: 4 }), getSettings()]);
-  const dims = dimensoesVisiveis();
+  const dims = dimensoesNavegaveis();
   const cenas = HOME.reconhecimento.cenas.filter(temCopy);
   const passos = HOME.primeiroPasso.cards.filter((c) => temCopy(c.titulo));
 
@@ -98,7 +98,7 @@ export default async function Home() {
                 const pergunta = DIMENSAO_CONTEUDO[d.id].pergunta;
                 return (
                   <li key={d.id} className="border-b border-linha sm:[&:nth-child(odd)]:border-r lg:border-r lg:[&:nth-child(5n)]:border-r-0">
-                    <Link href={dimensionPath(d.id)} className="group flex h-full flex-col p-6 transition-colors hover:bg-papel-claro">
+                    <Link href={d.href} className="group flex h-full flex-col p-6 transition-colors hover:bg-papel-claro">
                       <span className="font-mono text-xs text-latao-escuro">{String(d.order).padStart(2, "0")}</span>
                       <span className="mt-3 font-display text-[1.45rem] leading-tight text-grafite hyphens-auto break-words lg:text-[1.3rem] xl:text-[1.45rem]">{d.name}</span>
                       <span className="mt-3 text-[15px] leading-snug text-mineral-escuro">
@@ -188,7 +188,7 @@ export default async function Home() {
             </div>
           </div>
           <ol className="grid gap-x-10 sm:grid-cols-2">
-            {dimensoesVisiveis().length > 0 &&
+            {dims.length > 0 &&
               dims.map((d) => (
                 <li key={d.id} className="flex gap-3 border-b border-linha py-3">
                   <span className="pt-1 font-mono text-[11px] text-latao-escuro">{String(d.order).padStart(2, "0")}</span>

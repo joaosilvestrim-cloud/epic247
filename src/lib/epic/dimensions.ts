@@ -38,7 +38,7 @@ export const DIMENSIONS: Record<DimensionId, Dimension> = {
   energia: {
     id: "energia", order: 1, name: "Energia",
     manifestoLine: "Energia para começar.",
-    menuPhrase: null, mapWave: 1, page: "draft", map: "draft",
+    menuPhrase: null, mapWave: 1, page: "draft", map: "published",
   },
   mentalidade: {
     id: "mentalidade", order: 2, name: "Mentalidade",
@@ -68,7 +68,7 @@ export const DIMENSIONS: Record<DimensionId, Dimension> = {
   acao: {
     id: "acao", order: 7, name: "Ação",
     manifestoLine: "Ação para sair do papel.",
-    menuPhrase: null, mapWave: 1, page: "draft", map: "draft",
+    menuPhrase: null, mapWave: 1, page: "draft", map: "published",
   },
   inteligencia: {
     id: "inteligencia", order: 8, name: "Inteligência",

@@ -1,15 +1,15 @@
 import AppFooter from "@/components/epic/AppFooter";
 import AppHeader, { type ItemDimensao } from "@/components/epic/AppHeader";
-import { CTA_FRICCAO, NAV, dimensionPath, dimensoesVisiveis } from "@/lib/epic/site";
+import { CTA_FRICCAO, NAV, dimensoesNavegaveis } from "@/lib/epic/site";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  const dimensoes: ItemDimensao[] = dimensoesVisiveis().map((d) => ({
+  const dimensoes: ItemDimensao[] = dimensoesNavegaveis().map((d) => ({
     id: d.id,
     ordem: d.order,
     nome: d.name,
     // Frase do mega-menu ainda é COPY PENDENTE: usa a linha aprovada do manifesto.
     frase: d.menuPhrase ?? d.manifestoLine,
-    href: dimensionPath(d.id),
+    href: d.href,
   }));
 
   return (

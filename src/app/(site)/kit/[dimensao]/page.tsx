@@ -31,11 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function KitPage({ params }: Props) {
   const { dimensao } = await params;
-  if (!isDimensionId(dimensao) || !dimensaoVisivel(dimensao)) notFound();
+  if (!isDimensionId(dimensao)) notFound();
   const d = DIMENSIONS[dimensao];
   const cfg = getDimensionalMap(dimensao);
   const [p, perfil] = await Promise.all([produto(`kit_${dimensao}`), perfilAtual()]);
-  if (!p) notFound();
+  // Kit aparece com o Mapa no ar ou quando já está à venda (ex.: Kit Energia do Ciclo 1).
+  if (!p || !(dimensaoVisivel(dimensao) || mapaVisivel(dimensao) || vendavel(p))) notFound();
   const regras = ofertasPermitidas(perfil, dimensao);
 
   return (

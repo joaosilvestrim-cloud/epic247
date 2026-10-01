@@ -1,12 +1,11 @@
 import Link from "next/link";
 import BrandLogo from "@/components/brand-logo";
-import { dimensionPath } from "@/lib/epic/dimensions";
 import { MANIFESTO } from "@/lib/epic/content/home";
-import { CTA_FRICCAO, NAV, dimensoesVisiveis } from "@/lib/epic/site";
+import { CTA_FRICCAO, NAV, dimensoesNavegaveis } from "@/lib/epic/site";
 import NewsletterForm from "./NewsletterForm";
 
 export default function AppFooter() {
-  const dims = dimensoesVisiveis();
+  const dims = dimensoesNavegaveis();
   const ano = new Date().getFullYear();
 
   return (
@@ -30,7 +29,7 @@ export default function AppFooter() {
               <ul className="space-y-1.5 text-sm text-papel/75">
                 {dims.map((d) => (
                   <li key={d.id}>
-                    <Link href={dimensionPath(d.id)} className="hover:text-papel">
+                    <Link href={d.href} className="hover:text-papel">
                       {d.name}
                     </Link>
                   </li>

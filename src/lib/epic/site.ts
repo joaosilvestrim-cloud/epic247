@@ -1,6 +1,6 @@
 // Navegação global (RF-001, Blueprint §5).
 
-import { DIMENSION_IDS, DIMENSIONS, dimensionPath, type Dimension } from "./dimensions";
+import { DIMENSION_IDS, DIMENSIONS, dimensionPath, mapPath, type Dimension } from "./dimensions";
 import { IS_PRODUCTION } from "./content/copy";
 
 export const NAV = [
@@ -24,6 +24,23 @@ export function dimensaoVisivel(id: Dimension["id"]): boolean {
 
 export function mapaVisivel(id: Dimension["id"]): boolean {
   return !IS_PRODUCTION || DIMENSIONS[id].map === "published";
+}
+
+/**
+ * Para onde uma dimensão leva no site: a página, quando o texto está
+ * aprovado; o Mapa, quando só ele está no ar (Onda 1); senão, a lugar nenhum.
+ */
+export function dimensaoHref(id: Dimension["id"]): string | null {
+  if (dimensaoVisivel(id)) return dimensionPath(id);
+  if (mapaVisivel(id)) return mapPath(id);
+  return null;
+}
+
+/** Dimensões que aparecem na navegação (página ou Mapa no ar). */
+export function dimensoesNavegaveis(): (Dimension & { href: string })[] {
+  return DIMENSION_IDS.map((d) => ({ ...DIMENSIONS[d], href: dimensaoHref(d) })).filter(
+    (d): d is Dimension & { href: string } => d.href !== null
+  );
 }
 
 export { dimensionPath };
