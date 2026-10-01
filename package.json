@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "qa": "node scripts/v2-qa.mjs",
     "test": "tsc -p tsconfig.test.json && node --test \".test-build/**/*.test.js\""
   },
   "dependencies": {

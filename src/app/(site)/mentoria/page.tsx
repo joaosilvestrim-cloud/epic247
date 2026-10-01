@@ -5,6 +5,7 @@ import { C, Container, SectionTitle } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
 import { MENTORIA } from "@/lib/epic/content/produtos";
 import { formatPrice } from "@/lib/epic/products";
+import { perfilAtual } from "@/lib/epic/server/perfil";
 import { capacidadeMentoria, produto } from "@/lib/epic/server/produtos";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default async function MentoriaPage() {
-  const [vagas, p] = await Promise.all([capacidadeMentoria(), produto("mentoring")]);
+  const [vagas, p, perfil] = await Promise.all([capacidadeMentoria(), produto("mentoring"), perfilAtual()]);
+  // Cliente da Mentoria não recebe a oferta de novo (RF-041).
+  const cliente = Boolean(perfil?.mentoring_purchased);
 
   return (
     <>
@@ -69,17 +72,29 @@ export default async function MentoriaPage() {
 
       <section className="border-t border-linha bg-papel-escuro">
         <Container estreito className="py-20">
-          <h2 className="font-display text-[2rem] leading-tight text-grafite">
-            {vagas.disponivel ? "Quero conversar sobre a Mentoria" : "Entrar na lista de espera"}
-          </h2>
-          <p className="mt-3 text-grafite/75">
-            {vagas.disponivel
-              ? "Conte um pouco do seu momento. A equipe lê e responde com os próximos passos."
-              : "Avisamos quando uma vaga abrir, sem prometer antes da hora."}
-          </p>
-          <div className="mt-8">
-            <FormMentoria listaDeEspera={!vagas.disponivel} />
-          </div>
+          {cliente ? (
+            <>
+              <h2 className="font-display text-[2rem] leading-tight text-grafite">Você já faz parte da Mentoria</h2>
+              <p className="mt-3 text-grafite/75">
+                Para combinar encontros ou tirar uma dúvida, responda o e-mail de boas-vindas ou escreva pelo{" "}
+                <a href="/contato" className="underline underline-offset-4">contato</a>.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="font-display text-[2rem] leading-tight text-grafite">
+                {vagas.disponivel ? "Quero conversar sobre a Mentoria" : "Entrar na lista de espera"}
+              </h2>
+              <p className="mt-3 text-grafite/75">
+                {vagas.disponivel
+                  ? "Conte um pouco do seu momento. A equipe lê e responde com os próximos passos."
+                  : "Avisamos quando uma vaga abrir, sem prometer antes da hora."}
+              </p>
+              <div className="mt-8">
+                <FormMentoria listaDeEspera={!vagas.disponivel} />
+              </div>
+            </>
+          )}
         </Container>
       </section>
     </>

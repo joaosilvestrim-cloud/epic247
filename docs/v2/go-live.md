@@ -41,6 +41,15 @@ Nada disto impede a virada técnica, mas define o que aparece no site.
 
 Gerar segredos: `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
 
+**Homologação (ambiente Preview da Vercel).** Cada push na branch `v2` gera
+um preview em `epic247-git-v2-joao-silvestrims-projects.vercel.app`, fechado
+pelo login da Vercel. Para ele funcionar por inteiro (Mapas, captura, admin),
+cadastrar no ambiente **Preview**: `DATABASE_URL`, `EPIC_DB_SCHEMA=v2_staging`,
+`EPIC_SECRET`, `CRON_SECRET`, `EPIC_EMAIL_MODE=simulate` e
+`EPIC_EMAIL_ALLOWLIST` com os e-mails da equipe. Não cadastrar
+`NEXT_PUBLIC_EPIC_ENV` no Preview: sem ela o site mostra os rascunhos e não
+entra no Google.
+
 ## 3. Banco
 
 ```bash
@@ -96,6 +105,10 @@ Ele chama `/api/v2/cron/disparar` a cada 10 minutos.
 
 ## 6. Ordem da virada
 
+0. QA automático verde contra o staging: `npm run qa` (59 verificações de
+   Mapa, identidade, compra, webhook repetido, supressão, reembolso,
+   chargeback e eventos). Ele cria e apaga os próprios dados e recusa rodar
+   no schema `v2`.
 1. Variáveis da Vercel configuradas (item 2), com `EPIC_EMAIL_MODE=simulate`.
 2. Banco migrado (item 3).
 3. Merge da branch `v2` na `main`. A Vercel publica sozinha.
