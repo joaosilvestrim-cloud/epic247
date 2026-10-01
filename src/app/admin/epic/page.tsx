@@ -148,6 +148,21 @@ export default async function PainelPage({ searchParams }: Props) {
         </div>
       </Secao>
 
+      <Secao titulo="Coortes de clientes (LTV inicial)">
+        <Tabela cab={["1ª compra em", "Clientes", "Receita por cliente em 30 dias", "Em 60 dias", "Fizeram 2ª compra"]} vazio={!eco.coortes.length}>
+          {eco.coortes.map((c) => (
+            <tr key={c.mes}>
+              <Td>{c.mes}</Td>
+              <Td direita>{c.clientes}</Td>
+              <Td direita>{brl(c.receita30 / c.clientes)}</Td>
+              <Td direita>{brl(c.receita60 / c.clientes)}</Td>
+              <Td direita>{pct(c.segundaCompra, c.clientes)}</Td>
+            </tr>
+          ))}
+        </Tabela>
+        <p className="mt-2 text-xs text-mineral-escuro">Não julgar a aquisição só pela primeira compra quando existe progressão de ticket (Financeiro §9).</p>
+      </Secao>
+
       <Secao titulo="Por origem">
         <Tabela cab={["Origem", "Visitantes", "Mapas", "Leads", "Compras", "Vendido", "Lead / visitante"]} vazio={d.porOrigem.length === 0}>
           {d.porOrigem.map((o) => (

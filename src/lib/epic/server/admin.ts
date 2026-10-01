@@ -68,15 +68,15 @@ export async function painel(p: Periodo): Promise<Painel> {
   );
   const porOrigem = await query<Record<string, string>>(
     `with o as (
-       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto') as origem, count(distinct lead_id) as visitantes, 0 as mapas, 0 as leads, 0 as compras, 0::numeric as bruto
+       select fonte_normalizada(utm_source) as origem, count(distinct lead_id) as visitantes, 0 as mapas, 0 as leads, 0 as compras, 0::numeric as bruto
        from sessions where session_started_at >= $1 group by 1
        union all
-       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto'), 0, count(*), 0, 0, 0 from map_results where started_at >= $1 group by 1
+       select fonte_normalizada(utm_source), 0, count(*), 0, 0, 0 from map_results where started_at >= $1 group by 1
        union all
-       select coalesce(nullif(nullif(l.last_touch_source,''),'direct'),'direto'), 0, 0, count(distinct e.lead_id), 0, 0
+       select fonte_normalizada(l.last_touch_source), 0, 0, count(distinct e.lead_id), 0, 0
        from events e join leads l using (lead_id) where e.event_name = 'SubmitMapEmail' and e.occurred_at >= $1 group by 1
        union all
-       select coalesce(nullif(nullif(utm_source,''),'direct'),'direto'), 0, 0, 0, count(*), sum(amount_gross)
+       select fonte_normalizada(utm_source), 0, 0, 0, count(*), sum(amount_gross)
        from transactions where transaction_status = 'approved' and approved_at >= $1 group by 1
      )
      select origem, sum(visitantes) visitantes, sum(mapas) mapas, sum(leads) leads, sum(compras) compras, sum(bruto) bruto
@@ -202,6 +202,7 @@ export interface Economia {
   porPerfil: { mapa: string; perfil: string; concluidos: number; leads: number; compradores: number }[];
   porProduto: { produto: string; nome: string; vendas: number; bruto: number; reembolsos: number }[];
   acumulado: Record<string, number>;
+  coortes: { mes: string; clientes: number; receita30: number; receita60: number; segundaCompra: number }[];
 }
 
 export async function economia(p: Periodo): Promise<Economia> {
@@ -270,6 +271,21 @@ export async function economia(p: Periodo): Promise<Economia> {
     `select p.product_type tipo, count(*) n from transactions t join products p using (product_id)
      where t.transaction_status = 'approved' group by 1`
   );
+  // LTV por coorte (Financeiro §9): mês da 1ª compra, receita acumulada em 30 e 60 dias.
+  const coortes = await query<{ mes: string; clientes: string; r30: string; r60: string; segunda: string }>(
+    `with primeira as (
+       select lead_id, min(approved_at) inicio from transactions where transaction_status = 'approved' group by 1
+     )
+     select to_char(date_trunc('month', p.inicio at time zone 'America/Sao_Paulo'), 'MM/YYYY') mes,
+            count(*) clientes,
+            sum((select coalesce(sum(t.amount_gross),0) from transactions t where t.lead_id = p.lead_id
+                  and t.transaction_status = 'approved' and t.approved_at < p.inicio + interval '30 days')) r30,
+            sum((select coalesce(sum(t.amount_gross),0) from transactions t where t.lead_id = p.lead_id
+                  and t.transaction_status = 'approved' and t.approved_at < p.inicio + interval '60 days')) r60,
+            count(*) filter (where (select count(*) from transactions t where t.lead_id = p.lead_id
+                  and t.transaction_status = 'approved') >= 2) segunda
+     from primeira p group by date_trunc('month', p.inicio at time zone 'America/Sao_Paulo'), 1 order by date_trunc('month', p.inicio at time zone 'America/Sao_Paulo') desc limit 6`
+  );
   const leadsTotal = Number(base.leads_total ?? 0);
   return {
     ofertas: ofertas.map((o) => ({ oferta: o.oferta, vistas: +o.vistas, compras: +o.compras })),
@@ -282,6 +298,7 @@ export async function economia(p: Periodo): Promise<Economia> {
     porPerfil: porPerfil.map((r) => ({ mapa: r.mapa, perfil: r.perfil, concluidos: +r.concluidos, leads: +r.leads, compradores: +r.compradores })),
     porProduto: porProduto.map((r) => ({ produto: r.produto, nome: r.nome, vendas: +r.vendas, bruto: +r.bruto, reembolsos: +r.reembolsos })),
     acumulado: Object.fromEntries(acumulado.map((a) => [a.tipo, +a.n])),
+    coortes: coortes.map((c) => ({ mes: c.mes, clientes: +c.clientes, receita30: +c.r30, receita60: +c.r60, segundaCompra: +c.segunda })),
   };
 }
 
