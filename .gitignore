@@ -30,3 +30,6 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# build dos testes do dominio
+.test-build/
