@@ -8,7 +8,13 @@ export const FRICCAO: FrictionMapConfig = {
   kind: "friccao",
   mapType: "friccao",
   mapVersion: "1.0",
+  // 1.1 = comparação relativa (proposta de correção de viés). Só vira a
+  // versão ativa depois da aprovação de Ju e Luiz. Ver docs/v2/vies-mapa-friccao.md.
   scoringVersion: "1.0",
+  scoringVersions: {
+    "1.0": { comparacao: "bruta" },
+    "1.1": { comparacao: "relativa", limiarProximo: 0.4 },
+  },
   resultCopyVersion: "1.0",
   title: "Mapa de Fricção EPIC",
   disclaimer:

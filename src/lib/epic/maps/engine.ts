@@ -98,12 +98,18 @@ export function scoreDimensional(
  *    sequência (as perguntas avançam em direção à ação concreta);
  * 3) por fim, a ordem do Protocolo, só para ser determinístico.
  * Diferença de 0 ou 1 ponto entre as duas primeiras é sempre comunicada
- * como "duas fricções muito próximas", sem falsa precisão.
+ * como "duas fricções muito próximas", sem falsa precisão. Na comparação
+ * relativa (versão 1.1), "1 ponto" vira `limiarProximo` desvios padrão.
+ *
+ * `versao` permite recompor um resultado antigo na regra em que foi gerado.
  */
 export function scoreFriction(
   config: FrictionMapConfig,
-  answers: Record<number, string>
+  answers: Record<number, string>,
+  versao: string = config.scoringVersion
 ): FrictionResult {
+  const regra = config.scoringVersions[versao] ?? config.scoringVersions[config.scoringVersion];
+  const scoringVersion = config.scoringVersions[versao] ? versao : config.scoringVersion;
   const zero = () =>
     Object.fromEntries(DIMENSION_IDS.map((d) => [d, 0])) as Record<DimensionId, number>;
   const scores = zero();
@@ -120,28 +126,70 @@ export function scoreFriction(
     ultimaPerguntaPrincipal[opcao.primary] = Math.max(ultimaPerguntaPrincipal[opcao.primary], q.id);
   }
 
+  let valor: Record<DimensionId, number> = scores;
+  let relativeScores: Record<DimensionId, number> | undefined;
+  if (regra.comparacao === "relativa") {
+    const ref = referenciaFriccao(config);
+    relativeScores = zero();
+    for (const d of DIMENSION_IDS) {
+      relativeScores[d] = ref[d].desvio > 0 ? (scores[d] - ref[d].media) / ref[d].desvio : 0;
+    }
+    valor = relativeScores;
+  }
+
+  // Igualdade com tolerância: a nota relativa é fracionária.
+  const EPS = 1e-9;
   const ordem = [...DIMENSION_IDS].sort(
     (a, b) =>
-      scores[b] - scores[a] ||
+      (Math.abs(valor[b] - valor[a]) > EPS ? valor[b] - valor[a] : 0) ||
       primaryHits[b] - primaryHits[a] ||
       ultimaPerguntaPrincipal[b] - ultimaPerguntaPrincipal[a] ||
       DIMENSION_IDS.indexOf(a) - DIMENSION_IDS.indexOf(b)
   );
   const [primary, secondary] = ordem;
-  const diff = scores[primary] - scores[secondary];
-  const tiedTop = ordem.filter((d) => scores[d] === scores[primary]);
+  const diff = valor[primary] - valor[secondary];
+  const tiedTop = ordem.filter((d) => Math.abs(valor[d] - valor[primary]) <= EPS);
+  const limiar = regra.comparacao === "relativa" ? (regra.limiarProximo ?? 0.4) : 1;
+  const kind: FrictionResult["kind"] = diff <= EPS ? "tie" : diff <= limiar + EPS ? "close" : "single";
 
   return {
     mapType: "friccao",
     mapVersion: config.mapVersion,
-    scoringVersion: config.scoringVersion,
-    kind: diff === 0 ? "tie" : diff === 1 ? "close" : "single",
+    scoringVersion,
+    kind,
     scores,
+    ...(relativeScores ? { relativeScores } : {}),
     primaryHits,
     primary,
     secondary,
-    tiedTop: diff === 0 ? tiedTop : [],
+    tiedTop: kind === "tie" ? tiedTop : [],
+    ranking: ordem,
   };
+}
+
+/**
+ * Média e desvio padrão de pontos de cada dimensão se cada alternativa
+ * fosse igualmente provável. Depende só do questionário (não dos dados).
+ */
+export function referenciaFriccao(config: FrictionMapConfig): Record<DimensionId, { media: number; desvio: number }> {
+  const ref = Object.fromEntries(DIMENSION_IDS.map((d) => [d, { media: 0, desvio: 0 }])) as Record<
+    DimensionId,
+    { media: number; desvio: number }
+  >;
+  for (const d of DIMENSION_IDS) {
+    let media = 0;
+    let variancia = 0;
+    for (const q of config.questions) {
+      const pts = q.options.map(
+        (o) => (o.primary === d ? config.primaryWeight : 0) + (o.secondary === d ? config.secondaryWeight : 0)
+      );
+      const m = pts.reduce((a, x) => a + x, 0) / pts.length;
+      media += m;
+      variancia += pts.reduce((a, x) => a + (x - m) ** 2, 0) / pts.length;
+    }
+    ref[d] = { media, desvio: Math.sqrt(variancia) };
+  }
+  return ref;
 }
 
 /** Escala de resposta dos Mapas dimensionais (todos os documentos). */

@@ -188,3 +188,79 @@ describe("Mapa de Fricção", () => {
     });
   });
 });
+
+describe("Mapa de Fricção · pontuação 1.1 (comparação relativa)", () => {
+  type Opcao = (typeof FRICCAO.questions)[number]["options"][number];
+  /** Percorre todas as combinações de respostas (5^7). */
+  function todas(opcoes: Opcao[][], f: (r: Record<number, string>) => void) {
+    const r: Record<number, string> = {};
+    (function rec(i: number) {
+      if (i === opcoes.length) return f(r);
+      for (const o of opcoes[i]) {
+        r[FRICCAO.questions[i].id] = o.id;
+        rec(i + 1);
+      }
+    })(0);
+  }
+
+  it("respostas ao acaso se espalham entre as 10 dimensões (8% a 12% cada)", () => {
+    const n = Object.fromEntries(DIMENSION_IDS.map((d) => [d, 0])) as Record<string, number>;
+    let total = 0;
+    todas(FRICCAO.questions.map((q) => q.options), (r) => {
+      n[scoreFriction(FRICCAO, r, "1.1").primary]++;
+      total++;
+    });
+    for (const d of DIMENSION_IDS) {
+      const p = n[d] / total;
+      assert.ok(p > 0.08 && p < 0.12, `${d}: ${(p * 100).toFixed(1)}%`);
+    }
+  });
+
+  it("quem tem uma fricção clara recebe essa fricção (99% ou mais)", () => {
+    for (const d of DIMENSION_IDS) {
+      const opcoes = FRICCAO.questions.map((q) => {
+        const p = q.options.filter((o) => o.primary === d);
+        if (p.length) return p;
+        const s = q.options.filter((o) => o.secondary === d);
+        return s.length ? s : q.options;
+      });
+      let ganha = 0;
+      let total = 0;
+      todas(opcoes, (r) => {
+        total++;
+        if (scoreFriction(FRICCAO, r, "1.1").primary === d) ganha++;
+      });
+      assert.ok(ganha / total >= 0.99, `${d}: ${((ganha / total) * 100).toFixed(1)}%`);
+    }
+  });
+
+  it("registra a versão usada e cai na ativa quando a versão é desconhecida", () => {
+    const r: Record<number, string> = {};
+    for (const q of FRICCAO.questions) r[q.id] = "A";
+    const v11 = scoreFriction(FRICCAO, r, "1.1");
+    assert.equal(v11.scoringVersion, "1.1");
+    assert.ok(v11.relativeScores);
+    const desconhecida = scoreFriction(FRICCAO, r, "9.9");
+    assert.equal(desconhecida.scoringVersion, FRICCAO.scoringVersion);
+    assert.deepEqual(desconhecida, scoreFriction(FRICCAO, r));
+  });
+
+  it("o ranking começa sempre pela principal e pela secundária, nas duas versões", () => {
+    for (const v of ["1.0", "1.1"]) {
+      todas(FRICCAO.questions.map((q) => q.options), (r) => {
+        const res = scoreFriction(FRICCAO, r, v);
+        assert.equal(res.ranking[0], res.primary);
+        assert.equal(res.ranking[1], res.secondary);
+        assert.equal(res.ranking.length, 10);
+      });
+    }
+  });
+
+  it("a versão 1.0 continua idêntica para resultados já salvos", () => {
+    const r: Record<number, string> = {};
+    for (const q of FRICCAO.questions) r[q.id] = "B";
+    const v10 = scoreFriction(FRICCAO, r, "1.0");
+    assert.equal(v10.scoringVersion, "1.0");
+    assert.equal(v10.relativeScores, undefined);
+  });
+});

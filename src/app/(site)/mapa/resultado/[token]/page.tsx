@@ -34,10 +34,13 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
   const proximas = r.kind !== "single";
 
   // Ranking só das 5 primeiras, sem números: evita falsa precisão (§3).
-  const ranking = (Object.keys(r.scores) as DimensionId[])
-    .sort((a, b) => r.scores[b] - r.scores[a])
-    .slice(0, 5);
-  const max = Math.max(1, r.scores[ranking[0]]);
+  // A ordem vem do motor (com desempate), para a 1ª barra ser sempre a do texto.
+  const ranking = r.ranking.slice(0, 5);
+  const valor = r.relativeScores ?? r.scores;
+  const menor = r.relativeScores ? Math.min(...Object.values(r.relativeScores)) : 0;
+  const maior = valor[ranking[0]];
+  const largura = (d: DimensionId) =>
+    maior - menor > 0 ? Math.max(8, ((valor[d] - menor) / (maior - menor)) * 100) : 100;
 
   const ctaPrincipal = mapaVisivel(p)
     ? { href: mapPath(p), label: FRICCAO.results[p].cta.replace(/\.$/, "") }
@@ -78,7 +81,7 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
                 <span aria-hidden className="relative h-2 overflow-hidden rounded-full bg-papel-escuro">
                   <span
                     className={`absolute inset-y-0 left-0 rounded-full ${i === 0 ? "bg-grafite" : "bg-mineral"}`}
-                    style={{ width: `${(r.scores[d] / max) * 100}%` }}
+                    style={{ width: `${largura(d)}%` }}
                   />
                 </span>
               </li>

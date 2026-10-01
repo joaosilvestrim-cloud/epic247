@@ -146,9 +146,10 @@ export async function concluirMapa(q: Q, id: string, respostasBrutas: Record<str
     await q(
       `update map_results set status = 'completed', completed_at = now(), answers_json = $2,
          primary_dimension = $3, secondary_dimension = $4, result_kind = $5, scores = $6, result_token = $7,
-         current_step = $8
+         current_step = $8, scoring_version = $9
        where map_result_id = $1`,
-      [id, JSON.stringify(respostas), r.primary, r.secondary, r.kind, JSON.stringify(r.scores), token, FRICCAO.questions.length]
+      [id, JSON.stringify(respostas), r.primary, r.secondary, r.kind, JSON.stringify(r.scores), token,
+        FRICCAO.questions.length, r.scoringVersion]
     );
   } else {
     const cfg = getDimensionalMap(m.map_type);
@@ -218,6 +219,7 @@ export interface ResultadoSalvo {
   lead_id: string;
   map_type: MapType;
   map_version: string;
+  scoring_version: string;
   scores: Record<string, number>;
   primary_dimension: DimensionId | null;
   secondary_dimension: DimensionId | null;
@@ -233,7 +235,7 @@ export interface ResultadoSalvo {
 export async function resultadoPorToken(q: Q, token: string): Promise<ResultadoSalvo | null> {
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
   const [r] = await q<ResultadoSalvo>(
-    `select map_result_id, lead_id, map_type, map_version, scores, primary_dimension, secondary_dimension,
+    `select map_result_id, lead_id, map_type, map_version, scoring_version, scores, primary_dimension, secondary_dimension,
             primary_pattern, secondary_pattern, result_kind, completed_at, answers_json, result_token
      from map_results where result_token = $1 and status = 'completed'`,
     [token]
@@ -244,7 +246,7 @@ export async function resultadoPorToken(q: Q, token: string): Promise<ResultadoS
 /** Recalcula o resultado completo (com faixas e empates) a partir do salvo. */
 export function recomporResultado(r: ResultadoSalvo): DimensionalResult | FrictionResult {
   if (r.map_type === "friccao") {
-    return scoreFriction(FRICCAO, r.answers_json as Record<number, string>);
+    return scoreFriction(FRICCAO, r.answers_json as Record<number, string>, r.scoring_version);
   }
   return scoreDimensional(getDimensionalMap(r.map_type), r.answers_json as Record<string, number>);
 }

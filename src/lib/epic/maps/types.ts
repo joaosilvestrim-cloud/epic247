@@ -106,11 +106,27 @@ export interface FrictionResultCopy {
   cta: string;
 }
 
+/**
+ * Regra de comparação entre dimensões no Mapa de Fricção.
+ * - "bruta": soma de pontos (+3/+1), como no documento v1.0;
+ * - "relativa": cada dimensão é comparada com o quanto ela costuma pontuar
+ *   (pontos menos a média, divididos pelo desvio padrão). Corrige o viés de
+ *   dimensões que aparecem em mais alternativas.
+ */
+export interface FrictionScoring {
+  comparacao: "bruta" | "relativa";
+  /** Só na relativa: diferença abaixo disto entre as duas primeiras = "muito próximos". */
+  limiarProximo?: number;
+}
+
 export interface FrictionMapConfig {
   kind: "friccao";
   mapType: "friccao";
   mapVersion: string;
+  /** Versão de pontuação usada em resultados novos. */
   scoringVersion: string;
+  /** Todas as versões de pontuação já usadas (resultados antigos são recompostos na sua). */
+  scoringVersions: Record<string, FrictionScoring>;
   resultCopyVersion: string;
   title: string;
   disclaimer: string;
@@ -152,9 +168,13 @@ export interface FrictionResult {
   scoringVersion: string;
   kind: Exclude<ResultKind, "low">;
   scores: Record<DimensionId, number>;
+  /** Na comparação relativa: a nota de cada dimensão em desvios padrão. */
+  relativeScores?: Record<DimensionId, number>;
   /** Quantas vezes cada dimensão recebeu o peso principal. */
   primaryHits: Record<DimensionId, number>;
   primary: DimensionId;
   secondary: DimensionId;
   tiedTop: DimensionId[];
+  /** As 10 dimensões na ordem final, já com desempate. */
+  ranking: DimensionId[];
 }
