@@ -73,6 +73,12 @@ export interface DimensionalMapConfig {
   closingPhrase: string;
   ctaPlan: string;
   ctaKit: string;
+  /**
+   * Aviso de segurança exibido no resultado (seção "Linguagem e
+   * responsabilidade" de cada documento). Não é copy de marketing: aparece
+   * também em produção, mesmo antes de a copy final ser aprovada.
+   */
+  safetyNote?: string;
   /** Dimensões a sugerir quando a fricção pode estar em outro lugar. */
   related: { dimension: DimensionId; when: string }[];
 }

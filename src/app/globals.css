@@ -1,24 +1,50 @@
 @import "tailwindcss";
 
+/*
+  EPIC247 2.0 — Design tokens (Identidade Visual e Brand System v1.0).
+  Paleta base: creme + grafite + preto quente (85–90%), cinza mineral
+  (5–10%), latão (3–5%, nunca como fundo grande). Sem #000 nem #FFF puros,
+  sem cinza azulado. A cor da vida entra pela fotografia, não pela UI.
+*/
 @theme {
-  /* ── Paleta EPIC247 ──────────────────────────────────────────── */
-  --color-navy: #182848;
-  --color-navy-deep: #0f1c34;
-  --color-offwhite: #f8f8f8;
-  --color-cream: #f8f0e8;
-  --color-gold: #c09840;
-  --color-gold-soft: #d8b765;
-  --color-line: #b0b0b0;
+  /* ── Paleta 2.0 ─────────────────────────────────────────────── */
+  --color-papel: #f1e8dc;        /* creme: fundo dominante */
+  --color-papel-claro: #f7f2ea;  /* superfície elevada (cartão, campo) */
+  --color-papel-escuro: #e6dbcb; /* faixa alternada, divisória larga */
+  --color-grafite: #2b2a28;      /* texto e títulos */
+  --color-tinta: #171614;        /* preto quente: blocos escuros */
+  --color-mineral: #8b8782;      /* apoio, metadados */
+  --color-mineral-escuro: #66625d; /* texto secundário com contraste AA */
+  --color-latao: #b59a63;        /* acento: linhas, números, marcação */
+  --color-latao-escuro: #8c7445; /* latão legível sobre creme */
+  --color-linha: #d8ccbb;        /* filete sobre creme */
 
-  /* compat com classes antigas do quiz (mapeadas para a nova paleta) */
-  --color-epic-dark: #0f1c34;
-  --color-epic-navy: #182848;
-  --color-epic-blue: #182848;
-  --color-epic-accent: #d8b765;
-  --color-epic-amber: #c09840;
+  /*
+    Compatibilidade com o /admin e telas antigas: os nomes antigos passam a
+    apontar para a paleta 2.0, então o painel muda junto sem reescrever.
+  */
+  --color-navy: #2b2a28;
+  --color-navy-deep: #171614;
+  --color-offwhite: #f4eee5;
+  --color-cream: #ebe1d3;
+  --color-gold: #b59a63;
+  --color-gold-soft: #c9b283;
+  --color-line: #b9b0a5;
+  --color-epic-dark: #171614;
+  --color-epic-navy: #2b2a28;
+  --color-epic-blue: #2b2a28;
+  --color-epic-accent: #c9b283;
+  --color-epic-amber: #b59a63;
 
+  /* ── Tipografia (trocável por token: a fonte final ainda pode mudar) ── */
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* ── Grid e ritmo ── */
+  --container-texto: 40rem;
+  --container-site: 76rem;
+  --radius-epic: 0.375rem;
 }
 
 :root {
@@ -30,128 +56,80 @@ html {
 }
 
 body {
-  background-color: var(--color-offwhite);
-  color: var(--color-navy);
+  background-color: var(--color-papel);
+  color: var(--color-grafite);
   font-family: var(--font-sans);
-  /* Corpo em 17px (hierarquia definida em 17/09/2026) */
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* A Fraunces e variavel: deixa o opsz trabalhar sozinho, assim o titulo
-   grande sai mais delicado e o pequeno mais robusto. */
+/* Fraunces variável: opsz deixa o título grande delicado e o pequeno firme. */
 .font-display {
   font-optical-sizing: auto;
   letter-spacing: -0.015em;
 }
 
-/* ── Utilitários ─────────────────────────────────────────────── */
-.text-gold-gradient {
-  background: linear-gradient(100deg, #c09840 0%, #e3c478 45%, #c09840 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shimmer 6s linear infinite;
+/* Foco visível em tudo que é interativo (Requisitos RF-069). */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-latao-escuro);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-.gold-rule {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #c09840, transparent);
+/* ── Sinais de pensamento (Brand §9): marcação, não decoração ── */
+
+/* Sublinhado feito à mão, em latão, sob uma palavra-chave. */
+.marca-mao {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 40 3, 90 10, 130 6 S 185 4, 198 7' fill='none' stroke='%23b59a63' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 0.32em;
+  background-position: 0 96%;
+  padding-bottom: 0.08em;
 }
 
-/* ── Keyframes ───────────────────────────────────────────────── */
-@keyframes float-blob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(4%, -6%) scale(1.12); }
-  66% { transform: translate(-5%, 4%) scale(0.94); }
+/* Filete fino de latão. */
+.filete {
+  height: 1px;
+  background: var(--color-latao);
 }
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.06); }
+/* Grão de papel discreto (Brand §9: textura/grão). */
+.grao {
+  position: relative;
+  isolation: isolate;
 }
-
-@keyframes grid-drift {
-  from { background-position: 0 0; }
-  to { background-position: 56px 56px; }
-}
-
-@keyframes shimmer {
-  to { background-position: 200% center; }
-}
-
-@keyframes float-soft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.15; transform: scale(0.8); }
-  50% { opacity: 0.9; transform: scale(1.25); }
-}
-
-@keyframes scroll-bob {
-  0%, 100% { transform: translateY(0); opacity: 0.4; }
-  50% { transform: translateY(8px); opacity: 1; }
-}
-
-/* ── Bateria Vital ───────────────────────────────────────────── */
-@keyframes wave-spin {
-  from { transform: translateX(-50%) rotate(0deg); }
-  to { transform: translateX(-50%) rotate(360deg); }
-}
-
-@keyframes bubble-rise {
-  0% { transform: translateY(0) scale(1); opacity: 0; }
-  15% { opacity: 0.75; }
-  100% { transform: translateY(-150px) scale(0.3); opacity: 0; }
-}
-
-@keyframes battery-glow {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(192, 152, 64, 0.45)); }
-  50% { filter: drop-shadow(0 0 22px rgba(216, 183, 101, 0.85)); }
-}
-
-@keyframes bolt-flicker {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  45% { opacity: 1; transform: scale(1.08); }
-  50% { opacity: 0.6; }
-}
-
-.animate-battery-glow { animation: battery-glow 3s ease-in-out infinite; }
-.animate-bolt-flicker { animation: bolt-flicker 2.4s ease-in-out infinite; }
-
-.battery-wave {
+.grao::after {
+  content: "";
   position: absolute;
-  left: 50%;
-  width: 240%;
-  aspect-ratio: 1;
-  border-radius: 43%;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.16 0 0 0 0 0.15 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.animate-float-blob { animation: float-blob 16s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow 3.5s ease-in-out infinite; }
-.animate-float-soft { animation: float-soft 7s ease-in-out infinite; }
-.animate-twinkle { animation: twinkle 4s ease-in-out infinite; }
-.animate-scroll-bob { animation: scroll-bob 1.8s ease-in-out infinite; }
-
-/* grade sutil (hero) */
-.bg-grid-gold {
-  background-image:
-    linear-gradient(rgba(192, 152, 64, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(192, 152, 64, 0.08) 1px, transparent 1px);
-  background-size: 56px 56px;
-  animation: grid-drift 14s linear infinite;
+/* Texto longo editorial. */
+.prosa p + p {
+  margin-top: 1em;
 }
 
-/* grade do quiz (agora em tom dourado) */
-.bg-quiz-grid {
-  background-image:
-    linear-gradient(rgba(216, 183, 101, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(216, 183, 101, 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: grid-drift 9s linear infinite;
+/* Copy pendente: só aparece em staging (RF-087). */
+.copy-pendente {
+  text-decoration: underline dashed var(--color-latao);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
