@@ -39,6 +39,8 @@ export interface PerfilLead {
   protocol_purchased: boolean;
   mentoring_purchased: boolean;
   kits_owned: string[] | null;
+  /** E-mail voltou (bounce permanente): nada mais é enviado. */
+  email_bounced_at?: string | null;
 }
 
 export type Contexto = Record<string, unknown> & {

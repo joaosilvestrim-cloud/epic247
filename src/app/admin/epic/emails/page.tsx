@@ -51,7 +51,8 @@ export default async function EmailsPage({ searchParams }: Props) {
               count(*) filter (where status = 'cancelled') cancelados,
               count(*) filter (where status = 'failed') falhas,
               count(*) filter (where opened_at is not null) abertos,
-              count(*) filter (where clicked_at is not null) cliques
+              count(*) filter (where clicked_at is not null) cliques,
+              count(*) filter (where bounced_at is not null or complained_at is not null) devolvidos
        from messages where created_at >= $1 group by 1 order by 1`,
       [desde]
     ),
@@ -96,7 +97,7 @@ export default async function EmailsPage({ searchParams }: Props) {
         <Cartao rotulo="Na fila" valor={tot("fila")} sub={vencidas ? `${vencidas} já vencidas` : "nenhuma vencida"} />
         <Cartao rotulo="Enviados" valor={tot("enviados")} sub={tot("simulados") ? `${tot("simulados")} simulados` : undefined} />
         <Cartao rotulo="Pulados ou cancelados" valor={tot("pulados") + tot("cancelados")} sub="regras de supressão" />
-        <Cartao rotulo="Abertura · clique" valor={pct(tot("abertos"), tot("enviados") - tot("simulados"))} sub={`cliques ${pct(tot("cliques"), tot("enviados") - tot("simulados"))}`} />
+        <Cartao rotulo="Abertura · clique" valor={pct(tot("abertos"), tot("enviados") - tot("simulados"))} sub={`cliques ${pct(tot("cliques"), tot("enviados") - tot("simulados"))} · devolvidos ou spam ${tot("devolvidos")}`} />
       </div>
 
       <form action={dispararAgora} className="mb-8 flex flex-wrap items-center gap-3 text-sm">

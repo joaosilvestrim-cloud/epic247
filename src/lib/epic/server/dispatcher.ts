@@ -47,7 +47,8 @@ export function urlDescadastro(leadId: string) {
 async function perfil(q: Q, lead: string): Promise<PerfilLead | null> {
   const [p] = await q<PerfilLead>(
     `select lead_id, email, first_name, lifecycle_stage, marketing_email_allowed, unsubscribed_at,
-            plan_purchased, kit_purchased, protocol_purchased, mentoring_purchased, kits_owned
+            plan_purchased, kit_purchased, protocol_purchased, mentoring_purchased, kits_owned,
+            (select l.email_bounced_at from leads l where l.lead_id = lead_profile.lead_id) as email_bounced_at
      from lead_profile where lead_id = $1`,
     [lead]
   );
@@ -147,6 +148,7 @@ type Decisao = { acao: "enviar" } | { acao: "pular"; motivo: string } | { acao: 
 async function decidir(q: Q, m: Mensagem, p: PerfilLead | null): Promise<Decisao> {
   if (!p) return { acao: "pular", motivo: "lead_inexistente" };
   if (!p.email) return { acao: "pular", motivo: "sem_email" };
+  if (p.email_bounced_at) return { acao: "pular", motivo: "email_invalido" };
   const etapa = etapaDe(m.automation_id, m.step);
   if (!etapa) return { acao: "pular", motivo: "etapa_desconhecida" };
   const automacao = AUTOMACOES[m.automation_id];

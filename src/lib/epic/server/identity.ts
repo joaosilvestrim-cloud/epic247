@@ -191,7 +191,8 @@ export async function identificar(
 
   if (!dono) {
     await q(
-      `update leads set email = $2, first_name = coalesce($3, first_name), last_activity_at = now()
+      `update leads set email = $2, first_name = coalesce($3, first_name), last_activity_at = now(),
+         email_bounced_at = case when lower(email) is distinct from $2 then null else email_bounced_at end
        where lead_id = $1`,
       [leadAtualId, email, dados.firstName]
     );
