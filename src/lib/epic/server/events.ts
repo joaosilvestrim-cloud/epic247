@@ -22,7 +22,7 @@ export type EventoNome = EventoCore | (typeof EVENTOS_AUTOMACAO)[number];
 /** Eventos que o navegador pode registrar. Compras e e-mails só pelo servidor. */
 export const EVENTOS_DO_NAVEGADOR = new Set<string>([
   "ViewHome", "ViewDimensionPage", "ViewMapEntry", "ViewPlanOffer", "ViewKitOffer",
-  "ViewProtocolOffer", "ViewMentoring", "StartCheckout", "MapQuestionProgress",
+  "ViewProtocolOffer", "ViewMentoring", "MapQuestionProgress", "ViewMapResult", "ViewMapEntry",
 ]);
 
 export interface DadosEvento {

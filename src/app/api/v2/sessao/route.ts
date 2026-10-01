@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       const jaTinhaSessao = await sessaoAtual();
       const lead = await garantirLead(q, toque);
       if (toque) await registrarToque(q, lead, toque);
-      if (!jaTinhaSessao || toque) await abrirSessao(q, lead, toque ?? atrib);
+      if (!jaTinhaSessao || toque) await abrirSessao(q, lead, toque ?? atrib, Boolean(toque));
     });
     return ok();
   } catch (e) {

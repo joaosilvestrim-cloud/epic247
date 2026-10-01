@@ -131,9 +131,10 @@ export async function sessaoAtual(): Promise<string | null> {
   return id && UUID.test(id) ? id : null;
 }
 
-export async function abrirSessao(q: Q, leadId: string, t: Atribuicao): Promise<string> {
+export async function abrirSessao(q: Q, leadId: string, t: Atribuicao, novoToque = false): Promise<string> {
   const atual = await sessaoAtual();
-  if (atual) {
+  // Um novo toque atribuível (utm, referrer externo) abre sessão nova, como no GA.
+  if (atual && !novoToque) {
     const rows = await q("select 1 from sessions where session_id = $1", [atual]);
     if (rows.length) return atual;
   }
