@@ -48,7 +48,7 @@ export default async function JuPage() {
         <Container className="grid items-end gap-12 pb-20 pt-14 sm:pt-20 md:grid-cols-[1fr_20rem] md:gap-16">
           <div>
             <p className="font-mono text-sm text-latao-escuro">Ju Ferreira</p>
-            <h1 className="mt-5 font-display text-[2.2rem] font-normal leading-[1.15] text-grafite sm:text-[3rem]">
+            <h1 className="entrada mt-5 font-display text-[2.2rem] font-normal leading-[1.15] text-grafite sm:text-[3rem]">
               {HOME.ju.mensagem}
             </h1>
           </div>

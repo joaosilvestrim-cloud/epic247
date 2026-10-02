@@ -20,7 +20,7 @@ export default function EixosMapa({
 }) {
   return (
     <ol className="divide-y divide-linha border-y border-linha">
-      {eixos.map((e) => {
+      {eixos.map((e, idx) => {
         const nome = rotulos.find((r) => r.key === e.key)?.label ?? e.key;
         const principal = destaque.includes(e.key);
         return (
@@ -28,8 +28,8 @@ export default function EixosMapa({
             <span className={`font-display text-lg ${principal ? "text-tinta" : "text-grafite/80"}`}>{nome}</span>
             <span aria-hidden className="relative h-2 overflow-hidden rounded-full bg-papel-escuro">
               <span
-                className={`absolute inset-y-0 left-0 rounded-full ${principal ? "bg-grafite" : "bg-mineral"}`}
-                style={{ width: `${Math.max(4, (e.score / 12) * 100)}%` }}
+                className={`barra-cresce absolute inset-y-0 left-0 rounded-full ${principal ? "bg-grafite" : "bg-mineral"}`}
+                style={{ width: `${Math.max(4, (e.score / 12) * 100)}%`, "--atraso": `${250 + idx * 110}ms` } as React.CSSProperties}
               />
             </span>
             <span className={`text-sm sm:text-right ${principal ? "font-semibold text-tinta" : "text-mineral-escuro"}`}>

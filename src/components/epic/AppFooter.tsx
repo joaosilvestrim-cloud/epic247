@@ -10,11 +10,18 @@ export default function AppFooter() {
 
   return (
     <footer className="grao bg-tinta text-papel">
-      <div className="mx-auto max-w-[76rem] px-5 pb-10 pt-16 sm:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
+      <div className="mx-auto max-w-[76rem] px-5 pb-10 pt-20 sm:px-8">
+        {/* Fechamento: a promessa da marca (Posicionamento §9), em tamanho de cena final. */}
+        <p className="revelar max-w-4xl font-display text-[2.1rem] font-light leading-[1.12] text-papel sm:text-[3.2rem]">
+          {MANIFESTO.promessa}
+        </p>
+        <div className="filete-revela mt-10 h-px w-24 bg-latao" />
+        <div className="mt-14 grid gap-12 border-t border-papel/10 pt-12 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
           <div>
-            <BrandLogo size="1.3rem" />
-            <p className="mt-6 max-w-xs font-display text-xl leading-snug text-papel/90">{MANIFESTO.promessa}</p>
+            <BrandLogo size="1.3rem" tagline={false} />
+            <p className="mt-6 max-w-xs text-sm leading-relaxed text-papel/70">
+              Transformação pessoal aplicada. 10 dimensões. Um sistema.
+            </p>
             <Link
               href={CTA_FRICCAO.href}
               className="mt-6 inline-block border-b border-latao pb-0.5 text-sm text-papel/90 hover:text-papel"

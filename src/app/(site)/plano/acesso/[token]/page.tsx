@@ -27,7 +27,7 @@ export default async function PlanoAcessoPage({ params }: Props) {
       <section className="grao min-h-[60vh]">
         <Container estreito className="py-24">
           <p className="font-mono text-sm text-latao-escuro">Plano EPIC {nome} 7 Dias</p>
-          <h1 className="mt-4 font-display text-[2.4rem] leading-tight text-grafite">Falta um passo.</h1>
+          <h1 className="entrada mt-4 font-display text-[2.4rem] leading-tight text-grafite">Falta um passo.</h1>
           <p className="mt-4 text-lg text-grafite/80">
             Para personalizar o seu Plano, precisamos das suas respostas no Mapa de {nome}. Assim que você
             concluir, o Plano aparece aqui e chega no seu e-mail.
@@ -50,7 +50,7 @@ export default async function PlanoAcessoPage({ params }: Props) {
       <section className="grao border-b border-linha">
         <Container estreito className="pb-12 pt-14 sm:pt-20">
           <p className="font-mono text-sm text-latao-escuro">{p.personalizacao}</p>
-          <h1 className="mt-4 font-display text-[2.4rem] font-normal leading-[1.1] text-grafite sm:text-[3.2rem]">
+          <h1 className="entrada mt-4 font-display text-[2.4rem] font-normal leading-[1.1] text-grafite sm:text-[3.2rem]">
             {p.titulo}
           </h1>
           <p className="mt-5 text-lg text-grafite/80">

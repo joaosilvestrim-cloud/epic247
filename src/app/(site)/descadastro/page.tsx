@@ -17,7 +17,7 @@ export default async function DescadastroPage({ searchParams }: Props) {
       <Container estreito className="py-24">
         {ok ? (
           <>
-            <h1 className="font-display text-[2.4rem] leading-tight text-grafite">Pronto.</h1>
+            <h1 className="entrada font-display text-[2.4rem] leading-tight text-grafite">Pronto.</h1>
             <p className="mt-4 text-lg text-grafite/80">
               Você não vai mais receber conteúdos e ofertas do EPIC247 por e-mail. Mensagens sobre algo que você
               comprou ou pediu continuam chegando.
@@ -27,7 +27,7 @@ export default async function DescadastroPage({ searchParams }: Props) {
           <form action={`/api/v2/descadastro`} method="post">
             <input type="hidden" name="l" value={l} />
             <input type="hidden" name="t" value={t} />
-            <h1 className="font-display text-[2.4rem] leading-tight text-grafite">Parar de receber e-mails?</h1>
+            <h1 className="entrada font-display text-[2.4rem] leading-tight text-grafite">Parar de receber e-mails?</h1>
             <p className="mt-4 text-lg text-grafite/80">
               Você deixa de receber conteúdos e ofertas. Mensagens sobre compras e pedidos seus continuam.
             </p>
@@ -40,7 +40,7 @@ export default async function DescadastroPage({ searchParams }: Props) {
           </form>
         ) : (
           <>
-            <h1 className="font-display text-[2.4rem] leading-tight text-grafite">Link incompleto.</h1>
+            <h1 className="entrada font-display text-[2.4rem] leading-tight text-grafite">Link incompleto.</h1>
             <p className="mt-4 text-lg text-grafite/80">Use o link que veio no rodapé do e-mail.</p>
           </>
         )}

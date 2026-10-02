@@ -26,6 +26,14 @@ interface Props {
 export default function AppHeader({ dimensoes, nav, cta }: Props) {
   const [megaAberto, setMegaAberto] = useState(false);
   const [mobileAberto, setMobileAberto] = useState(false);
+  // Ao rolar, o header fica um pouco mais baixo e ganha o filete (sem sombra).
+  const [rolou, setRolou] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setRolou(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const pathname = usePathname();
   const painelId = useId();
   const botaoRef = useRef<HTMLButtonElement>(null);
@@ -68,10 +76,19 @@ export default function AppHeader({ dimensoes, nav, cta }: Props) {
   const emDimensao = pathname.startsWith("/dimensoes");
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 border-b border-linha bg-papel/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-[68px] max-w-[76rem] items-center justify-between gap-6 px-5 sm:px-8">
+    <header
+      ref={headerRef}
+      className={`sticky top-0 z-40 border-b backdrop-blur-sm transition-[background-color,border-color] duration-300 ${
+        rolou || megaAberto || mobileAberto ? "border-linha bg-papel/95" : "border-transparent bg-papel/80"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-[76rem] items-center justify-between gap-6 px-5 transition-[height] duration-300 [transition-timing-function:var(--ease-saida)] sm:px-8 ${
+          rolou ? "h-[58px]" : "h-[68px]"
+        }`}
+      >
         <Link href="/" aria-label="EPIC247, página inicial" className="text-grafite">
-          <BrandLogo size="1.15rem" />
+          <BrandLogo size="1.2rem" tagline={false} />
         </Link>
 
         <nav aria-label="Principal" className="hidden items-center gap-7 lg:flex">
@@ -147,7 +164,7 @@ export default function AppHeader({ dimensoes, nav, cta }: Props) {
 
       {/* Mega-menu de Dimensões (desktop) */}
       {megaAberto && dimensoes.length > 0 && (
-        <div id={painelId} className="absolute inset-x-0 top-full border-b border-linha bg-papel-claro shadow-[0_24px_40px_-30px_rgba(23,22,20,0.35)]">
+        <div id={painelId} className="menu-entra absolute inset-x-0 top-full border-b border-linha bg-papel-claro shadow-[0_24px_40px_-30px_rgba(23,22,20,0.35)]">
           <div className="mx-auto max-w-[76rem] px-8 py-10">
             <ol className="grid grid-cols-2 gap-x-12 gap-y-1 xl:grid-cols-5 xl:gap-x-8">
               {dimensoes.map((d) => (
@@ -175,7 +192,7 @@ export default function AppHeader({ dimensoes, nav, cta }: Props) {
 
       {/* Menu mobile */}
       {mobileAberto && (
-        <div className="fixed inset-x-0 bottom-0 top-[68px] overflow-y-auto bg-tinta text-papel lg:hidden">
+        <div className={`menu-entra fixed inset-x-0 bottom-0 overflow-y-auto bg-tinta text-papel lg:hidden ${rolou ? "top-[58px]" : "top-[68px]"}`}>
           <div className="px-5 pb-12 pt-8">
             <Link
               href={cta.href}

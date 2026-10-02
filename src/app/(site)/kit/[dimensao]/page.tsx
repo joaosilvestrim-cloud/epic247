@@ -50,7 +50,7 @@ export default async function KitPage({ params }: Props) {
             <p className="font-mono text-sm text-latao-escuro">
               Dimensão {String(d.order).padStart(2, "0")} · {d.name}
             </p>
-            <h1 className="mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
+            <h1 className="entrada mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
               {p.product_name}
             </h1>
             <p className="mt-6 text-xl text-grafite/85">Manual + Workbook + ferramentas práticas.</p>
@@ -79,7 +79,7 @@ export default async function KitPage({ params }: Props) {
           <h2 className="font-display text-[1.9rem] leading-tight text-grafite sm:text-[2.4rem]">
             As cinco áreas que o Kit aprofunda
           </h2>
-          <ol className="border-t border-linha">
+          <ol className="revelar-lista border-t border-linha">
             {cfg.axes.map((a, i) => (
               <li key={a.key} className="flex gap-4 border-b border-linha py-3.5">
                 <span className="pt-1 font-mono text-xs text-latao-escuro">{String(i + 1).padStart(2, "0")}</span>

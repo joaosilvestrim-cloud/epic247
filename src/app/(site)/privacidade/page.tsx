@@ -22,7 +22,7 @@ export default function PrivacidadePage() {
       <article className="grao">
         <Container estreito className="py-16 sm:py-24">
           <p className="font-mono text-sm text-latao-escuro">Versão {VERSAO}</p>
-          <h1 className="mt-4 font-display text-[2.6rem] leading-tight text-grafite">Política de privacidade</h1>
+          <h1 className="entrada mt-4 font-display text-[2.6rem] leading-tight text-grafite">Política de privacidade</h1>
 
           <div className="prosa mt-10 space-y-8 text-[17px] leading-relaxed text-grafite/90">
             <Bloco titulo="Quem é responsável pelos seus dados">

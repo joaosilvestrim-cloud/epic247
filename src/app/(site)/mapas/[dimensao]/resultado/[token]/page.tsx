@@ -72,7 +72,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
 
           {r.kind === "low" ? (
             <>
-              <h1 className="mt-5 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
+              <h1 className="entrada mt-5 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
                 <C v={RESULTADO_BAIXO.titulo} />
               </h1>
               <p className="mt-6 text-lg leading-relaxed text-grafite/80">
@@ -87,7 +87,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
                   <span className="font-display text-xl italic text-grafite">{principal.editorialName}</span>.
                 </p>
               )}
-              <h1 className="mt-4 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
+              <h1 className="entrada mt-4 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
                 {cfg.generalTitle && r.kind === "single"
                   ? cfg.generalTitle.replace("{DRENO}", rotulo(r.primary))
                   : principal.title}

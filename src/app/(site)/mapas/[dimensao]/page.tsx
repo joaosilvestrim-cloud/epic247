@@ -41,6 +41,7 @@ export default async function MapaDimensaoPage({ params }: Params) {
             tempo={`${cfg.questions.length} afirmações · ${cfg.estimatedMinutes} · resultado na hora`}
             resumo="Para cada afirmação, diga com que frequência ela acontece com você hoje. Não existe resposta certa: o Mapa mostra onde vale olhar primeiro, não o que você tem."
             aviso={cfg.disclaimer}
+            areas={cfg.axes.map((a) => a.label)}
             caminhoResultado={`/mapas/${dimensao}/resultado`}
             perguntas={cfg.questions.map((q) => ({ id: q.id, texto: q.text, opcoes }))}
           />

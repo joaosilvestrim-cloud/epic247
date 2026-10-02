@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enviar, espelhar, rastrear } from "@/lib/epic/client/track";
+import SinalFriccao from "./SinalFriccao";
 
 // MapEngine na tela (Blueprint §10). Um componente para os 11 Mapas.
 // Estados: intro → (resume) → question → calculating → (error).
@@ -21,6 +22,8 @@ interface Props {
   tempo: string;
   resumo: string;
   aviso: string;
+  /** Áreas que o Mapa lê (nomes dos eixos nos documentos), mostradas na abertura. */
+  areas?: string[];
   perguntas: PerguntaRunner[];
   /** Ex.: "/mapas/energia/resultado" ou "/mapa/resultado" */
   caminhoResultado: string;
@@ -34,6 +37,7 @@ const chaveLocal = (id: string) => `epic_mapa_${id}`;
 export default function MapRunner(p: Props) {
   const router = useRouter();
   const [estado, setEstado] = useState<Estado>("intro");
+  const [avancando, setAvancando] = useState(false);
   const [mapaId, setMapaId] = useState<string | null>(null);
   const [respostas, setRespostas] = useState<Respostas>({});
   const [indice, setIndice] = useState(0);
@@ -141,7 +145,7 @@ export default function MapRunner(p: Props) {
   }
 
   function responder(valor: string | number) {
-    if (!mapaId) return;
+    if (!mapaId || avancando) return;
     const pergunta = p.perguntas[indice];
     const novas = { ...respostas, [pergunta.id]: valor };
     setRespostas(novas);
@@ -156,8 +160,13 @@ export default function MapRunner(p: Props) {
       rastrear("MapQuestionProgress", { map_type: p.mapType, question_index: proximo });
     }
 
-    if (proximo >= total) void concluir(novas);
-    else setIndice(proximo);
+    // Um instante com a escolha marcada antes de seguir: a pessoa vê o que respondeu.
+    setAvancando(true);
+    window.setTimeout(() => {
+      setAvancando(false);
+      if (proximo >= total) void concluir(novas);
+      else setIndice(proximo);
+    }, 260);
   }
 
   const respondidas = useMemo(
@@ -170,16 +179,38 @@ export default function MapRunner(p: Props) {
   if (estado === "intro") {
     return (
       <div className="mx-auto max-w-2xl">
-        <p className="font-mono text-sm text-latao-escuro">{p.tempo}</p>
-        <h1 className="mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.4rem]">
+        <p className="entrada-suave font-mono text-sm text-latao-escuro">{p.tempo}</p>
+        <h1 className="entrada mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.4rem]">
           {p.titulo}
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-grafite/80">{p.resumo}</p>
+        <p className="entrada mt-6 text-lg leading-relaxed text-grafite/80" style={{ "--atraso": "150ms" } as React.CSSProperties}>
+          {p.resumo}
+        </p>
+        {p.areas && p.areas.length > 0 && (
+          <div className="mt-9">
+            <p className="entrada-suave text-sm text-mineral-escuro" style={{ "--atraso": "220ms" } as React.CSSProperties}>
+              O Mapa olha para cinco áreas:
+            </p>
+            <ol className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+              {p.areas.map((a, i) => (
+                <li
+                  key={a}
+                  className="entrada flex items-center gap-2 font-display text-lg text-grafite"
+                  style={{ "--atraso": `${300 + i * 90}ms` } as React.CSSProperties}
+                >
+                  <span aria-hidden className="h-3 w-px bg-latao" />
+                  {a}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
         <button
+          style={{ "--atraso": p.areas?.length ? "760ms" : "280ms" } as React.CSSProperties}
           type="button"
           onClick={comecar}
           disabled={iniciando}
-          className="group mt-10 inline-flex items-center gap-3 rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel transition-colors hover:bg-tinta disabled:opacity-60"
+          className="entrada group mt-10 inline-flex items-center gap-3 rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel transition-[background-color,transform] hover:bg-tinta active:scale-[0.98] disabled:opacity-60"
         >
           {iniciando ? "Preparando..." : "Começar"}
           <span aria-hidden className="h-px w-5 bg-latao transition-all group-hover:w-8" />
@@ -224,12 +255,11 @@ export default function MapRunner(p: Props) {
 
   if (estado === "calculating") {
     return (
-      <div className="mx-auto max-w-2xl py-16 text-center" role="status" aria-live="polite">
-        <p className="font-display text-2xl text-grafite">Montando o seu mapa...</p>
-        <div className="mx-auto mt-6 h-px w-40 overflow-hidden bg-linha">
-          <div className="h-px w-1/3 animate-[deslizar_1.2s_ease-in-out_infinite] bg-latao" />
+      <div className="mx-auto flex max-w-2xl flex-col items-center py-16 text-center" role="status" aria-live="polite">
+        <div className="w-48">
+          <SinalFriccao escuro={false} tempo />
         </div>
-        <style>{`@keyframes deslizar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}`}</style>
+        <p className="entrada-suave mt-8 font-display text-2xl text-grafite">Montando o seu mapa...</p>
       </div>
     );
   }
@@ -295,6 +325,7 @@ export default function MapRunner(p: Props) {
         <div className="h-px bg-latao transition-all duration-500" style={{ width: `${pct}%` }} />
       </div>
 
+      <div key={pergunta.id} className="pergunta-entra">
       <h1
         ref={tituloPergunta}
         tabIndex={-1}
@@ -313,8 +344,10 @@ export default function MapRunner(p: Props) {
                 key={String(o.valor)}
                 type="button"
                 aria-pressed={marcada}
+                disabled={avancando}
                 onClick={() => responder(o.valor)}
-                className={`flex w-full items-start gap-4 rounded-[var(--radius-epic)] border px-5 py-4 text-left transition-colors ${
+                style={{ "--atraso": `${80 + i * 45}ms` } as React.CSSProperties}
+                className={`opcao-entra flex w-full items-start gap-4 rounded-[var(--radius-epic)] border px-5 py-4 text-left transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.995] disabled:cursor-default ${
                   marcada
                     ? "border-grafite bg-grafite text-papel"
                     : "border-linha bg-papel-claro text-grafite hover:border-latao"
@@ -329,6 +362,7 @@ export default function MapRunner(p: Props) {
           })}
         </div>
       </fieldset>
+      </div>
     </div>
   );
 }

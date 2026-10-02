@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { C, Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import IdeiasLista from "@/components/epic/IdeiasLista";
+import MarcaMao from "@/components/epic/MarcaMao";
+import SinalFriccao from "@/components/epic/SinalFriccao";
 import JsonLd from "@/components/epic/JsonLd";
 import { ORGANIZACAO, WEBSITE } from "@/lib/epic/seo";
 import Retorno from "@/components/epic/Retorno";
@@ -28,6 +30,21 @@ const TENSOES = [
   "quero mais, mas ainda não sei exatamente mais o quê",
 ];
 
+const atraso = (ms: number) => ({ "--atraso": `${ms}ms` }) as React.CSSProperties;
+
+/** Circula à mão uma palavra do título (uma marcação por tela, Brand §9). */
+function tituloComMarca(titulo: string, palavra: string) {
+  const i = titulo.indexOf(palavra);
+  if (i < 0) return titulo;
+  return (
+    <>
+      {titulo.slice(0, i)}
+      <MarcaMao tipo="circulo" atraso={400} rolagem>{palavra}</MarcaMao>
+      {titulo.slice(i + palavra.length)}
+    </>
+  );
+}
+
 export default async function Home() {
   const [ideias, settings] = await Promise.all([listarConteudos({ limite: 4 }), getSettings()]);
   const dims = dimensoesNavegaveis();
@@ -45,22 +62,26 @@ export default async function Home() {
       <section className="grao border-b border-linha">
         <Container className="grid gap-14 pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.5fr_1fr] lg:gap-20 lg:pb-28">
           <div>
-            <h1 className="font-display text-[2.4rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem] lg:text-[4.1rem]">
+            <h1 className="entrada font-display text-[2.4rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem] lg:text-[4.1rem]">
               Tem uma distância entre a vida que você vive e a vida que{" "}
-              <span className="marca-mao">sabe que poderia viver</span>?
+              <MarcaMao atraso={900}>sabe que poderia viver</MarcaMao>?
             </h1>
-            <p className="mt-8 max-w-xl text-lg leading-relaxed text-grafite/80">{HOME.hero.subtexto}</p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+            <p className="entrada mt-8 max-w-xl text-lg leading-relaxed text-grafite/80" style={atraso(180)}>
+              {HOME.hero.subtexto}
+            </p>
+            <div className="entrada mt-10 flex flex-wrap items-center gap-x-8 gap-y-5" style={atraso(320)}>
               <PrimaryCTA href="/mapa">{HOME.hero.ctaPrimario}</PrimaryCTA>
               <TextCTA href="/protocolo">{HOME.hero.ctaSecundario}</TextCTA>
             </div>
           </div>
 
           <aside aria-label="Formas que essa distância assume" className="self-end">
-            <p className="mb-5 font-display text-lg italic text-mineral-escuro">Essa distância pode soar assim:</p>
+            <p className="entrada-suave mb-5 font-display text-lg italic text-mineral-escuro" style={atraso(500)}>
+              Essa distância pode soar assim:
+            </p>
             <ul className="space-y-3 border-l border-latao pl-5">
-              {TENSOES.map((t) => (
-                <li key={t} className="font-display text-[1.15rem] leading-snug text-grafite/85">
+              {TENSOES.map((t, i) => (
+                <li key={t} className="entrada font-display text-[1.15rem] leading-snug text-grafite/85" style={atraso(600 + i * 110)}>
                   “{t}”
                 </li>
               ))}
@@ -76,7 +97,7 @@ export default async function Home() {
             {HOME.reconhecimento.titulo}
           </SectionTitle>
           {cenas.length > 0 && (
-            <div className="mt-14 grid gap-x-14 gap-y-10 md:grid-cols-2">
+            <div className="revelar-lista mt-14 grid gap-x-14 gap-y-10 md:grid-cols-2">
               {cenas.map((c, i) => (
                 <p key={i} className="font-display text-[1.35rem] leading-[1.45] text-grafite/90">
                   <C v={c} />
@@ -94,14 +115,14 @@ export default async function Home() {
             <SectionTitle numero="02" className="max-w-2xl">
               {HOME.dimensoes.titulo}
             </SectionTitle>
-            <ol className="mt-14 grid border-t border-linha sm:grid-cols-2 lg:grid-cols-5">
+            <ol className="revelar-lista mt-14 grid border-t border-linha sm:grid-cols-2 lg:grid-cols-5">
               {dims.map((d) => {
                 const pergunta = DIMENSAO_CONTEUDO[d.id].pergunta;
                 return (
                   <li key={d.id} className="border-b border-linha sm:[&:nth-child(odd)]:border-r lg:border-r lg:[&:nth-child(5n)]:border-r-0">
-                    <Link href={d.href} className="group flex h-full flex-col p-6 transition-colors hover:bg-papel-claro">
+                    <Link href={d.href} className="group flex h-full flex-col p-6 transition-colors hover:bg-papel-claro lg:px-5">
                       <span className="font-mono text-xs text-latao-escuro">{String(d.order).padStart(2, "0")}</span>
-                      <span className="mt-3 font-display text-[1.45rem] leading-tight text-grafite hyphens-auto break-words lg:text-[1.3rem] xl:text-[1.45rem]">{d.name}</span>
+                      <span className="mt-3 font-display text-[1.45rem] leading-tight text-grafite transition-transform duration-500 [transition-timing-function:var(--ease-saida)] group-hover:translate-x-1 lg:whitespace-nowrap lg:text-[1.08rem] xl:text-[1.26rem]">{d.name}</span>
                       <span className="mt-3 text-[15px] leading-snug text-mineral-escuro">
                         {temCopy(pergunta) ? <C v={pergunta} /> : d.manifestoLine}
                       </span>
@@ -122,7 +143,7 @@ export default async function Home() {
         <Container className="grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.4fr_1fr] lg:items-end">
           <div>
             <SectionTitle numero="03" escuro>
-              {HOME.mapa.titulo}
+              {tituloComMarca(HOME.mapa.titulo, "fricção")}
             </SectionTitle>
             {temCopy(HOME.mapa.texto) && (
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-papel/75">
@@ -131,6 +152,9 @@ export default async function Home() {
             )}
           </div>
           <div className="lg:justify-self-end">
+            <div className="mb-10">
+              <SinalFriccao />
+            </div>
             <dl className="mb-8 grid grid-cols-3 gap-6 border-t border-papel/15 pt-5 font-mono text-xs text-papel/60">
               <div>
                 <dt>perguntas</dt>
@@ -159,7 +183,7 @@ export default async function Home() {
             <SectionTitle numero="04" className="max-w-2xl">
               {HOME.primeiroPasso.titulo}
             </SectionTitle>
-            <ol className="mt-14 grid gap-px overflow-hidden rounded-[var(--radius-epic)] border border-linha bg-linha sm:grid-cols-2 lg:grid-cols-4">
+            <ol className="revelar-lista mt-14 grid gap-px overflow-hidden rounded-[var(--radius-epic)] border border-linha bg-linha sm:grid-cols-2 lg:grid-cols-4">
               {passos.map((c, i) => (
                 <li key={c.href} className="bg-papel">
                   <Link href={c.href} className="group flex h-full flex-col p-7 transition-colors hover:bg-papel-claro">
@@ -188,7 +212,7 @@ export default async function Home() {
               <PrimaryCTA href="/protocolo">{HOME.protocolo.cta}</PrimaryCTA>
             </div>
           </div>
-          <ol className="grid gap-x-10 sm:grid-cols-2">
+          <ol className="revelar-lista grid gap-x-10 sm:grid-cols-2">
             {dims.length > 0 &&
               dims.map((d) => (
                 <li key={d.id} className="flex gap-3 border-b border-linha py-3">
@@ -228,7 +252,7 @@ export default async function Home() {
             <div aria-hidden className="hidden md:block" />
           )}
           <div>
-            <p className="font-display text-[1.6rem] leading-[1.35] text-papel sm:text-[2rem]">
+            <p className="revelar font-display text-[1.6rem] leading-[1.35] text-papel sm:text-[2rem]">
               {HOME.ju.mensagem}
             </p>
             <p className="mt-6 font-mono text-xs text-latao">Ju Ferreira</p>

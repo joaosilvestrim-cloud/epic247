@@ -10,7 +10,7 @@ export default function TermosPage() {
       <DraftRibbon texto="Rascunho para revisão jurídica antes de publicar." />
       <article className="grao">
         <Container estreito className="py-16 sm:py-24">
-          <h1 className="font-display text-[2.6rem] leading-tight text-grafite">Termos de uso</h1>
+          <h1 className="entrada font-display text-[2.6rem] leading-tight text-grafite">Termos de uso</h1>
           <div className="mt-10 space-y-8 text-[17px] leading-relaxed text-grafite/90">
             <section>
               <h2 className="mb-3 font-display text-2xl text-grafite">Caráter educativo</h2>

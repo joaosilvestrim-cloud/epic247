@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import IdeiasLista from "@/components/epic/IdeiasLista";
+import MarcaMao from "@/components/epic/MarcaMao";
+import PosicaoDimensao from "@/components/epic/PosicaoDimensao";
 import Retorno from "@/components/epic/Retorno";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, DraftRibbon, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
@@ -63,13 +65,18 @@ export default async function DimensaoPage({ params }: Params) {
 
       {/* 1 · Hero */}
       <section className="grao border-b border-linha">
-        <Container className="pb-20 pt-14 sm:pt-20">
-          <p className="font-mono text-sm text-latao-escuro">
+        <Container className="grid gap-12 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-20">
+          <div>
+          <p className="entrada-suave font-mono text-sm text-latao-escuro">
             Dimensão {String(d.order).padStart(2, "0")} de 10
           </p>
-          <h1 className="mt-4 font-display text-[3.2rem] font-normal leading-none text-grafite sm:text-[5.5rem]">
+          <h1 className="entrada mt-4 font-display text-[3.2rem] font-normal leading-none text-grafite sm:text-[5.5rem]">
             {d.name}
           </h1>
+          {/* Linha do Manifesto da dimensão (Posicionamento §12, aprovado). */}
+          <p className="entrada mt-6 font-display text-[1.35rem] italic text-grafite/80 sm:text-[1.6rem]" style={{ "--atraso": "160ms" } as React.CSSProperties}>
+            <MarcaMao atraso={800}>{d.manifestoLine}</MarcaMao>
+          </p>
           {temCopy(cont.pergunta) && (
             <p className="mt-8 max-w-3xl font-display text-[1.6rem] leading-[1.3] text-grafite/90 sm:text-[2.1rem]">
               <C v={cont.pergunta} />
@@ -83,6 +90,8 @@ export default async function DimensaoPage({ params }: Params) {
           <div className="mt-10">
             <PrimaryCTA href={ctaMapa.href}>{ctaMapa.label}</PrimaryCTA>
           </div>
+          </div>
+          <PosicaoDimensao atual={dimensao} />
         </Container>
       </section>
 
@@ -92,7 +101,7 @@ export default async function DimensaoPage({ params }: Params) {
           <SectionTitle numero="01" className="max-w-2xl">
             Isso acontece com você?
           </SectionTitle>
-          <ul className="mt-12 grid gap-x-14 gap-y-8 md:grid-cols-2">
+          <ul className="revelar-lista mt-12 grid gap-x-14 gap-y-8 md:grid-cols-2">
             {reconhecimento.map((r) => (
               <li key={r} className="border-l border-latao pl-5 font-display text-[1.25rem] leading-snug text-grafite/90">
                 {r}
@@ -117,7 +126,7 @@ export default async function DimensaoPage({ params }: Params) {
             <p className="font-display text-lg italic text-mineral-escuro">
               As cinco áreas que o {mapa.title} observa:
             </p>
-            <ol className="mt-5 border-t border-linha">
+            <ol className="revelar-lista mt-5 border-t border-linha">
               {mapa.axes.map((a, i) => (
                 <li key={a.key} className="flex items-baseline gap-4 border-b border-linha py-3.5">
                   <span className="font-mono text-xs text-latao-escuro">{String(i + 1).padStart(2, "0")}</span>
@@ -215,7 +224,7 @@ export default async function DimensaoPage({ params }: Params) {
             <SectionTitle numero="06" className="max-w-2xl">
               Às vezes a fricção está em outro lugar
             </SectionTitle>
-            <ul className="mt-12 divide-y divide-linha border-y border-linha">
+            <ul className="revelar-lista mt-12 divide-y divide-linha border-y border-linha">
               {relacionadas.map((r) => (
                 <li key={r.dimension}>
                   <Link

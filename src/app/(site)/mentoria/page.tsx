@@ -30,7 +30,7 @@ export default async function MentoriaPage() {
         <Container className="grid gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.4fr_1fr] lg:gap-20">
           <div>
             <p className="font-mono text-sm text-latao-escuro">Mentoria EPIC Individual</p>
-            <h1 className="mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
+            <h1 className="entrada mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
               <C v={pendente("Quando a mudança pede um olhar humano.")} />
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-grafite/80">
@@ -60,7 +60,7 @@ export default async function MentoriaPage() {
       <section>
         <Container className="grid gap-12 py-20 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
           <SectionTitle numero="01">Como funciona</SectionTitle>
-          <ol className="border-t border-linha">
+          <ol className="revelar-lista border-t border-linha">
             {MENTORIA.formato.map((f, i) => (
               <li key={f} className="flex gap-4 border-b border-linha py-4">
                 <span className="pt-1 font-mono text-xs text-latao-escuro">{String(i + 1).padStart(2, "0")}</span>

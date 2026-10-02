@@ -19,7 +19,7 @@ export default async function IdeiasPage() {
     <>
       <section className="grao border-b border-linha">
         <Container className="pb-14 pt-14 sm:pt-20">
-          <h1 className="font-display text-[2.8rem] font-normal leading-[1.05] text-grafite sm:text-[4.2rem]">
+          <h1 className="entrada font-display text-[2.8rem] font-normal leading-[1.05] text-grafite sm:text-[4.2rem]">
             Ideias para viver melhor.
           </h1>
           <nav aria-label="Tipos de conteúdo" className="mt-10 flex flex-wrap gap-x-8 gap-y-3">

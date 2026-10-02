@@ -14,12 +14,12 @@ export default function IdeiasLista({ itens, escuro = false }: { itens: ItemCont
     );
   }
   return (
-    <ul className={`divide-y ${escuro ? "divide-papel/10" : "divide-linha"} border-y ${escuro ? "border-papel/10" : "border-linha"}`}>
+    <ul className={`revelar-lista divide-y ${escuro ? "divide-papel/10" : "divide-linha"} border-y ${escuro ? "border-papel/10" : "border-linha"}`}>
       {itens.map((c) => (
         <li key={c.id}>
           <Link
             href={`/ideias/${TIPO_ROTA[c.content_type]}/${c.slug}`}
-            className="group grid gap-2 py-6 sm:grid-cols-[9rem_1fr] sm:gap-8"
+            className={`group grid gap-2 py-6 sm:gap-8 ${c.cover ? "sm:grid-cols-[9rem_1fr_7.5rem]" : "sm:grid-cols-[9rem_1fr_auto]"}`}
           >
             <span className={`font-mono text-xs ${escuro ? "text-latao" : "text-latao-escuro"}`}>
               {TIPO_LABEL[c.content_type]}
@@ -35,6 +35,24 @@ export default function IdeiasLista({ itens, escuro = false }: { itens: ItemCont
                 </span>
               )}
             </span>
+            {c.cover ? (
+              <span className="relative hidden aspect-[4/3] overflow-hidden rounded-[var(--radius-epic)] bg-papel-escuro sm:block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={c.cover}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 [transition-timing-function:var(--ease-saida)] group-hover:scale-[1.04]"
+                />
+              </span>
+            ) : (
+              <span
+                aria-hidden
+                className={`hidden self-center transition-transform duration-300 [transition-timing-function:var(--ease-saida)] group-hover:translate-x-1 sm:block ${escuro ? "text-latao" : "text-latao-escuro"}`}
+              >
+                →
+              </span>
+            )}
           </Link>
         </li>
       ))}

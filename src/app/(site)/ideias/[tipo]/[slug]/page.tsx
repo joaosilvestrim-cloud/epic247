@@ -67,7 +67,7 @@ export default async function ConteudoPage({ params }: Props) {
             {dim ? ` · ${DIMENSIONS[dim].name}` : ""}
             {data ? ` · ${data}` : ""}
           </p>
-          <h1 className="mt-4 font-display text-[2.3rem] font-normal leading-[1.1] text-grafite sm:text-[3.2rem]">{c.title}</h1>
+          <h1 className="entrada mt-4 font-display text-[2.3rem] font-normal leading-[1.1] text-grafite sm:text-[3.2rem]">{c.title}</h1>
           {c.excerpt && <p className="mt-5 text-xl leading-relaxed text-grafite/75">{c.excerpt}</p>}
           {c.author && <p className="mt-6 text-sm text-mineral-escuro">Por {c.author}</p>}
         </Container>

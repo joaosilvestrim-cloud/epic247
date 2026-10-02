@@ -39,7 +39,7 @@ export default async function IdeiasTipoPage({ params }: Props) {
           <p className="font-mono text-sm text-latao-escuro">
             <Link href="/ideias" className="hover:underline">Ideias</Link>
           </p>
-          <h1 className="mt-4 font-display text-[2.8rem] font-normal leading-[1.05] text-grafite sm:text-[4rem]">{t.titulo}</h1>
+          <h1 className="entrada mt-4 font-display text-[2.8rem] font-normal leading-[1.05] text-grafite sm:text-[4rem]">{t.titulo}</h1>
         </Container>
       </section>
       <section>

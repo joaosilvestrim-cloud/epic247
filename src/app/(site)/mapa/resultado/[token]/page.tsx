@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CapturaResultado from "@/components/epic/CapturaResultado";
 import FeedbackResultado from "@/components/epic/FeedbackResultado";
+import MarcaMao from "@/components/epic/MarcaMao";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { DIMENSIONS, mapPath, type DimensionId } from "@/lib/epic/dimensions";
@@ -61,9 +62,20 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
 
       <section className="grao border-b border-linha">
         <Container estreito className="pb-16 pt-14 sm:pt-20">
-          <p className="font-mono text-sm text-latao-escuro">Mapa de Fricção EPIC</p>
-          <h1 className="mt-5 font-display text-[2.2rem] font-normal leading-[1.12] text-grafite sm:text-[3rem]">
-            {FRICCAO.results[p].title}
+          <p className="entrada-suave font-mono text-sm text-latao-escuro">Mapa de Fricção EPIC</p>
+          <h1 className="entrada mt-5 font-display text-[2.2rem] font-normal leading-[1.12] text-grafite sm:text-[3rem]">
+            {(() => {
+              // Sublinhado à mão no nome da dimensão (a única marcação da tela).
+              const t = FRICCAO.results[p].title;
+              const k = t.lastIndexOf(nome(p));
+              return k < 0 ? t : (
+                <>
+                  {t.slice(0, k)}
+                  <MarcaMao atraso={700}>{nome(p)}</MarcaMao>
+                  {t.slice(k + nome(p).length)}
+                </>
+              );
+            })()}
           </h1>
           {proximas && (
             <p className="mt-6 border-l border-latao pl-5 text-lg leading-relaxed text-grafite/85">
@@ -93,8 +105,8 @@ export default async function ResultadoFriccaoPage({ params }: Params) {
                 </span>
                 <span aria-hidden className="relative h-2 overflow-hidden rounded-full bg-papel-escuro">
                   <span
-                    className={`absolute inset-y-0 left-0 rounded-full ${i === 0 ? "bg-grafite" : "bg-mineral"}`}
-                    style={{ width: `${largura(d)}%` }}
+                    className={`barra-cresce absolute inset-y-0 left-0 rounded-full ${i === 0 ? "bg-grafite" : "bg-mineral"}`}
+                    style={{ width: `${largura(d)}%`, "--atraso": `${200 + i * 120}ms` } as React.CSSProperties}
                   />
                 </span>
               </li>

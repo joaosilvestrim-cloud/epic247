@@ -51,7 +51,7 @@ export function PrimaryCTA({
   return (
     <Link
       href={href}
-      className={`group inline-flex items-center gap-3 rounded-[var(--radius-epic)] px-6 py-3.5 text-[15px] font-semibold transition-colors ${cores} ${className}`}
+      className={`group inline-flex items-center gap-3 rounded-[var(--radius-epic)] px-6 py-3.5 text-[15px] font-semibold transition-[background-color,transform] duration-200 active:scale-[0.98] ${cores} ${className}`}
     >
       <span>{children}</span>
       <span
@@ -75,7 +75,7 @@ export function TextCTA({
   return (
     <Link
       href={href}
-      className={`inline-block border-b border-latao pb-0.5 text-[15px] font-medium transition-colors ${
+      className={`inline-block border-b border-latao pb-0.5 text-[15px] font-medium transition-[color,border-color] duration-200 hover:border-grafite ${
         escuro ? "text-papel hover:text-papel-claro" : "text-grafite hover:text-tinta"
       }`}
     >
@@ -97,7 +97,7 @@ export function SectionTitle({
   className?: string;
 }) {
   return (
-    <div className={className}>
+    <div className={`revelar ${className}`}>
       {numero && (
         <div className="mb-4 flex items-center gap-3">
           <span className={`font-mono text-sm ${escuro ? "text-latao" : "text-latao-escuro"}`}>{numero}</span>

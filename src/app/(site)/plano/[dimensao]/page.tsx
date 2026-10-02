@@ -50,7 +50,7 @@ export default async function PlanoPage({ params, searchParams }: Props) {
         <Container className="grid gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
           <div>
             <p className="font-mono text-sm text-latao-escuro">7 dias · {d.name}</p>
-            <h1 className="mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
+            <h1 className="entrada mt-4 font-display text-[2.6rem] font-normal leading-[1.08] text-grafite sm:text-[3.6rem]">
               {p.product_name}
             </h1>
             <p className="mt-6 text-xl text-grafite/85">Personalizado a partir das suas respostas.</p>
@@ -103,7 +103,7 @@ export default async function PlanoPage({ params, searchParams }: Props) {
               Cada parte é preenchida a partir do seu padrão principal, do secundário e das suas respostas.
             </p>
           </div>
-          <ol className="border-t border-linha">
+          <ol className="revelar-lista border-t border-linha">
             {ESTRUTURA_PLANO[dimensao].map((item, i) => (
               <li key={item} className="flex gap-4 border-b border-linha py-3.5">
                 <span className="pt-1 font-mono text-xs text-latao-escuro">{String(i + 1).padStart(2, "0")}</span>
