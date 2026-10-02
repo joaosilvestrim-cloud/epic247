@@ -60,6 +60,17 @@ function sinalMaisForte(cfg: DimensionalMapConfig, eixo: string, respostas: Reco
   return melhor.reverse ? `Você raramente se reconheceu nesta frase: “${melhor.text}”` : `“${melhor.text}”`;
 }
 
+/**
+ * Empate em primeiro: a pessoa diz qual área pesa mais agora e o Plano parte
+ * dela (Mapa de Energia §8, aplicado a todos os Mapas). Sem empate, ou com
+ * escolha fora do empate, o resultado segue igual.
+ */
+export function aplicarPrioridade(r: DimensionalResult, escolhido: string | null | undefined): DimensionalResult {
+  if (!escolhido || r.kind !== "tie" || !r.tiedTop.includes(escolhido) || escolhido === r.primary) return r;
+  const banda = r.axes.find((a) => a.key === escolhido)?.band ?? r.primaryBand;
+  return { ...r, primary: escolhido, secondary: r.primary, primaryBand: banda };
+}
+
 export function gerarPlano(
   cfg: DimensionalMapConfig,
   r: DimensionalResult,

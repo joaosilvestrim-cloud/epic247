@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { isDimensionId, type DimensionId } from "../dimensions";
 import { getDimensionalMap } from "../maps";
 import { scoreDimensional } from "../maps/engine";
-import { gerarPlano, PLAN_TEMPLATE_VERSION, type Plano } from "../plano/gerador";
+import { aplicarPrioridade, gerarPlano, PLAN_TEMPLATE_VERSION, type Plano } from "../plano/gerador";
 import type { Q } from "./db";
 import { eventIdDeTransacao } from "./checkout";
 import { registrarEvento } from "./events";
@@ -17,15 +17,15 @@ const novoToken = () => randomBytes(24).toString("base64url");
 
 async function mapaParaPlano(q: Q, lead: string, dim: DimensionId, preferido: string | null) {
   if (preferido && /^[0-9a-f-]{36}$/i.test(preferido)) {
-    const [m] = await q<{ map_result_id: string; answers_json: Record<string, number> }>(
-      `select map_result_id, answers_json from map_results
+    const [m] = await q<{ map_result_id: string; answers_json: Record<string, number>; chosen_pattern: string | null }>(
+      `select map_result_id, answers_json, chosen_pattern from map_results
        where map_result_id = $1 and lead_id = $2 and map_type = $3 and status = 'completed'`,
       [preferido, lead, dim]
     );
     if (m) return m;
   }
-  const [ultimo] = await q<{ map_result_id: string; answers_json: Record<string, number> }>(
-    `select map_result_id, answers_json from map_results
+  const [ultimo] = await q<{ map_result_id: string; answers_json: Record<string, number>; chosen_pattern: string | null }>(
+    `select map_result_id, answers_json, chosen_pattern from map_results
      where lead_id = $1 and map_type = $2 and status = 'completed'
      order by completed_at desc limit 1`,
     [lead, dim]
@@ -56,7 +56,7 @@ export async function prepararPlano(
     );
     return { id: row.plan_generation_id, token, gerado: false };
   }
-  const plano = montar(ctx.dim, mapa.answers_json);
+  const plano = montar(ctx.dim, mapa.answers_json, mapa.chosen_pattern);
   const [row] = await q<{ plan_generation_id: string }>(
     `insert into plan_generations (lead_id, map_result_id, product_id, provider, transaction_id, generated_at,
        input_version, output_version, content, access_token, processing_status)
@@ -66,9 +66,9 @@ export async function prepararPlano(
   return { id: row.plan_generation_id, token, gerado: true };
 }
 
-function montar(dim: DimensionId, respostas: Record<string, number>): Plano {
+function montar(dim: DimensionId, respostas: Record<string, number>, escolhido: string | null = null): Plano {
   const cfg = getDimensionalMap(dim);
-  return gerarPlano(cfg, scoreDimensional(cfg, respostas), respostas);
+  return gerarPlano(cfg, aplicarPrioridade(scoreDimensional(cfg, respostas), escolhido), respostas);
 }
 
 /** Chamado ao concluir um Mapa: gera Planos que estavam esperando por ele. */
@@ -80,10 +80,10 @@ export async function gerarPlanosPendentes(q: Q, lead: string, dim: string, mapR
     [lead, dim]
   );
   if (!pendentes.length) return 0;
-  const [m] = await q<{ answers_json: Record<string, number> }>(
-    "select answers_json from map_results where map_result_id = $1", [mapResultId]
+  const [m] = await q<{ answers_json: Record<string, number>; chosen_pattern: string | null }>(
+    "select answers_json, chosen_pattern from map_results where map_result_id = $1", [mapResultId]
   );
-  const plano = montar(dim, m.answers_json);
+  const plano = montar(dim, m.answers_json, m.chosen_pattern);
   for (const p of pendentes) {
     await q(
       `update plan_generations set map_result_id = $2, content = $3, generated_at = now(),

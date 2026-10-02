@@ -92,5 +92,8 @@ export const ENERGIA: DimensionalMapConfig = {
   ctaPlan: "Quero meu Plano EPIC Energia de 7 dias.",
   ctaKit: "Conhecer o Kit Energia.",
   // O documento de Energia não traz seção de conexão com outras dimensões.
+  // Mapa de Energia §15: orientar avaliação profissional para sintomas persistentes.
+  safetyNote:
+    "Se o seu cansaço é intenso, persistente, novo ou atrapalha o seu dia a dia, este resultado não explica a causa. Sintomas assim merecem avaliação profissional adequada.",
   related: [],
 };

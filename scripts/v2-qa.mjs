@@ -181,6 +181,20 @@ try {
   const [cx] = await sql("select count(*)::int n from §events where lead_id = $1 and event_name = 'CrossDimensionMapStarted'", [lead]);
   confere(cx.n === 1, "começar o Mapa de Ação depois do de Energia registra CrossDimensionMapStarted");
 
+  secao("2c. Empate: a pessoa escolhe por onde o Plano começa (Mapa de Energia §8)");
+  const [eA, eB] = [ENERGIA.axes[0].key, ENERGIA.axes[1].key];
+  const empate = Object.fromEntries(ENERGIA.questions.map((q) => [q.id, q.axis === eA || q.axis === eB ? (q.reverse ? 0 : 4) : q.reverse ? 4 : 0]));
+  const iniE = await a.post("/api/v2/mapas/iniciar", { map_type: "energia" });
+  const fimE = await a.post("/api/v2/mapas/concluir", { map_result_id: iniE.json?.map_result_id, answers: empate });
+  const fora = await a.post("/api/v2/mapas/prioridade", { token: fimE.json?.token, eixo: ENERGIA.axes[4].key });
+  confere(fora.status === 400, "recusa área que não está no empate", `status ${fora.status}`);
+  const dentro = await a.post("/api/v2/mapas/prioridade", { token: fimE.json?.token, eixo: eB });
+  const [esc] = await sql("select chosen_pattern from §map_results where result_token = $1", [fimE.json?.token]);
+  confere(dentro.status === 200 && esc?.chosen_pattern === eB, "grava a área escolhida no empate");
+  const fb = await a.post("/api/v2/mapas/feedback", { token: fimE.json?.token, resposta: "em_parte", comentario: "teste QA" });
+  const [fbr] = await sql("select feedback, feedback_comment from §map_results where result_token = $1", [fimE.json?.token]);
+  confere(fb.status === 200 && fbr?.feedback === "em_parte", "feedback do resultado gravado (seção 17)");
+
   // ── 3. Novo toque ──
   secao("3. Nova visita com outra campanha (RF-023, RF-024)");
   await a.post("/api/v2/sessao", { utm_source: "qa2", utm_medium: "email", utm_campaign: "c2", landing_page: "/plano/energia" });
@@ -279,7 +293,7 @@ try {
     "select count(*)::int n from §map_results where status = 'completed' and lead_id in (select lead_id from §leads where lead_id = $1 or merged_into = $1)",
     [lead]
   );
-  confere(hist.n === 3, "histórico com os três Mapas preservados (Energia duas vezes e Fricção)", `${hist.n}`);
+  confere(hist.n === 4, "histórico com os quatro Mapas preservados (Energia três vezes e Fricção)", `${hist.n}`);
   const [l4] = await sql("select maps_completed_count, first_primary_dimension from §leads where lead_id = $1", [lead]);
   confere(l4.maps_completed_count >= 2 && l4.first_primary_dimension === "energia", "contagem de Mapas sobe e a primeira dimensão é preservada (RF-082)", JSON.stringify(l4));
   confere(b.pote.get("epic_lid") === lead, "o segundo aparelho passa a usar o lead principal");

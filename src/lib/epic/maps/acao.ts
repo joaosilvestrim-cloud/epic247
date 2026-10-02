@@ -99,6 +99,9 @@ export const ACAO: DimensionalMapConfig = {
     "Você não precisa esperar a versão perfeita do plano. Precisa descobrir qual é o próximo passo pequeno o bastante para acontecer.",
   ctaPlan: "Quero meu Plano EPIC Ação de 7 dias.",
   ctaKit: "Conhecer o Kit Ação.",
+  // Mapa de Ação §16: autoavaliação comportamental não substitui avaliação profissional.
+  safetyNote:
+    "Se você vive sofrimento relevante, prejuízo importante no dia a dia ou sintomas persistentes que vão além de hábitos e execução, uma autoavaliação comportamental não substitui avaliação profissional adequada.",
   related: [
     { dimension: "energia", when: "quando a pessoa sabe o que fazer, mas não tem recurso físico/mental para sustentar." },
     { dimension: "mentalidade", when: "quando ruminação, antecipação, perfeccionismo ou justificativas dominam antes da ação." },

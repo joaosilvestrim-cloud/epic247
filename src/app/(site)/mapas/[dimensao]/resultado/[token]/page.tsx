@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CapturaResultado from "@/components/epic/CapturaResultado";
+import EscolhaPrioridade from "@/components/epic/EscolhaPrioridade";
 import FeedbackResultado from "@/components/epic/FeedbackResultado";
 import EixosMapa from "@/components/epic/EixosMapa";
 import Visualizacao from "@/components/epic/Visualizacao";
@@ -96,6 +97,13 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
                 <p className="mt-6 border-l border-latao pl-5 text-lg leading-relaxed text-grafite/85">
                   {cfg.dualMessage.replace("{A}", rotulo(r.primary)).replace("{B}", rotulo(r.secondary))}
                 </p>
+              )}
+              {r.kind === "tie" && r.tiedTop.length > 1 && (
+                <EscolhaPrioridade
+                  token={token}
+                  opcoes={r.tiedTop.map((k) => ({ chave: k, nome: rotulo(k) }))}
+                  inicial={salvo.chosen_pattern}
+                />
               )}
               {(r.kind === "tie" || r.kind === "close") && relacaoDoPar(dimensao, r.primary, r.secondary) && (
                 <p className="mt-3 pl-5 text-[15px] leading-relaxed text-mineral-escuro">

@@ -79,3 +79,22 @@ describe("Plano na estrutura de cada dimensão (seção 10 de cada Mapa)", () =>
     assert.ok(!plano.estrutura!.some((b) => b.tipo === "conteudo"));
   });
 });
+
+describe("Empate: prioridade escolhida pela pessoa (Mapa de Energia §8)", () => {
+  it("o Plano parte da área escolhida só quando ela está no empate", async () => {
+    const { aplicarPrioridade } = await import("./gerador");
+    const cfg = DIMENSIONAL_MAPS.energia;
+    const [a, b] = [cfg.axes[0].key, cfg.axes[1].key];
+    const r: Record<string, number> = {};
+    for (const q of cfg.questions) r[q.id] = q.axis === a || q.axis === b ? (q.reverse ? 0 : 4) : q.reverse ? 4 : 0;
+    const res = scoreDimensional(cfg, r);
+    assert.equal(res.kind, "tie");
+    const outro = res.tiedTop.find((k) => k !== res.primary)!;
+    const escolhido = aplicarPrioridade(res, outro);
+    assert.equal(escolhido.primary, outro);
+    assert.equal(escolhido.secondary, res.primary);
+    assert.equal(gerarPlano(cfg, escolhido, r).padrao.chave, outro);
+    // Escolha fora do empate é ignorada.
+    assert.equal(aplicarPrioridade(res, cfg.axes[4].key).primary, res.primary);
+  });
+});
