@@ -24,7 +24,12 @@ export default function EixosMapa({
         const nome = rotulos.find((r) => r.key === e.key)?.label ?? e.key;
         const principal = destaque.includes(e.key);
         return (
-          <li key={e.key} className="grid items-center gap-x-6 gap-y-2 py-4 sm:grid-cols-[11rem_1fr_11rem]">
+          <li
+            key={e.key}
+            className={`relative grid items-center gap-x-6 gap-y-2 py-4 sm:grid-cols-[11rem_1fr_11rem] ${
+              principal ? "before:absolute before:-left-4 before:inset-y-3 before:w-[2px] before:bg-latao sm:before:-left-5" : ""
+            }`}
+          >
             <span className={`font-display text-lg ${principal ? "text-tinta" : "text-grafite/80"}`}>{nome}</span>
             <span aria-hidden className="relative h-2 overflow-hidden rounded-full bg-papel-escuro">
               <span

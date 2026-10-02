@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BotaoCheckout from "@/components/epic/BotaoCheckout";
 import JsonLd from "@/components/epic/JsonLd";
+import { SeteDias } from "@/components/epic/ObjetosEditoriais";
 import { produtoLd } from "@/lib/epic/seo";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, DraftRibbon, TextCTA } from "@/components/epic/ui";
@@ -102,6 +103,9 @@ export default async function PlanoPage({ params, searchParams }: Props) {
             <p className="mt-4 text-grafite/75">
               Cada parte é preenchida a partir do seu padrão principal, do secundário e das suas respostas.
             </p>
+            <div className="mt-10">
+              <SeteDias dias={["Observar", "Nomear", "Reduzir", "Primeiro movimento", "Segundo movimento", "Terceiro movimento", "Revisar"]} />
+            </div>
           </div>
           <ol className="revelar-lista border-t border-linha">
             {ESTRUTURA_PLANO[dimensao].map((item, i) => (

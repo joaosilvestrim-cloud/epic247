@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FormMentoria from "@/components/epic/FormMentoria";
 import Depoimentos from "@/components/epic/Depoimentos";
+import { VagasMentoria } from "@/components/epic/ObjetosEditoriais";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, SectionTitle } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
@@ -44,7 +45,10 @@ export default async function MentoriaPage() {
           <aside className="self-end rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-8">
             {p && <p className="font-display text-4xl text-grafite">{formatPrice(p.price_list)}</p>}
             <p className="mt-2 text-sm text-mineral-escuro">Valor do piloto.</p>
-            <p className="mt-6 text-grafite">
+            <div className="mt-6">
+              <VagasMentoria capacidade={vagas.capacidade} ocupadas={Math.min(vagas.ocupadas, vagas.capacidade)} />
+            </div>
+            <p className="mt-4 text-grafite">
               {vagas.disponivel
                 ? `${vagas.capacidade - vagas.ocupadas} de ${vagas.capacidade} vagas abertas neste ciclo.`
                 : "As vagas deste ciclo estão preenchidas."}

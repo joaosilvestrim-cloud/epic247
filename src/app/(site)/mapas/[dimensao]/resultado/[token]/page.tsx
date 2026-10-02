@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import CapturaResultado from "@/components/epic/CapturaResultado";
 import EscolhaPrioridade from "@/components/epic/EscolhaPrioridade";
 import FeedbackResultado from "@/components/epic/FeedbackResultado";
+import MarcaMao from "@/components/epic/MarcaMao";
 import EixosMapa from "@/components/epic/EixosMapa";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
@@ -35,6 +36,19 @@ const RESULTADO_BAIXO = {
     "Suas respostas sugerem que esta dimensão está relativamente estável hoje. Isso não significa que nada precise de atenção: talvez a fricção esteja em outro lugar. O Mapa de Fricção ajuda a descobrir por onde começar."
   ),
 };
+
+/** Sublinha à mão o nome do padrão dentro do título (uma marcação por tela). */
+function comMarca(titulo: string, nome: string) {
+  const k = titulo.lastIndexOf(nome);
+  if (k < 0) return titulo;
+  return (
+    <>
+      {titulo.slice(0, k)}
+      <MarcaMao atraso={750}>{nome}</MarcaMao>
+      {titulo.slice(k + nome.length)}
+    </>
+  );
+}
 
 export default async function ResultadoDimensionalPage({ params }: Params) {
   const { dimensao, token } = await params;
@@ -88,9 +102,12 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
                 </p>
               )}
               <h1 className="entrada mt-4 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
-                {cfg.generalTitle && r.kind === "single"
-                  ? cfg.generalTitle.replace("{DRENO}", rotulo(r.primary))
-                  : principal.title}
+                {comMarca(
+                  cfg.generalTitle && r.kind === "single"
+                    ? cfg.generalTitle.replace("{DRENO}", rotulo(r.primary))
+                    : principal.title,
+                  rotulo(r.primary)
+                )}
               </h1>
               {cfg.generalSubtitle && <p className="mt-4 text-grafite/70">{cfg.generalSubtitle}</p>}
               {(r.kind === "tie" || r.kind === "close") && (
@@ -110,8 +127,10 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
                   {rotulo(r.primary)} e {rotulo(r.secondary)}: {relacaoDoPar(dimensao, r.primary, r.secondary)}
                 </p>
               )}
-              <blockquote className="mt-10 font-display text-[1.5rem] leading-snug text-grafite sm:text-[1.8rem]">
-                “{principal.recognition}”
+              {/* Frase de reconhecimento como citação editorial: aspas grandes em latão. */}
+              <blockquote className="entrada relative mt-12 pl-10 font-display text-[1.5rem] leading-snug text-grafite sm:pl-14 sm:text-[1.85rem]" style={{ "--atraso": "350ms" } as React.CSSProperties}>
+                <span aria-hidden className="absolute -top-4 left-0 font-display text-[4.5rem] leading-none text-latao sm:-top-6 sm:text-[6rem]">“</span>
+                {principal.recognition}
               </blockquote>
             </>
           )}
@@ -253,13 +272,14 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       )}
 
       {/* Fechamento e responsabilidade */}
-      <section className="grao bg-tinta text-papel">
-        <Container estreito className="py-16">
-          <p className="font-display text-[1.6rem] leading-snug sm:text-[2rem]">{cfg.closingPhrase}</p>
-          {cfg.safetyNote && <p className="mt-8 border-l border-latao pl-5 text-sm leading-relaxed text-papel/80">{cfg.safetyNote}</p>}
-          <p className="mt-6 text-sm leading-relaxed text-papel/55">{cfg.disclaimer}</p>
+      {/* Claro: o rodapé escuro é a cena final; aqui, o fechamento do Mapa. */}
+      <section className="grao border-t border-linha bg-papel-escuro">
+        <Container estreito className="py-20">
+          <p className="revelar font-display text-[1.6rem] leading-snug text-grafite sm:text-[2.1rem]">{cfg.closingPhrase}</p>
+          {cfg.safetyNote && <p className="mt-8 border-l border-latao pl-5 text-sm leading-relaxed text-grafite/80">{cfg.safetyNote}</p>}
+          <p className="mt-6 text-sm leading-relaxed text-mineral-escuro">{cfg.disclaimer}</p>
           <div className="mt-10">
-            <PrimaryCTA href="/mapa" escuro>
+            <PrimaryCTA href="/mapa">
               Fazer o Mapa de Fricção
             </PrimaryCTA>
           </div>

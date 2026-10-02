@@ -4,6 +4,7 @@ import BotaoCheckout from "@/components/epic/BotaoCheckout";
 import JsonLd from "@/components/epic/JsonLd";
 import { produtoLd } from "@/lib/epic/seo";
 import Visualizacao from "@/components/epic/Visualizacao";
+import { CapasKit } from "@/components/epic/ObjetosEditoriais";
 import { Container, DraftRibbon, TextCTA } from "@/components/epic/ui";
 import { FUNCAO_KIT } from "@/lib/epic/content/produtos";
 import { DIMENSION_IDS, DIMENSIONS, isDimensionId, mapPath } from "@/lib/epic/dimensions";
@@ -56,7 +57,11 @@ export default async function KitPage({ params }: Props) {
             <p className="mt-6 text-xl text-grafite/85">Manual + Workbook + ferramentas práticas.</p>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-grafite/75">Para {FUNCAO_KIT[dimensao]}</p>
           </div>
-          <div className="self-end rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-8">
+          <div className="flex flex-col gap-12 self-end">
+          <div className="flex justify-center lg:justify-start">
+            <CapasKit dimensao={dimensao} />
+          </div>
+          <div className="rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-8">
             <p className="font-display text-5xl text-grafite">{formatPrice(p.price_list)}</p>
             <p className="mt-2 text-sm text-mineral-escuro">Pagamento único. Pix ou cartão.</p>
             <div className="mt-8">
@@ -70,6 +75,7 @@ export default async function KitPage({ params }: Props) {
                 <BotaoCheckout productId={p.product_id} rotulo={`Quero o Kit ${d.name}`} disponivel={vendavel(p)} />
               )}
             </div>
+          </div>
           </div>
         </Container>
       </section>

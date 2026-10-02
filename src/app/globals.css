@@ -141,6 +141,14 @@ body {
   from { opacity: 0; transform: translateX(14px); }
   to { opacity: 1; transform: none; }
 }
+@keyframes cortina {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes assentar {
+  from { transform: scale(1.08); }
+  to { transform: none; }
+}
 @keyframes crescer-x {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -156,54 +164,64 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   /* Entrada de cena no carregamento (hero, título do resultado). */
   .entrada {
-    animation: entrar 0.9s var(--ease-saida) both;
+    animation: entrar 0.9s var(--ease-saida) backwards;
     animation-delay: var(--atraso, 0ms);
   }
   .entrada-suave {
-    animation: surgir 1.1s ease-out both;
+    animation: surgir 1.1s ease-out backwards;
     animation-delay: var(--atraso, 0ms);
   }
 
   /* Mapa: cada pergunta entra pela lateral; as alternativas, em sequência. */
   .pergunta-entra {
-    animation: entrar-lado 0.45s var(--ease-saida) both;
+    animation: entrar-lado 0.45s var(--ease-saida) backwards;
   }
   .opcao-entra {
-    animation: entrar 0.5s var(--ease-saida) both;
+    animation: entrar 0.5s var(--ease-saida) backwards;
     animation-delay: var(--atraso, 0ms);
   }
   /* Assinatura em modo tempo (tela "Montando o seu mapa"). */
   .sinal-tempo .sinal-linha {
-    animation: crescer-y 0.9s var(--ease-saida) both !important;
+    animation: crescer-y 0.9s var(--ease-saida) backwards !important;
     animation-timeline: auto !important;
     animation-delay: calc(var(--i) * 90ms) !important;
   }
   .sinal-tempo .sinal-ponto {
-    animation: surgir 0.5s ease-out both !important;
+    animation: surgir 0.5s ease-out backwards !important;
     animation-timeline: auto !important;
     animation-delay: 1s !important;
   }
 
+  /* Foto em corte de cinema: a cortina sobe e a imagem assenta. */
+  .foto-revela {
+    animation: cortina 1.2s var(--ease-traco) backwards;
+    animation-delay: var(--atraso, 150ms);
+  }
+  .foto-revela img {
+    animation: assentar 1.8s var(--ease-saida) backwards;
+    animation-delay: var(--atraso, 150ms);
+  }
+
   /* Menus que abrem: entrada curta, sem quicar. */
   .menu-entra {
-    animation: descer 0.28s var(--ease-saida) both;
+    animation: descer 0.28s var(--ease-saida) backwards;
   }
 
   /* Troca de página: o miolo entra, o header fica. */
   .pagina {
-    animation: surgir 0.45s ease-out both;
+    animation: surgir 0.45s ease-out backwards;
   }
 
   /* Barras que crescem a partir da esquerda (áreas do Mapa, ranking). */
   .barra-cresce {
     transform-origin: left center;
-    animation: crescer-x 1.1s var(--ease-saida) both;
+    animation: crescer-x 1.1s var(--ease-saida) backwards;
     animation-delay: var(--atraso, 200ms);
   }
 
   /* Sublinhado feito à mão que se desenha (acompanha a quebra de linha). */
   .marca-mao-anima {
-    animation: sublinhar 1.1s var(--ease-traco) both;
+    animation: sublinhar 1.1s var(--ease-traco) backwards;
     animation-delay: var(--atraso, 700ms);
   }
 
@@ -218,12 +236,12 @@ body {
   /* Revelação ao rolar, só onde o navegador sabe ligar a animação à rolagem. */
   @supports (animation-timeline: view()) {
     .revelar {
-      animation: entrar linear both;
+      animation: entrar linear backwards;
       animation-timeline: view();
       animation-range: entry 0% entry 55%;
     }
     .revelar-lista > * {
-      animation: entrar linear both;
+      animation: entrar linear backwards;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
     }
@@ -233,7 +251,7 @@ body {
     .revelar-lista > :nth-child(5n + 5) { animation-range: entry 16% entry 76%; }
     /* Marcas à mão abaixo da dobra: desenham quando chegam à tela. */
     .marca-mao-anima.marca-rola {
-      animation: sublinhar linear both;
+      animation: sublinhar linear backwards;
       animation-timeline: view();
       animation-delay: 0s;
       animation-range: entry 60% cover 45%;
@@ -248,7 +266,7 @@ body {
     .revelar .filete,
     .filete-revela {
       transform-origin: left center;
-      animation: crescer-x linear both;
+      animation: crescer-x linear backwards;
       animation-timeline: view();
       animation-range: entry 10% entry 70%;
     }
@@ -264,22 +282,22 @@ body {
   .sinal-linha {
     transform-box: fill-box;
     transform-origin: bottom center;
-    animation: crescer-y 1s var(--ease-saida) both;
+    animation: crescer-y 1s var(--ease-saida) backwards;
     animation-delay: calc(var(--i) * 70ms + 150ms);
   }
   .sinal-ponto {
-    animation: surgir 0.6s ease-out both;
+    animation: surgir 0.6s ease-out backwards;
     animation-delay: 1.15s;
   }
   @supports (animation-timeline: view()) {
     .sinal-linha {
-      animation: crescer-y linear both;
+      animation: crescer-y linear backwards;
       animation-timeline: view();
       animation-delay: 0s;
       animation-range: entry calc(var(--i) * 3%) entry calc(45% + var(--i) * 3%);
     }
     .sinal-ponto {
-      animation: surgir linear both;
+      animation: surgir linear backwards;
       animation-timeline: view();
       animation-delay: 0s;
       animation-range: entry 60% entry 80%;

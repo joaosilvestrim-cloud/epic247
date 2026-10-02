@@ -5,6 +5,7 @@ import JsonLd from "@/components/epic/JsonLd";
 import { produtoLd } from "@/lib/epic/seo";
 import Depoimentos from "@/components/epic/Depoimentos";
 import MarcaMao from "@/components/epic/MarcaMao";
+import { EstanteProtocolo } from "@/components/epic/ObjetosEditoriais";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import { MANIFESTO } from "@/lib/epic/content/home";
@@ -34,14 +35,17 @@ export default async function ProtocoloPage() {
       {p && <JsonLd dados={produtoLd(p, "/protocolo", String(metadata.description))} />}
 
       <section className="grao border-b border-linha">
-        <Container className="pb-20 pt-14 sm:pt-20">
-          <p className="font-mono text-sm text-latao-escuro">Protocolo EPIC247</p>
+        <Container className="grid gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.25fr_1fr] lg:items-end lg:gap-16">
+          <div>
+          <p className="entrada-suave font-mono text-sm text-latao-escuro">Protocolo EPIC247</p>
           <h1 className="entrada mt-4 max-w-4xl font-display text-[2.8rem] font-normal leading-[1.05] text-grafite sm:text-[4.4rem]">
             10 dimensões. Um sistema.
           </h1>
           <p className="mt-8 max-w-2xl text-xl leading-relaxed text-grafite/80">
             Você pode começar por uma dimensão específica. Mas algumas mudanças exigem olhar o sistema inteiro.
           </p>
+          </div>
+          <EstanteProtocolo />
         </Container>
       </section>
 

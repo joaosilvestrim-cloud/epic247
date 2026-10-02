@@ -53,7 +53,7 @@ export default async function JuPage() {
             </h1>
           </div>
           {settings.juPhotoUrl && (
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-epic)]">
+            <div className="foto-revela relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-epic)]">
               <Image src={settings.juPhotoUrl} alt="Ju Ferreira" fill sizes="20rem" className="object-cover" priority />
             </div>
           )}
@@ -62,7 +62,7 @@ export default async function JuPage() {
 
       <section>
         <Container estreito className="py-20">
-          <div className="prosa space-y-5 text-lg leading-relaxed text-grafite/85">
+          <div className="prosa revelar-lista space-y-5 text-lg leading-relaxed text-grafite/85">
             {BIO.map((p, i) => (
               <p key={i} className={i === 0 ? "font-display text-2xl text-grafite" : ""}>
                 <C v={p} />
