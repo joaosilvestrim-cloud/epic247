@@ -62,7 +62,7 @@ export default function AdminDashboard({
 }) {
   const router = useRouter();
   const [aba, setAba] = useState<Aba>("visao");
-  // Link direto para uma aba (ex.: /admin#marketing, usado pelo admin 2.0).
+  // Link direto para uma aba (ex.: /admin/antigo#leads).
   useEffect(() => {
     const h = window.location.hash.slice(1);
     if (["visao", "calendario", "leads", "origem", "midias", "marketing"].includes(h)) setAba(h as Aba);
@@ -93,10 +93,23 @@ export default function AdminDashboard({
   return (
     <main className="min-h-screen bg-offwhite px-4 py-8 text-navy sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl">
+        {/* Este é o admin do Ciclo 1. O oficial é o 2.0. */}
+        <div className="mb-6 rounded-xl border border-gold/50 bg-cream px-4 py-3 text-sm text-navy/80">
+          Admin antigo (Ciclo 1), mantido só para consulta. O admin oficial é o{" "}
+          <a href="/admin/epic" className="font-semibold underline underline-offset-2">
+            admin 2.0
+          </a>
+          . Tags de marketing e foto da Ju agora ficam em{" "}
+          <a href="/admin/epic/configuracoes" className="underline underline-offset-2">
+            Marketing e site
+          </a>
+          .
+        </div>
+
         {/* Header */}
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl font-bold">Painel EPIC247</h1>
+            <h1 className="font-display text-3xl font-bold">Painel EPIC247 · Ciclo 1</h1>
             <p className="text-sm text-navy/60">Gestão de tarefas, leads e conteúdo</p>
           </div>
           <div className="flex items-center gap-3">
@@ -327,7 +340,7 @@ export default function AdminDashboard({
   );
 }
 
-function UploadCard({
+export function UploadCard({
   titulo,
   descricao,
   kind,
@@ -541,7 +554,7 @@ interface CampoTag {
   segredo?: boolean;
 }
 
-function MarketingView({
+export function MarketingView({
   tracking,
   capiTokenConfigurado,
   disabled,

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdminLogin from "@/components/admin-login";
 import BrandLogo from "@/components/brand-logo";
+import BotaoSair from "@/components/epic/admin/BotaoSair";
 import { adminConfigurado, isAdmin } from "@/lib/admin-auth";
 import { DB_SCHEMA } from "@/lib/epic/server/db";
 
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/admin/epic/ideias", label: "Ideias no site" },
   { href: "/admin/epic/caixa", label: "Caixa de entrada" },
   { href: "/admin/epic/mentoria", label: "Mentoria" },
+  { href: "/admin/epic/configuracoes", label: "Marketing e site" },
 ];
 
 export default async function AdminEpicLayout({ children }: { children: React.ReactNode }) {
@@ -42,11 +44,11 @@ export default async function AdminEpicLayout({ children }: { children: React.Re
           ))}
         </nav>
         <div className="mt-8 border-t border-papel/10 pt-4 text-xs text-papel/50">
-          <a href="/admin#marketing" className="hover:text-papel">Pixel e tags de marketing</a>
-          <br />
-          <Link href="/admin" className="hover:text-papel">Admin do site atual (Ciclo 1)</Link>
-          <br />
           <Link href="/" className="hover:text-papel">Ver o site</Link>
+          <br />
+          <Link href="/admin/antigo" className="hover:text-papel">Admin antigo (Ciclo 1), só consulta</Link>
+          <br />
+          <BotaoSair />
         </div>
       </aside>
       <main className="min-w-0 px-5 py-8 sm:px-8">{children}</main>

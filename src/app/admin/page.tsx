@@ -1,64 +1,6 @@
-import { isAdmin, adminConfigurado } from "@/lib/admin-auth";
-import { getServiceClient } from "@/lib/supabase";
-import {
-  getSettings,
-  getTracking,
-  getMetaCapiTokenConfigurado,
-} from "@/lib/settings";
-import type { Conteudo } from "@/lib/conteudos";
-import { getResumoOrigem } from "@/lib/origem-resumo";
-import AdminLogin from "@/components/admin-login";
-import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export const metadata = {
-  title: "EPIC247 · Admin",
-  robots: { index: false, follow: false },
-};
-
-export default async function AdminPage() {
-  if (!(await isAdmin())) {
-    return <AdminLogin configurado={adminConfigurado()} />;
-  }
-
-  const supabase = getServiceClient();
-  let leads: LeadRow[] = [];
-  let conteudos: Conteudo[] = [];
-  let conteudosReady = false;
-
-  if (supabase) {
-    const { data: leadsData } = await supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(500);
-    leads = (leadsData as LeadRow[]) ?? [];
-
-    const { data: contData, error: contError } = await supabase
-      .from("conteudos")
-      .select("*")
-      .order("ordem", { ascending: true })
-      .order("data", { ascending: true });
-    conteudosReady = !contError;
-    conteudos = (contData as Conteudo[]) ?? [];
-  }
-
-  const settings = await getSettings();
-  const tracking = await getTracking();
-  const capiTokenConfigurado = await getMetaCapiTokenConfigurado();
-  const resumoOrigem = await getResumoOrigem();
-
-  return (
-    <AdminDashboard
-      leads={leads}
-      settings={settings}
-      tracking={tracking}
-      capiTokenConfigurado={capiTokenConfigurado}
-      resumoOrigem={resumoOrigem}
-      supabaseReady={Boolean(supabase)}
-      conteudos={conteudos}
-      conteudosReady={conteudosReady}
-    />
-  );
+// O admin oficial é o 2.0. O do Ciclo 1 fica em /admin/antigo, só para consulta.
+export default function AdminRaiz() {
+  redirect("/admin/epic");
 }
