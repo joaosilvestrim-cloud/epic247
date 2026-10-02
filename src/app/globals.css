@@ -74,7 +74,7 @@ body {
 }
 
 /* Foco visível em tudo que é interativo (Requisitos RF-069). */
-:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
   outline: 2px solid var(--color-latao-escuro);
   outline-offset: 3px;
   border-radius: 2px;
@@ -347,5 +347,129 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Mapa: a cena da pergunta (Brand §10). Sai para o lado em que a
+   pessoa vai; a próxima entra do outro. Voltar inverte.
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes sai-esquerda {
+  to { opacity: 0; transform: translateX(-28px); filter: blur(1.5px); }
+}
+@keyframes sai-direita {
+  to { opacity: 0; transform: translateX(28px); filter: blur(1.5px); }
+}
+@keyframes entra-direita {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes entra-esquerda {
+  from { opacity: 0; transform: translateX(-32px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sobe-numero {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes cena-sai {
+  to { opacity: 0; transform: translateY(-14px); }
+}
+@keyframes carregar {
+  0% { transform: scaleX(0.15); transform-origin: left; }
+  50% { transform: scaleX(1); transform-origin: left; }
+  51% { transform-origin: right; }
+  100% { transform: scaleX(0.15); transform-origin: right; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pergunta-sai-frente { animation: sai-esquerda 0.2s ease-in forwards; }
+  .pergunta-sai-tras { animation: sai-direita 0.2s ease-in forwards; }
+  .pergunta-entra-frente { animation: entra-direita 0.5s var(--ease-saida) backwards; }
+  .pergunta-entra-tras { animation: entra-esquerda 0.5s var(--ease-saida) backwards; }
+  .pergunta-entra-tras .opcao-entra { animation: none; }
+  .numero-troca { animation: sobe-numero 0.35s var(--ease-saida) backwards; }
+  .cena-sai { animation: cena-sai 0.26s ease-in forwards; }
+  .cena-entra { animation: entrar 0.6s var(--ease-saida) backwards; }
+
+  /* FAQ e blocos que abrem: o conteúdo desce no lugar. */
+  details[open] > :not(summary) { animation: descer 0.35s var(--ease-saida) backwards; }
+}
+
+/* Link de texto: o traço grafite corre sobre o filete de latão. */
+.link-traco {
+  border-bottom: 1px solid var(--color-latao);
+  padding-bottom: 2px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.45s var(--ease-saida), color 0.2s;
+}
+.link-traco:hover,
+.link-traco:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Troca de página (View Transitions, React <ViewTransition> no
+   template). O header não se mexe; o miolo sai curto e entra com
+   calma. Do Mapa para o resultado: a página sobe como cortina.
+   Sem suporte, a página troca normalmente (e .pagina faz o fade).
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes vt-sai {
+  to { opacity: 0; transform: translateY(-10px); }
+}
+@keyframes vt-entra {
+  from { opacity: 0; transform: translateY(16px); }
+}
+@keyframes vt-recua {
+  to { opacity: 0; transform: scale(0.97); filter: blur(2px); }
+}
+@keyframes vt-cortina {
+  from { clip-path: inset(100% 0 0 0); transform: translateY(40px); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+::view-transition-old(.pagina-sai) {
+  animation: vt-sai 0.18s ease-in both;
+}
+::view-transition-new(.pagina-entra) {
+  animation: vt-entra 0.45s var(--ease-saida) 0.12s both;
+}
+::view-transition-old(.resultado-sai) {
+  animation: vt-recua 0.35s ease-in both;
+}
+::view-transition-new(.resultado-entra) {
+  animation: vt-cortina 0.8s var(--ease-traco) 0.15s both;
+}
+@supports (view-transition-name: none) {
+  .pagina {
+    animation: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

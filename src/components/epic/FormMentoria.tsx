@@ -89,7 +89,7 @@ export default function FormMentoria({ listaDeEspera }: { listaDeEspera: boolean
   return (
     <div>
       {/* Região anunciada: confirmação e falha de envio chegam ao leitor de tela. */}
-      <div aria-live="polite" role="status">
+      <div aria-live="polite" role="status" className="cena-entra">
         {estado === "ok" && (
           <div className="rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-7">
             <p className="font-display text-2xl leading-snug text-grafite">{entrouNaEspera ? T.okEspera : T.okInteresse}</p>

@@ -73,7 +73,7 @@ export default function FormContato({ assuntoInicial }: { assuntoInicial?: strin
 
   if (estado === "ok") {
     return (
-      <div role="status" className="self-start rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-8">
+      <div role="status" className="cena-entra self-start rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-8">
         <p className="font-display text-3xl text-grafite">{MICRO.contato.sucesso}</p>
         <p className="mt-3 text-grafite/80">{MICRO.contato.sucessoTexto}</p>
         <div className="mt-8 flex flex-wrap items-center gap-6 text-[15px]">

@@ -76,7 +76,7 @@ export function TextCTA({
   return (
     <Link
       href={href}
-      className={`inline-block border-b border-latao pb-0.5 text-[15px] font-medium transition-[color,border-color] duration-200 hover:border-grafite ${
+      className={`link-traco inline-block text-[15px] font-medium ${
         escuro ? "text-papel hover:text-papel-claro" : "text-grafite hover:text-tinta"
       }`}
     >

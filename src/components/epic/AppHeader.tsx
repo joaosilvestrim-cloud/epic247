@@ -117,6 +117,8 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
   return (
     <header
       ref={headerRef}
+      // Âncora fixa na troca de página: o miolo se move, o header não.
+      style={{ viewTransitionName: "site-header" }}
       className={`sticky top-0 z-40 border-b backdrop-blur-sm transition-[background-color,border-color] duration-300 ${
         rolou || megaAberto || mobileAberto ? "border-linha bg-papel/95" : "border-transparent bg-papel/80"
       }`}
@@ -206,8 +208,8 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
               </div>
             )}
             <ol className="grid grid-cols-2 gap-x-12 gap-y-1 xl:grid-cols-5 xl:gap-x-6">
-              {dimensoes.map((d) => (
-                <li key={d.id}>
+              {dimensoes.map((d, i) => (
+                <li key={d.id} className="opcao-entra" style={{ "--atraso": `${40 + i * 30}ms` } as React.CSSProperties}>
                   <Link
                     href={d.href}
                     className="group flex gap-3 rounded-[var(--radius-epic)] p-3 transition-colors hover:bg-papel"
@@ -249,8 +251,8 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
               <>
                 <p className="mb-3 font-mono text-xs text-latao">Dimensões</p>
                 <ol className="mb-10 grid grid-cols-2 gap-x-4 gap-y-3">
-                  {dimensoes.map((d) => (
-                    <li key={d.id}>
+                  {dimensoes.map((d, i) => (
+                    <li key={d.id} className="opcao-entra" style={{ "--atraso": `${60 + i * 35}ms` } as React.CSSProperties}>
                       <Link href={d.href} className="flex items-baseline gap-2">
                         <span className="font-mono text-[11px] text-latao">{String(d.ordem).padStart(2, "0")}</span>
                         <span className="font-display text-lg">{d.nome}</span>

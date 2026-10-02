@@ -40,7 +40,7 @@ export default function NewsletterForm({
 
   if (estado === "ok") {
     return (
-      <div role="status" className={`text-sm ${claro ? "text-grafite" : "text-papel/85"}`}>
+      <div role="status" className={`cena-entra text-sm ${claro ? "text-grafite" : "text-papel/85"}`}>
         <p className="font-semibold">{MICRO.newsletter.sucesso}</p>
         <p className="mt-1">{MICRO.newsletter.sucessoTexto}</p>
       </div>

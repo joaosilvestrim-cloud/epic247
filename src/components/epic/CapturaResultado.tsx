@@ -57,7 +57,7 @@ export default function CapturaResultado({
 
   if (estado === "ok") {
     return (
-      <div role="status" className="rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-7">
+      <div role="status" className="cena-entra rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-7">
         <p className="font-display text-2xl text-grafite">{MICRO.captura.sucesso}</p>
         <p className="mt-2 text-grafite/80">Se não aparecer em alguns minutos no e-mail {email}, confira a caixa de spam.</p>
       </div>
