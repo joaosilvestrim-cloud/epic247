@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://epic247.com.br"),
   title: {
     default: "EPIC247 · Transformação pessoal aplicada",
-    template: "%s · EPIC247",
+    template: "%s | EPIC247",
   },
   description:
     "Existe uma distância entre a vida que você vive e a vida que sabe que poderia viver. O EPIC247 ajuda você a encontrar o seu ponto de fricção e construir a infraestrutura para mudar de verdade.",

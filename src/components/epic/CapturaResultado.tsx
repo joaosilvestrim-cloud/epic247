@@ -2,18 +2,20 @@
 
 import { useId, useState } from "react";
 import { enviar, espelhar } from "@/lib/epic/client/track";
+import { MICRO } from "@/lib/epic/content/microcopy";
 
 /**
- * Captura pós-resultado (RF-016). Nunca bloqueia o resultado, que já está
- * na tela. O aceite de marketing é separado e opcional (RF-061): receber o
- * próprio resultado não inscreve ninguém em newsletter.
+ * Captura pós-resultado (RF-016, Copy Final §6 e §27.11). Nunca bloqueia o
+ * resultado, que já está na tela. O aceite de marketing é separado e
+ * opcional (RF-061): receber o próprio resultado não inscreve ninguém.
+ * Título, texto e botão vêm da microcopy do Mapa da dimensão, quando existe.
  */
 export default function CapturaResultado({
   token,
   mapType,
-  titulo = "Quer receber seu mapa completo?",
-  texto = "Enviamos o seu resultado e as recomendações para o seu e-mail, para você guardar e voltar quando quiser.",
-  botao = "Receber meu mapa",
+  titulo = "Quer guardar seu mapa e receber a leitura completa?",
+  texto = "Deixe seu nome e e-mail. Seu resultado principal já é seu. O e-mail serve para enviar a leitura completa e recomendações.",
+  botao = "Enviar meu mapa completo",
   jaConhecido = false,
 }: {
   token: string;
@@ -33,6 +35,8 @@ export default function CapturaResultado({
   async function submeter(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErro(null);
+    if (!email.trim()) return setErro(MICRO.form.emailVazio);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setErro(MICRO.form.emailInvalido);
     setEstado("enviando");
     const isca = (new FormData(e.currentTarget).get("website") as string) ?? "";
     try {
@@ -45,8 +49,8 @@ export default function CapturaResultado({
       });
       if (d.event_id) espelhar("SubmitMapEmail", d.event_id, { map_type: mapType });
       setEstado("ok");
-    } catch (err) {
-      setErro(err instanceof Error ? err.message : "Não foi possível agora.");
+    } catch {
+      setErro(MICRO.form.falha);
       setEstado("livre");
     }
   }
@@ -54,10 +58,8 @@ export default function CapturaResultado({
   if (estado === "ok") {
     return (
       <div role="status" className="rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro p-7">
-        <p className="font-display text-2xl text-grafite">Enviado.</p>
-        <p className="mt-2 text-grafite/80">
-          Seu mapa está a caminho do e-mail {email}. Se não aparecer em alguns minutos, confira a caixa de spam.
-        </p>
+        <p className="font-display text-2xl text-grafite">{MICRO.captura.sucesso}</p>
+        <p className="mt-2 text-grafite/80">Se não aparecer em alguns minutos no e-mail {email}, confira a caixa de spam.</p>
       </div>
     );
   }
@@ -65,12 +67,12 @@ export default function CapturaResultado({
   return (
     <form onSubmit={submeter} noValidate className="rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-7 sm:p-9">
       <h2 className="font-display text-[1.7rem] leading-tight text-grafite">{titulo}</h2>
-      <p className="mt-3 text-grafite/75">{texto}</p>
+      <p className="mt-3 whitespace-pre-line text-grafite/75">{texto}</p>
 
       <div className="mt-7 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor={`${id}-nome`} className="mb-1.5 block text-sm font-medium text-grafite">
-            Seu primeiro nome
+            Como podemos chamar você?
           </label>
           <input
             id={`${id}-nome`}
@@ -82,7 +84,7 @@ export default function CapturaResultado({
         </div>
         <div>
           <label htmlFor={`${id}-email`} className="mb-1.5 block text-sm font-medium text-grafite">
-            E-mail
+            Seu melhor e-mail
           </label>
           <input
             id={`${id}-email`}
@@ -91,6 +93,7 @@ export default function CapturaResultado({
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={erro ? true : undefined}
             aria-describedby={erro ? `${id}-erro` : undefined}
             className="w-full rounded-[var(--radius-epic)] border border-linha bg-papel px-4 py-3 text-grafite focus:border-grafite"
           />
@@ -107,26 +110,21 @@ export default function CapturaResultado({
             onChange={(e) => setMarketing(e.target.checked)}
             className="mt-0.5 h-4 w-4 accent-[var(--color-grafite)]"
           />
-          <span>
-            Também quero receber conteúdos e ofertas do EPIC247 por e-mail. É opcional: sem marcar, você recebe só
-            o seu mapa.
-          </span>
+          <span>{MICRO.consentimento.editorial}</span>
         </label>
       )}
 
-      {erro && (
-        <p id={`${id}-erro`} role="alert" className="mt-4 text-sm text-[#9a3b2a]">
-          {erro}
-        </p>
-      )}
+      <p id={`${id}-erro`} role="alert" className="mt-4 text-sm text-[#9a3b2a] empty:hidden">
+        {erro}
+      </p>
 
       <div className="mt-7 flex flex-wrap items-center gap-5">
         <button
           type="submit"
-          disabled={estado === "enviando" || !email}
+          disabled={estado === "enviando"}
           className="rounded-[var(--radius-epic)] bg-grafite px-7 py-3.5 text-[15px] font-semibold text-papel transition-colors hover:bg-tinta disabled:opacity-50"
         >
-          {estado === "enviando" ? "Enviando..." : botao}
+          {estado === "enviando" ? MICRO.form.enviando : botao}
         </button>
         <p className="text-xs text-mineral-escuro">
           Usamos seus dados conforme a{" "}

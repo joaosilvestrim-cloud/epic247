@@ -16,9 +16,11 @@ import { dimensaoHref, dimensaoVisivel, dimensionPath, mapaVisivel } from "@/lib
 
 export const dynamic = "force-dynamic";
 
+// Resultado pessoal: noindex, canonical na entrada pública, nada do resultado na metadata (§57.5).
 export const metadata: Metadata = {
-  title: "Seu ponto de fricção",
+  title: "Mapa de Fricção",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/mapa" },
 };
 
 type Params = { params: Promise<{ token: string }> };

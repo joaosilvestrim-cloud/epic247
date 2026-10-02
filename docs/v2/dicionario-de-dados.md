@@ -54,7 +54,9 @@ Não são gravados, para nunca divergirem das transações e da fila (§11, §24
 
 session_id (Pseudônimo), lead_id, session_started_at, landing_page, referrer,
 utm_source/medium/campaign/content/term, device, os, in_app, country, region,
-city. Dono: ANALYTICS. Local é por cidade, nunca endereço. Sem IP gravado.
+city, external_campaign_id, external_adset_id, external_ad_id (v1.1 §55: vêm
+de `campaign_id` ou `utm_id`, `adset_id` e `ad_id` na URL do anúncio). Dono:
+ANALYTICS. Local é por cidade, nunca endereço. Sem IP gravado.
 
 ## Resultado de Mapa (`map_results`)
 
@@ -82,13 +84,41 @@ provider_product_id (ID na Kiwify), active. Dono: CHECKOUT. Editável em
 | Campo | Pessoal | Observação |
 |---|---|---|
 | provider + transaction_id | não | chave única: webhook repetido não duplica (§47) |
+| payment_provider | não | v1.1 §65; coluna gerada a partir de provider (kiwify) |
+| provider_transaction_id | não | id da venda na Kiwify (order_id); único por provedor |
+| provider_status_raw | não | status cru da Kiwify, só auditoria |
+| provider_event_id | não | id do evento no provedor, quando houver |
 | lead_id, product_id | Pseudônimo | |
-| transaction_status | não | pending, approved, refunded, chargeback, cancelled |
+| transaction_status | não | pending, approved, refused, refunded, chargeback, cancelled (normalizado, ver abaixo) |
 | payment_method, installments | não | |
 | amount_gross, amount_fee, amount_net, amount_received | não | recebido = líquido na data prevista de depósito; zera em reembolso |
 | buyer_email | **PII** | apagado na anonimização; transação fica (obrigação fiscal) |
 | purchased_at, approved_at, received_at, refunded_at | não | |
 | utm_* | Comportamental | da Kiwify (sck/src e utm do link) |
+
+`purchase_history` só tem compra de verdade: approved, refunded e chargeback.
+Pagamento aguardando, recusado ou cancelado fica em `transactions` para
+operação e analytics, sem liberar produto, sem mudar lifecycle e sem entrar
+no histórico.
+
+### Normalização Kiwify (§65, Blueprint §55)
+
+Adapter puro em `src/lib/epic/pagamentos/kiwify.ts`. O tipo do evento decide;
+sem tipo conhecido, decide o `order_status`.
+
+| Kiwify (webhook_event_type / order_status) | Estado interno | transaction_status | Evento |
+|---|---|---|---|
+| order_approved / paid | purchase_approved | approved | Purchase + PurchasePlan/Kit/Protocol |
+| billet_created, pix_created / waiting_payment | payment_waiting | pending | PaymentWaiting |
+| order_rejected / refused | payment_refused | refused | PaymentRefused |
+| canceled, expired (status) | payment_refused | cancelled | PaymentRefused |
+| order_refunded / refunded | refund | refunded | Refund |
+| chargeback / chargedback | chargeback | chargeback | Refund (tipo chargeback) + Chargeback |
+
+Webhook fora de ordem nunca rebaixa: aprovada só vira reembolso ou
+chargeback; chargeback é final. Deduplicação: provider_event_id quando vier;
+senão order_id + tipo do evento (`webhook_events.event_key`); a transação é
+única por provider + transaction_id.
 
 ## Checkout (`checkouts`, visão)
 
@@ -102,7 +132,8 @@ Estrutura padrão do §14: event_id (chave de deduplicação), event_name,
 lead_id, session_id, occurred_at, page_url (sem domínio e sem parâmetros
 pessoais), referrer, utm_*, map_type, dimension, primary/secondary_pattern,
 product_id, product_type, product_price, transaction_id, question_index,
-props. Campos não aplicáveis ficam nulos.
+props, external_campaign_id, external_adset_id, external_ad_id (herdados da
+sessão). Campos não aplicáveis ficam nulos.
 
 Eventos core: ViewHome, ViewDimensionPage, ViewMapEntry, StartMap,
 MapQuestionProgress, CompleteMap, ViewMapResult, SubmitMapEmail,
@@ -114,7 +145,8 @@ MapNurtureConversion, PlanDelivered, PlanDay7Completed, KitDelivered,
 ProtocolActivated, MentoringBooked, RecoveredCheckout,
 CrossDimensionMapStarted, ResumeMap, NewsletterSignup, ContactSubmitted,
 ResultFeedback e LifecycleChanged (gravado pelo banco a cada mudança de
-estágio, com o anterior e o novo em `props`).
+estágio, com o anterior e o novo em `props`). Eventos de pagamento (§65), só
+pelo webhook: PaymentWaiting, PaymentRefused e Chargeback.
 O navegador só consegue registrar eventos de visualização; compra e e-mail
 vêm sempre do servidor.
 
@@ -144,9 +176,86 @@ postponed_count, error, dedupe_key (garante uma mensagem por etapa e escopo).
 | contact_messages | mensagens do contato (**PII**) |
 | content_items | Ideias publicadas no site e edições de newsletter |
 | editorial_ideas, editorial_derivations | banco de ideias e peças, com código de utm_content |
-| media_spend | investimento em mídia por período, fase, campanha e criativo |
+| media_spend | investimento lançado à mão por período, fase, campanha e criativo |
 | rate_limits | contagem por IP em hash, apagada após 1 dia |
 | app_settings | capacidade da Mentoria, versão da política, última rodada do agendador |
+
+## Camada KPI / BI (Modelo de Dados v1.1 §52 a §64)
+
+Migração `012_kpi_bi.sql`. Nenhuma destas tabelas tem dado pessoal.
+
+**Ingestão (§62).** Toda carga externa grava `source_system`,
+`source_record_id`, `source_updated_at`, `ingested_at`, `processing_status`
+(pending, processed, failed) e `processing_error`. Único por
+`source_system + source_record_id`: reimportar não duplica. Cada importação
+fica em `ingestion_runs` (entidade, origem, arquivo, linhas, gravadas, com
+problema, erros). Importação pelo admin: CSV em Conteúdo, Mídia e Vendas.
+
+### ContentPerformance (`content_performance`, §53)
+
+content_id (estável, igual ao utm_content), platform (instagram, facebook,
+linkedin, youtube, tiktok, other), published_at, content_type (reel, story,
+carousel, static_post, video, article, newsletter, other), dimension,
+editorial_universe (eu_me_vi_aqui, ju_pensa, historias,
+cultura_explica_a_vida, ferramentas, movimento), organic_or_paid (organic,
+paid, hybrid), campaign_id, views, reach, impressions, watch_time_seconds,
+average_watch_time_seconds, retention_rate (em %), saves, shares, comments,
+profile_visits, link_clicks, source_updated_at. Uma linha por platform +
+content_id (`source_record_id` = `platform:content_id`). Export mais antigo
+não sobrescreve número mais novo. Dono: CONTENT.
+
+### CampaignPerformance (`campaign_performance`, §54)
+
+performance_date, platform (meta, google, linkedin, tiktok, other),
+account_id, campaign_id, campaign_name, adset_id, adset_name, ad_id, ad_name,
+utm_source/medium/campaign/content, spend, impressions, reach, clicks,
+landing_page_views, platform_leads, platform_purchases (só referência da
+plataforma, nunca conversão oficial), fase (1 a 5, opcional),
+source_updated_at. Chave de granularidade: performance_date + platform +
+campaign_id + adset_id + ad_id (nulo conta como igual). Sem campaign_id no
+CSV, a chave usa `nome:<nome da campanha>`. Dono: ANALYTICS.
+
+`investimento_midia` (visão) junta o CSV importado e o `media_spend` manual.
+Chave de campanha: utm_campaign; sem ele, o utm de outra linha da mesma
+campanha; depois o nome; depois o id. Chave de criativo: utm_content.
+
+### Receivable (`receivables`, §57 e §58)
+
+receivable_id, provider + transaction_id (FK para a transação, 1..N por
+venda), installment_number, installment_total, expected_amount (líquido
+esperado), expected_date, received_amount, received_date, receivable_status
+(pending, scheduled, received, overdue, cancelled, refunded, chargeback),
+fee_amount, net_received_amount, provider_receivable_id, source_updated_at.
+Único por provider + transaction_id + installment_number.
+
+Origem: o webhook da Kiwify cria um recebível 1/1 agendado só quando manda
+`estimated_deposit_date` e o líquido (`my_commission`). Sem esses dados,
+nenhum recebível é criado e o painel mostra a venda como "sem recebível".
+Reembolso e chargeback passam os recebíveis da venda para refunded ou
+chargeback. Extrato importado ou edição em Vendas substitui a linha da Kiwify.
+
+### Métricas (§56, §59, §63)
+
+Contas em `src/lib/epic/kpi/metricas.ts` (testadas). Denominadores fixos:
+
+| Métrica | Conta |
+|---|---|
+| Save Rate / Share Rate / CTR de conteúdo | saves, shares ou link_clicks ÷ views |
+| CPL | gasto ÷ leads atribuídos a campanhas com gasto |
+| CAC 1º produto | gasto ÷ pessoas cuja primeira compra foi no período e atribuída |
+| CAC cliente EPIC | gasto ÷ compradores únicos atribuídos no período |
+| Ticket médio | receita bruta aprovada ÷ vendas aprovadas |
+| RPL / RPV | receita bruta ÷ leads / ÷ visitantes |
+| ROAS bruto / líquido / caixa | receita bruta / líquida / caixa recebido atribuídos ÷ gasto |
+| Vendido | bruto das vendas aprovadas no período, mesmo se reembolsadas depois |
+| Receita líquida, taxas | só das vendas que seguem aprovadas |
+| Recebido | recebíveis received + recebíveis da Kiwify com data prevista vencida (presumido) |
+| A receber | pending, scheduled e overdue ainda não recebidos |
+| Caixa projetado | recebido + a receber com data até 30/12/2026 |
+
+Atribuição: último toque com origem (last non-direct click) por utm_campaign
+e utm_content. Lead pelo `last_touch_*`; venda pelo utm do link de checkout.
+Leads e compras da plataforma de mídia não entram.
 
 ## Retenção e direitos (§38)
 

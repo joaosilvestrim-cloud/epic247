@@ -21,14 +21,25 @@ export interface Atribuicao {
   term: string | null;
   landing_page: string | null;
   referrer: string | null;
+  /** IDs externos de mídia (§55): só quando vieram na URL do anúncio. */
+  campaign_id?: string | null;
+  adset_id?: string | null;
+  ad_id?: string | null;
 }
 
 const corta = (v: unknown, n = 200) =>
   typeof v === "string" && v.trim() ? v.trim().slice(0, n).toLowerCase() : null;
 
+/** ID de plataforma (número ou token curto). Qualquer outra coisa é descartada. */
+const idExterno = (v: unknown) =>
+  typeof v === "string" && /^[A-Za-z0-9_.:-]{1,64}$/.test(v.trim()) ? v.trim() : null;
+
 /** Normaliza o que veio do navegador. Nunca confiar em tamanho nem formato. */
 export function atribuicaoDe(input: Record<string, unknown>): Atribuicao {
   return {
+    campaign_id: idExterno(input.campaign_id),
+    adset_id: idExterno(input.adset_id),
+    ad_id: idExterno(input.ad_id),
     source: corta(input.utm_source),
     medium: corta(input.utm_medium),
     campaign: corta(input.utm_campaign),
@@ -167,12 +178,14 @@ export async function abrirSessao(q: Q, leadId: string, t: Atribuicao, novoToque
   };
   await q(
     `insert into sessions (session_id, lead_id, landing_page, referrer, utm_source, utm_medium,
-       utm_campaign, utm_content, utm_term, device, os, in_app, country, region, city)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+       utm_campaign, utm_content, utm_term, device, os, in_app, country, region, city,
+       external_campaign_id, external_adset_id, external_ad_id)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
     [
       id, leadId, t.landing_page, t.referrer, t.source, t.medium, t.campaign, t.content, t.term,
       dispositivo(ua), sistema(ua), app(ua),
       dec(h.get("x-vercel-ip-country")), dec(h.get("x-vercel-ip-country-region")), dec(h.get("x-vercel-ip-city")),
+      t.campaign_id ?? null, t.adset_id ?? null, t.ad_id ?? null,
     ]
   );
   (await cookies()).set(COOKIE_SESSION, id, { ...cookieOpts(), maxAge: undefined });

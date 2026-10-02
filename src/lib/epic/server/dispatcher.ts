@@ -8,6 +8,7 @@ import { rotuloFaixa } from "../maps/engine";
 import type { DimensionalResult, FrictionResult } from "../maps/types";
 import { CONTEUDO_PLANO } from "../plano/conteudo";
 import { assinar } from "./assinatura";
+import { ehStatusMentoria, supressaoMentoria } from "../mentoria";
 import { mapaVisivel } from "../site";
 import { AUTOMACOES, etapaDe, type Contexto, type PerfilLead } from "./automations";
 import { withTx, type Q } from "./db";
@@ -238,6 +239,23 @@ async function decidir(q: Q, m: Mensagem, p: PerfilLead | null): Promise<Decisao
   }
   const motivo = etapa.suprimir?.(p, m.context, extra);
   if (motivo) return { acao: "pular", motivo };
+
+  // Mentoria (RF-041, Matriz §26): cliente em acompanhamento e conversa em
+  // andamento saem dos fluxos promocionais; abandono da Mentoria só com link.
+  const [cand] = await q<{ status: string; link: boolean }>(
+    `select status, payment_link_sent_at is not null as link from mentoring_applications
+     where lead_id = $1 order by created_at desc limit 1`,
+    [m.lead_id]
+  );
+  const motivoMentoria = supressaoMentoria({
+    automacao: m.automation_id,
+    prioridade: m.priority,
+    productId: typeof m.context.product_id === "string" ? m.context.product_id : null,
+    comprou: p.mentoring_purchased,
+    status: ehStatusMentoria(cand?.status) ? cand.status : null,
+    linkLiberado: Boolean(cand?.link),
+  });
+  if (motivoMentoria) return { acao: "pular", motivo: motivoMentoria };
 
   // Frequência: no máximo 1 não transacional por dia (Modelo de Dados §25).
   // Quem continua inativo depois da reativação recebe no máximo 1 por semana

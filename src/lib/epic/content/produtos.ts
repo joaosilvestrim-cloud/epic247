@@ -100,7 +100,7 @@ export const PROTOCOLO = {
 
 export const MENTORIA = {
   formato: [
-    "Diagnóstico inicial",
+    "Leitura inicial do contexto",
     "4 encontros ao longo de 6 semanas",
     "Plano EPIC individual",
     "Tarefas entre encontros",

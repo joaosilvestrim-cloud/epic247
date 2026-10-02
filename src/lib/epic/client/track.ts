@@ -87,6 +87,10 @@ export function registrarSessao() {
     utm_campaign: q.get("utm_campaign"),
     utm_content: q.get("utm_content"),
     utm_term: q.get("utm_term"),
+    // IDs externos de mídia (Modelo de Dados §55), quando o anúncio manda.
+    campaign_id: q.get("campaign_id") ?? q.get("utm_id"),
+    adset_id: q.get("adset_id"),
+    ad_id: q.get("ad_id"),
     landing_page: window.location.pathname,
     referrer: document.referrer || null,
   };

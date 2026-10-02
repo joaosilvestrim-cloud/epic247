@@ -1,16 +1,25 @@
 import AppFooter from "@/components/epic/AppFooter";
 import AppHeader, { type ItemDimensao } from "@/components/epic/AppHeader";
-import { CTA_FRICCAO, NAV, dimensoesNavegaveis } from "@/lib/epic/site";
+import { copyText } from "@/lib/epic/content/copy";
+import { MEGA_MENU, PERGUNTA_MENU } from "@/lib/epic/content/navegacao";
+import { mapPath } from "@/lib/epic/dimensions";
+import { CTA_FRICCAO, NAV, dimensoesNavegaveis, mapaVisivel } from "@/lib/epic/site";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const dimensoes: ItemDimensao[] = dimensoesNavegaveis().map((d) => ({
     id: d.id,
     ordem: d.order,
     nome: d.name,
-    // Frase do mega-menu ainda é COPY PENDENTE: usa a linha aprovada do manifesto.
-    frase: d.menuPhrase ?? d.manifestoLine,
+    // Pergunta do mega-menu (Copy Final §3); sem ela, a linha do manifesto.
+    frase: copyText(PERGUNTA_MENU[d.id]) ?? d.manifestoLine,
     href: d.href,
+    mapaHref: mapaVisivel(d.id) ? mapPath(d.id) : null,
   }));
+  const menu = {
+    titulo: copyText(MEGA_MENU.titulo),
+    apoio: copyText(MEGA_MENU.apoio),
+    fimPergunta: copyText(MEGA_MENU.fimPergunta),
+  };
 
   return (
     <>
@@ -20,7 +29,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       >
         Pular para o conteúdo
       </a>
-      <AppHeader dimensoes={dimensoes} nav={NAV} cta={CTA_FRICCAO} />
+      <AppHeader dimensoes={dimensoes} nav={NAV} cta={CTA_FRICCAO} menu={menu} />
       <main id="conteudo">{children}</main>
       <AppFooter />
     </>

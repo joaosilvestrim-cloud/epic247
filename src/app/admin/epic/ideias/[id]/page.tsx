@@ -7,6 +7,7 @@ import { enviarNewsletter, excluirConteudo, salvarConteudo } from "../../actions
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { TIPO_LABEL, TIPO_ROTA, type ItemConteudo } from "@/lib/epic/server/conteudo";
 import { query } from "@/lib/epic/server/db";
+import { UNIVERSOS } from "@/lib/epic/server/editorial";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ salvo?: string; erro?: string; enviada?: string }> };
 
@@ -90,9 +91,24 @@ export default async function EditorIdeiaPage({ params, searchParams }: Props) {
               {DIMENSION_IDS.map((d) => <option key={d} value={d}>{DIMENSIONS[d].name}</option>)}
             </select>
           </Campo>
-          <Campo rotulo="Autor">
-            <input name="author" defaultValue={c?.author ?? "Ju Monteiro"} className={CAMPO} />
+          <Campo rotulo="Universo editorial (interno)">
+            <select name="universe" defaultValue={c?.universe ?? ""} className={CAMPO}>
+              <option value="">Nenhum</option>
+              {Object.entries(UNIVERSOS).map(([k, u]) => <option key={k} value={k}>{u.nome}</option>)}
+            </select>
           </Campo>
+          <Campo rotulo="Autor">
+            <input name="author" defaultValue={c?.author ?? "Ju Ferreira"} className={CAMPO} />
+          </Campo>
+          <div className="rounded border border-linha p-3">
+            <label className="flex items-center gap-2 text-grafite">
+              <input type="checkbox" name="featured" defaultChecked={Boolean(c?.featured)} /> Ideia em destaque
+            </label>
+            <p className="mt-1 text-xs text-mineral-escuro">Abre a página Ideias. Escolha pela força da ideia, não pela data.</p>
+            <Campo rotulo="Ordem do destaque">
+              <input name="featured_order" type="number" min={0} max={99} defaultValue={(c as { featured_order?: number | null } | null)?.featured_order ?? ""} className={CAMPO} />
+            </Campo>
+          </div>
           <Campo rotulo="Endereço (slug)">
             <input name="slug" defaultValue={c?.slug ?? ""} placeholder="gerado do título" className={`${CAMPO} font-mono text-xs`} />
           </Campo>
@@ -107,6 +123,9 @@ export default async function EditorIdeiaPage({ params, searchParams }: Props) {
               </Campo>
               <Campo rotulo="Descrição para o Google">
                 <textarea name="seo_description" rows={3} maxLength={300} defaultValue={c?.seo_description ?? ""} className={CAMPO} />
+              </Campo>
+              <Campo rotulo="Imagem social (URL; vazio = capa)">
+                <input name="og_image" maxLength={400} defaultValue={c?.og_image ?? ""} className={CAMPO} />
               </Campo>
             </div>
           </details>

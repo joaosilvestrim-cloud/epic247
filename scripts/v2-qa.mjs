@@ -237,7 +237,7 @@ try {
   // ── 6. Supressão ──
   secao("6. Quem comprou não vê a mesma oferta (RF-038, RF-039, RF-093)");
   const pagPlano = await a.get("/plano/energia");
-  confere(pagPlano.html.includes("Você já tem este Plano"), "página do Plano reconhece a compra");
+  confere(pagPlano.html.includes("Você já tem acesso a este produto") && !pagPlano.html.includes("Quero meu Plano EPIC 7 Dias<"), "página do Plano reconhece a compra");
   const res2 = await a.get(`/mapas/energia/resultado/${tokenResultado}`);
   confere(!res2.html.includes(`/plano/energia?r=${tokenResultado}`), "resultado não oferece mais o Plano");
   confere(res2.html.includes("/kit/energia"), "Kit da dimensão continua oferecido");
@@ -326,6 +326,8 @@ try {
     const [{ todos }] = await sql("select coalesce(array_agg(lead_id), '{}') todos from §leads where lead_id = any($1) or merged_into = any($1)", [ids]);
     await db.query("begin");
     try {
+      // Recebíveis (012) dependem das transações: saem antes.
+      await sql("delete from §receivables where transaction_id in (select transaction_id from §transactions where lead_id = any($1))", [todos]);
       for (const t of ["events", "messages", "plan_generations", "transactions", "mentoring_applications", "contact_messages"]) {
         await sql(`delete from §${t} where lead_id = any($1)`, [todos]);
       }

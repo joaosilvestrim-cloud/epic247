@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { withTx } from "@/lib/epic/server/db";
 import { dispararFila } from "@/lib/epic/server/dispatcher";
-import { registrarEvento } from "@/lib/epic/server/events";
 import { isDimensionId } from "@/lib/epic/dimensions";
 import { gerarCodigo } from "@/lib/epic/server/editorial";
 import { mapaVisivel } from "@/lib/epic/site";
@@ -85,24 +84,7 @@ export async function cancelarMensagem(f: FormData) {
 }
 
 // ── Caixa de entrada ──
-export async function statusMentoria(f: FormData) {
-  await exigirAdmin();
-  const id = s(f, "id", 40);
-  const st = s(f, "status", 20);
-  if (id && st && ["new", "in_conversation", "client", "waitlist", "disqualified"].includes(st)) {
-    await withTx(async (q) => {
-      const [antes] = await q<{ lead_id: string | null; status: string }>(
-        "select lead_id, status from mentoring_applications where id = $1 for update", [id]
-      );
-      await q("update mentoring_applications set status = $2 where id = $1", [id, st]);
-      // Conversa marcada: evento de sucesso da AUT_MENTORING_INTEREST (MentoringBooked).
-      if (st === "in_conversation" && antes?.status !== "in_conversation" && antes?.lead_id) {
-        await registrarEvento(q, "MentoringBooked", { lead_id: antes.lead_id, props: { candidatura: id } });
-      }
-    });
-  }
-  revalidatePath("/admin/epic/caixa");
-}
+// A Mentoria tem ações próprias em mentoria/actions.ts.
 
 export async function statusContato(f: FormData) {
   await exigirAdmin();
@@ -154,6 +136,8 @@ export async function anonimizarLead(f: FormData) {
 // ── Ideias (CMS) ──
 const TIPOS = ["artigo", "newsletter", "video", "repertorio"];
 
+const UNIVERSOS_CMS = ["eu_me_vi_aqui", "ju_pensa", "historias", "cultura", "ferramentas", "movimento"];
+
 export async function salvarConteudo(f: FormData) {
   await exigirAdmin();
   const id = s(f, "id", 40);
@@ -172,6 +156,11 @@ export async function salvarConteudo(f: FormData) {
     tipo, titulo, slug, s(f, "excerpt", 400), s(f, "cover", 400), s(f, "body", 60000), s(f, "video_url", 400),
     s(f, "dimension", 30), s(f, "author", 80), s(f, "seo_title", 120), s(f, "seo_description", 300), status,
     status === "published" ? publicado ?? new Date().toISOString() : publicado,
+    // CMS leve (Blueprint v1.2 §58.1): universo, destaque e imagem social.
+    UNIVERSOS_CMS.includes(s(f, "universe", 30) ?? "") ? s(f, "universe", 30) : null,
+    f.get("featured") === "on",
+    Number.isFinite(Number(f.get("featured_order"))) && s(f, "featured_order", 4) ? Number(f.get("featured_order")) : null,
+    s(f, "og_image", 400),
   ];
   const novoId = await withTx(async (q) => {
     // Endereço já usado por outro conteúdo: no novo, ganha um sufixo; na edição, avisa.
@@ -183,7 +172,8 @@ export async function salvarConteudo(f: FormData) {
     if (id) {
       await q(
         `update content_items set content_type=$2, title=$3, slug=$4, excerpt=$5, cover=$6, body=$7, video_url=$8,
-           dimension=$9, author=$10, seo_title=$11, seo_description=$12, status=$13, published_at=$14, updated_at=now()
+           dimension=$9, author=$10, seo_title=$11, seo_description=$12, status=$13, published_at=$14,
+           universe=$15, featured=$16, featured_order=$17, og_image=$18, updated_at=now()
          where id = $1`,
         [id, ...valores]
       );
@@ -191,8 +181,8 @@ export async function salvarConteudo(f: FormData) {
     }
     const [r] = await q<{ id: string }>(
       `insert into content_items (content_type, title, slug, excerpt, cover, body, video_url, dimension, author,
-         seo_title, seo_description, status, published_at)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) returning id`,
+         seo_title, seo_description, status, published_at, universe, featured, featured_order, og_image)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) returning id`,
       valores
     );
     return r.id;

@@ -3,7 +3,10 @@
 import { DIMENSION_IDS, DIMENSIONS, dimensionPath, mapPath, type Dimension } from "./dimensions";
 import { IS_PRODUCTION } from "./content/copy";
 
+// RC1 §3 e Blueprint v1.2: Home | Dimensões | Protocolo | Mentoria | Ju | Ideias | Contato.
+// "Dimensões" é o mega-menu, desenhado à parte no header.
 export const NAV = [
+  { label: "Home", href: "/" },
   { label: "Protocolo", href: "/protocolo" },
   { label: "Mentoria", href: "/mentoria" },
   { label: "Ju", href: "/ju" },

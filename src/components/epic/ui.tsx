@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { IS_PRODUCTION, type Copy } from "@/lib/epic/content/copy";
+import { copyText, IS_PRODUCTION, type Copy } from "@/lib/epic/content/copy";
 
 /** Renderiza copy aprovada; rascunho só em staging, marcado (RF-087). */
 export function C({ v }: { v: Copy | null | undefined }) {
   if (v == null) return null;
   if (typeof v === "string") return <>{v}</>;
+  if ("proposta" in v) return <>{copyText(v)}</>;
   if (IS_PRODUCTION) return null;
   return (
     <span className="copy-pendente" title="Copy pendente de aprovação">

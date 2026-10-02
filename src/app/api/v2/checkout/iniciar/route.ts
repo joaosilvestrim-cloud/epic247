@@ -19,6 +19,8 @@ export async function POST(req: Request) {
   const id = str(b?.product_id, 40);
   if (!b || !id) return erro("Produto inválido.");
   const p = await produto(id);
+  // Mentoria não tem checkout direto: o link sai só depois da vaga confirmada (RC1 §6).
+  if (p?.product_type === "mentoring") return erro("A Mentoria começa pelo formulário de interesse.", 409);
   if (!vendavel(p)) return erro("Este produto ainda não está disponível.", 409);
 
   const perfil = await perfilAtual();

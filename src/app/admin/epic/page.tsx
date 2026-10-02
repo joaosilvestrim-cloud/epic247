@@ -1,7 +1,10 @@
 import { brl, Cartao, FiltroPeriodo, origem, pct, Secao, Selo, Tabela, Td, Titulo } from "@/components/epic/admin/ui";
 import { DIMENSIONS, isDimensionId } from "@/lib/epic/dimensions";
 import { getDimensionalMap } from "@/lib/epic/maps";
+import { brlOu, FrescorDados, inteiro, taxa, vezes } from "@/components/epic/admin/dados";
+import { DEFINICAO_CAIXA, DEFINICAO_CONTEUDO, DEFINICAO_ECONOMIA, MODELO_ATRIBUICAO } from "@/lib/epic/kpi/metricas";
 import { CENARIOS, CHECKPOINTS, cortes, economia, painel, periodoDe, prontidao, type Corte } from "@/lib/epic/server/admin";
+import { frescor, kpisSemana } from "@/lib/epic/server/kpi";
 
 type Props = { searchParams: Promise<{ p?: string }> };
 
@@ -11,13 +14,17 @@ const dias = (v: number | null) => (v == null ? "—" : v < 1 ? "menos de 1 dia"
 /** Dashboard semanal (Modelo Financeiro §15, Funis §30, Modelo de Dados §40). */
 export default async function PainelPage({ searchParams }: Props) {
   const periodo = periodoDe((await searchParams).p);
-  const [d, eco, campanhas, criativos, checklist] = await Promise.all([
+  const [d, eco, campanhas, criativos, checklist, k, fontes] = await Promise.all([
     painel(periodo),
     economia(periodo),
     cortes(periodo, "utm_campaign"),
     cortes(periodo, "utm_content"),
     prontidao(),
+    kpisSemana(periodo),
+    frescor(),
   ]);
+  // Meta é caixa recebido (Financeiro §1): vem dos recebíveis, não da venda.
+  const caixaRecebido = k.caixa.recebido;
   const hoje = new Date().toISOString().slice(0, 10);
   const proximo = CHECKPOINTS.find((c) => c.ate >= hoje) ?? CHECKPOINTS[CHECKPOINTS.length - 1];
   const nomeDim = (x: string) => (isDimensionId(x) ? DIMENSIONS[x].name : x);
@@ -33,7 +40,7 @@ export default async function PainelPage({ searchParams }: Props) {
       <Secao titulo="Meta: R$ 50 mil recebidos em caixa até 30/12">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {CHECKPOINTS.map((c) => {
-            const atingido = d.caixaAcumulado >= c.valor;
+            const atingido = caixaRecebido >= c.valor;
             const passou = c.ate < hoje;
             return (
               <div key={c.ate} className={`rounded-[var(--radius-epic)] border p-4 ${c === proximo ? "border-grafite" : "border-linha"} bg-papel-claro`}>
@@ -43,15 +50,16 @@ export default async function PainelPage({ searchParams }: Props) {
                 </div>
                 <p className="mt-1 font-display text-2xl text-grafite">{brl(c.valor)}</p>
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-papel-escuro">
-                  <div className="h-full bg-grafite" style={{ width: `${Math.min(100, (d.caixaAcumulado / c.valor) * 100)}%` }} />
+                  <div className="h-full bg-grafite" style={{ width: `${Math.min(100, (caixaRecebido / c.valor) * 100)}%` }} />
                 </div>
               </div>
             );
           })}
         </div>
         <p className="mt-3 text-sm text-mineral-escuro">
-          Caixa recebido acumulado: <strong className="text-grafite">{brl(d.caixaAcumulado)}</strong>. Conta o valor
-          líquido cuja data prevista de depósito já passou.
+          Recebido: <strong className="text-grafite">{brl(caixaRecebido)}</strong> ({brl(k.caixa.recebidoConfirmado)} confirmado
+          por extrato, {brl(k.caixa.recebidoPresumido)} pela data de depósito da Kiwify). Projetado até 30/12:{" "}
+          <strong className="text-grafite">{brl(k.caixa.projetadoAteCorte)}</strong>.
         </p>
       </Secao>
 
@@ -70,13 +78,66 @@ export default async function PainelPage({ searchParams }: Props) {
         <p className="mt-2 text-xs text-mineral-escuro">Pré-requisitos do Modelo Financeiro §18. Cada item é conferido no sistema, nada é marcado à mão.</p>
       </Secao>
 
-      <Secao titulo="Funil do período">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Cartao rotulo="Visitantes" valor={d.visitantes} sub={`${d.sessoes} sessões`} />
-          <Cartao rotulo="Mapas iniciados" valor={d.mapasIniciados} sub={`${d.mapasConcluidos} concluídos · ${pct(d.mapasConcluidos, d.mapasIniciados)}`} />
-          <Cartao rotulo="Leads (e-mail após Mapa)" valor={d.leads} sub={`resultado → e-mail ${pct(d.leads, d.mapasConcluidos)}`} />
-          <Cartao rotulo="Compras" valor={d.compras.reduce((a, c) => a + c.n, 0)} sub={d.compras.map((c) => `${c.n} ${ROTULO_TIPO[c.tipo] ?? c.tipo}`).join(" · ") || "nenhuma"} />
+      <Secao titulo="KPIs do período">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <Grupo titulo="Conteúdo" nota={DEFINICAO_CONTEUDO} linhas={[
+            ["Publicados", `${k.conteudo.publicados} (${k.conteudo.videos} vídeos)`],
+            ["Views", inteiro(k.conteudo.views)],
+            ["Retenção média", k.conteudo.retencao == null ? "—" : `${k.conteudo.retencao.toFixed(1).replace(".", ",")}%`],
+            ["Salvamentos", inteiro(k.conteudo.salvamentos)],
+            ["Compartilhamentos", inteiro(k.conteudo.compartilhamentos)],
+          ]} />
+          <Grupo titulo="Tráfego" nota="Sessão = visita com origem própria. Dimensão = página de entrada." linhas={[
+            ["Sessões", inteiro(k.trafego.sessoes)],
+            ["Visitantes", inteiro(k.trafego.visitantes)],
+            ["Origem", k.trafego.origens.map((o) => `${origem(o.chave)} ${o.n}`).join(" · ") || "—"],
+            ["Dimensão", k.trafego.dimensoes.map((o) => `${nomeDim(o.chave)} ${o.n}`).join(" · ") || "—"],
+          ]} />
+          <Grupo titulo="Mapas" nota="Taxa de conclusão = concluídos ÷ iniciados. Lead = e-mail deixado após um Mapa." linhas={[
+            ["Iniciados", inteiro(k.mapas.iniciados)],
+            ["Concluídos", inteiro(k.mapas.concluidos)],
+            ["Taxa de conclusão", pct(k.mapas.concluidos, k.mapas.iniciados)],
+            ["Leads", `${k.mapas.leads} (${pct(k.mapas.leads, k.mapas.concluidos)} dos concluídos)`],
+          ]} />
+          <Grupo titulo="Vendas" nota="Vendas aprovadas no período, pela data de aprovação." linhas={
+            (["plan", "kit", "protocol", "mentoring"] as const).map((t) => {
+              const v = k.vendas.find((x) => x.tipo === t);
+              return [ROTULO_TIPO[t], v ? `${v.n} · ${brl(v.bruto)}` : "0"] as [string, string];
+            })
+          } />
+          <Grupo titulo="Economia" nota={`${MODELO_ATRIBUICAO} ${DEFINICAO_ECONOMIA}`} linhas={[
+            ["Gasto em mídia", brl(k.economia.gasto)],
+            ["CPL", `${brlOu(k.economia.cpl)} (${k.economia.leadsAtribuidos} leads atribuídos)`],
+            ["CAC 1º produto", `${brlOu(k.economia.cacPrimeiroProduto)} (${k.economia.novosCompradoresAtribuidos} novos)`],
+            ["CAC cliente EPIC", `${brlOu(k.economia.cacCliente)} (${k.economia.compradoresUnicosAtribuidos} compradores)`],
+            ["Ticket médio", brlOu(k.economia.ticketMedio)],
+            ["RPL · RPV", `${brlOu(k.economia.rpl)} · ${brlOu(k.economia.rpv)} (meta RPL ≈ R$ 24)`],
+            ["ROAS bruto · líquido · caixa", `${vezes(k.economia.roasBruto)} · ${vezes(k.economia.roasLiquido)} · ${vezes(k.economia.roasCaixa)}`],
+          ]} />
+          <Grupo titulo="Caixa" nota={DEFINICAO_CAIXA} linhas={[
+            ["Vendido", `${brl(k.caixa.vendido)} (${k.caixa.vendas} vendas)`],
+            ["Receita líquida", `${brl(k.caixa.receitaLiquida)} (reembolsos ${brl(k.caixa.reembolsado)})`],
+            ["Taxas", brl(k.caixa.taxas)],
+            ["Recebido até hoje", brl(k.caixa.recebido)],
+            ["A receber", `${brl(k.caixa.aReceber)}${k.caixa.vencido ? ` (${brl(k.caixa.vencido)} vencido)` : ""}`],
+            ["Projetado até 30/12", brl(k.caixa.projetadoAteCorte)],
+          ]} />
         </div>
+        {(k.caixa.recebidoPresumido > 0 || k.caixa.semRecebivel > 0 || k.caixa.semData > 0) && (
+          <p className="mt-3 text-xs text-mineral-escuro">
+            Limite do caixa: a Kiwify não confirma o depósito por webhook. {brl(k.caixa.recebidoPresumido)} conta como recebido
+            pela data prevista até um extrato ser importado em Vendas.
+            {k.caixa.semRecebivel > 0 && ` ${k.caixa.semRecebivel} venda(s) aprovada(s) sem data de depósito no webhook (${brl(k.caixa.semRecebivelValor)} líquido) ficam fora da projeção.`}
+            {k.caixa.semData > 0 && ` ${brl(k.caixa.semData)} a receber sem data também fica fora.`}
+          </p>
+        )}
+        <p className="mt-2 text-xs text-mineral-escuro">
+          Gasto, CPL, CAC e ROAS por campanha e criativo ficam em Mídia. Conteúdo por content_id fica em Conteúdo.
+        </p>
+      </Secao>
+
+      <Secao titulo="Atualização dos dados">
+        <FrescorDados itens={fontes} />
       </Secao>
 
       <Secao titulo="Conversão por oferta">
@@ -90,20 +151,6 @@ export default async function PainelPage({ searchParams }: Props) {
             </tr>
           ))}
         </Tabela>
-      </Secao>
-
-      <Secao titulo="Economia do período">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Cartao rotulo="Vendido (bruto)" valor={brl(d.bruto)} sub={`taxas ${brl(d.taxas)} · ticket médio ${brl(eco.ticketMedio)}`} />
-          <Cartao rotulo="Receita líquida" valor={brl(d.liquido)} sub={`reembolsos ${brl(d.reembolsos)}`} />
-          <Cartao rotulo="Recebido" valor={brl(d.recebido)} sub={`a receber ${brl(d.aReceber)}`} />
-          <Cartao
-            rotulo="Receita por lead · por visitante"
-            valor={d.leads ? brl(d.bruto / d.leads) : "—"}
-            sub={`RPV ${d.visitantes ? brl(d.bruto / d.visitantes) : "—"} · caixa por lead ${brl(eco.caixaPorLead)} · meta RPL ≈ R$ 24`}
-          />
-        </div>
-        <p className="mt-3 text-xs text-mineral-escuro">CPL, CAC e ROAS ficam em Mídia, que cruza o investimento lançado com o que cada campanha trouxe.</p>
       </Secao>
 
       <Secao titulo="Cenários da meta (vendas acumuladas desde o início)">
@@ -224,6 +271,23 @@ export default async function PainelPage({ searchParams }: Props) {
         </Tabela>
       </Secao>
     </>
+  );
+}
+
+function Grupo({ titulo, linhas, nota }: { titulo: string; linhas: [string, string][]; nota?: string }) {
+  return (
+    <div className="rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-4">
+      <h3 className="font-display text-lg text-grafite">{titulo}</h3>
+      <dl className="mt-2 divide-y divide-linha/70 text-sm">
+        {linhas.map(([r, v]) => (
+          <div key={r} className="flex items-baseline justify-between gap-4 py-1.5">
+            <dt className="text-mineral-escuro">{r}</dt>
+            <dd className="text-right tabular-nums text-grafite">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      {nota && <p className="mt-2 text-[11px] leading-snug text-mineral-escuro">{nota}</p>}
+    </div>
   );
 }
 

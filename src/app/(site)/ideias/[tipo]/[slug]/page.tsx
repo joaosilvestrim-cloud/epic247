@@ -16,11 +16,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tipo, slug } = await params;
   const c = await buscarConteudo(slug);
   if (!c || TIPO_ROTA[c.content_type] !== tipo) return {};
+  // CMS por item (Blueprint v1.2 §57, "SEO para conteúdo editorial"): og_image
+  // própria, senão a capa; twitter herda o og.
+  const titulo = c.seo_title || c.title;
+  const descricao = c.seo_description || c.excerpt || undefined;
+  const imagem = c.og_image || c.cover;
   return {
-    title: c.seo_title || c.title,
-    description: c.seo_description || c.excerpt || undefined,
+    title: titulo,
+    description: descricao,
     alternates: { canonical: `/ideias/${tipo}/${slug}` },
-    openGraph: { title: c.seo_title || c.title, description: c.seo_description || c.excerpt || undefined, images: c.cover ? [c.cover] : undefined, type: "article" },
+    openGraph: { title: titulo, description: descricao, images: imagem ? [imagem] : undefined, type: "article", url: `/ideias/${tipo}/${slug}` },
+    twitter: { card: "summary_large_image", title: titulo, description: descricao, images: imagem ? [imagem] : undefined },
   };
 }
 
@@ -41,14 +47,18 @@ export default async function ConteudoPage({ params }: Props) {
   const video = c.video_url ? embed(c.video_url) : null;
   const data = c.published_at ? new Date(c.published_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) : null;
 
+  // VideoObject só com título, descrição, miniatura, data e embed reais (§57.14).
+  const ehVideo = c.content_type === "video" && Boolean(video && c.cover && c.excerpt && c.published_at);
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": c.content_type === "video" ? "VideoObject" : "Article",
+    "@type": ehVideo ? "VideoObject" : "Article",
+    mainEntityOfPage: `https://epic247.com.br/ideias/${tipo}/${slug}`,
+    ...(ehVideo ? { thumbnailUrl: c.cover, embedUrl: video } : {}),
     headline: c.title,
     name: c.title,
     description: c.excerpt ?? undefined,
     datePublished: c.published_at ?? undefined,
-    uploadDate: c.content_type === "video" ? c.published_at ?? undefined : undefined,
+    uploadDate: ehVideo ? c.published_at ?? undefined : undefined,
     author: { "@type": "Person", name: c.author || "Ju Ferreira" },
     image: c.cover ?? undefined,
   };

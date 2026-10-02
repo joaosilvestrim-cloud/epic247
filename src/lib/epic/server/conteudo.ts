@@ -15,6 +15,9 @@ export interface ItemConteudo {
   seo_title: string | null;
   seo_description: string | null;
   published_at: string | null;
+  universe?: string | null;
+  featured?: boolean;
+  og_image?: string | null;
 }
 
 /** Conteúdo publicado de Ideias. Banco fora do ar = lista vazia (RF-072). */
@@ -34,6 +37,30 @@ export async function listarConteudos(opts: { tipo?: string; dimensao?: string; 
   } catch {
     return [];
   }
+}
+
+/** Destaque editorial de Ideias: escolhido no admin, não o mais recente (Copy Final §23.3). */
+export async function listarDestaques(limite = 1) {
+  try {
+    return await query<ItemConteudo>(
+      `select id, content_type, title, slug, excerpt, cover, null as body, video_url, dimension, author,
+              seo_title, seo_description, published_at, universe, featured, og_image
+       from content_items
+       where status = 'published' and published_at <= now() and featured
+       order by featured_order nulls last, published_at desc
+       limit $1`,
+      [limite]
+    );
+  } catch {
+    return [];
+  }
+}
+
+/** Minutos de leitura (texto) ou nada (vídeo usa a própria duração). */
+export function minutosDeLeitura(body: string | null): number | null {
+  if (!body) return null;
+  const palavras = body.split(/\s+/).filter(Boolean).length;
+  return palavras ? Math.max(1, Math.round(palavras / 200)) : null;
 }
 
 export async function buscarConteudo(slug: string) {

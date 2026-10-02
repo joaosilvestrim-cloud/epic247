@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { enviar, espelhar } from "@/lib/epic/client/track";
+import { MICRO } from "@/lib/epic/content/microcopy";
 
 /**
  * Abre o checkout pelo servidor (que registra StartCheckout, bloqueia recompra
@@ -35,23 +36,34 @@ export default function BotaoCheckout({
       espelhar("StartCheckout", d.event_id, { value: d.value, currency: "BRL", product_id: productId });
       window.location.href = d.url;
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não foi possível abrir o checkout.");
+      // Recompra bloqueada e afins voltam com mensagem própria do servidor.
+      setErro(e instanceof Error && e.message ? e.message : MICRO.checkout.falha);
       setIndo(false);
     }
   }
 
   const cores = escuro ? "bg-papel text-tinta hover:bg-papel-claro" : "bg-grafite text-papel hover:bg-tinta";
+  // Produto sem checkout ativo: estado de indisponível, sem botão morto (Copy Final §27.30).
+  if (!disponivel) {
+    return (
+      <div>
+        <p className={`font-display text-lg ${escuro ? "text-papel" : "text-grafite"}`}>{MICRO.indisponivel.titulo}</p>
+        <p className={`mt-1 text-sm ${escuro ? "text-papel/60" : "text-mineral-escuro"}`}>{MICRO.indisponivel.texto}</p>
+      </div>
+    );
+  }
   return (
     <div>
       <button
         type="button"
         onClick={ir}
-        disabled={indo || !disponivel}
+        disabled={indo}
         className={`group inline-flex items-center gap-3 rounded-[var(--radius-epic)] px-7 py-4 text-[15px] font-semibold transition-colors disabled:opacity-50 ${cores}`}
       >
-        {!disponivel ? "Em breve" : indo ? "Abrindo o checkout..." : rotulo}
-        {disponivel && <span aria-hidden className="h-px w-5 bg-latao transition-all group-hover:w-8" />}
+        {indo ? MICRO.checkout.levando : rotulo}
+        {!indo && <span aria-hidden className="h-px w-5 bg-latao transition-all group-hover:w-8" />}
       </button>
+      {!erro && <p className={`mt-3 text-xs ${escuro ? "text-papel/50" : "text-mineral-escuro"}`}>{MICRO.checkout.kiwify}</p>}
       {erro && (
         <p role="alert" className={`mt-3 text-sm ${escuro ? "text-[#e8b4a0]" : "text-[#9a3b2a]"}`}>
           {erro}

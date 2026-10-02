@@ -18,6 +18,7 @@ const MAPA_EVENTOS: Record<string, string> = {
   NewsletterSignup: "lead_identified",
   ContactSubmitted: "lead_identified",
   MentoringInterest: "mentoring_interest",
+  MentoringWaitlist: "mentoring_waitlist",
   StartCheckout: "checkout_started",
   Purchase: "purchase_approved",
   Refund: "refund",

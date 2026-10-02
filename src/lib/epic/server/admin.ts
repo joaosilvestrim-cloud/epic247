@@ -364,54 +364,18 @@ export function sinalMidia(cpl: number | null, rpl: number | null, investido = 0
   return "vermelho";
 }
 
-export interface LinhaMidia {
-  campanha: string;
-  investido: number;
-  visitantes: number;
-  leads: number;
-  compradores: number;
-  receita: number;
-  cpl: number | null;
-  cac: number | null;
-  roas: number | null;
-  rpl: number | null;
-  sinal: ReturnType<typeof sinalMidia>;
-}
-
-/** Junta o investimento lançado com o que cada campanha trouxe (pelo utm_campaign). */
-export async function resumoMidia(): Promise<{ linhas: LinhaMidia[]; porFase: { fase: number; investido: number }[]; total: number }> {
+/**
+ * Orçamento consumido por fase e total. Lê o investimento unificado: CSV
+ * importado da plataforma (campaign_performance) + lançamento manual
+ * (media_spend). Resultado por campanha e criativo fica em server/kpi.ts.
+ */
+export async function resumoMidia(): Promise<{ porFase: { fase: number; investido: number }[]; total: number }> {
   await exigirAdmin();
-  const rows = await query<Record<string, string>>(
-    `with gasto as (
-       select coalesce(nullif(campaign,''),'(sem campanha)') campanha, sum(amount) investido
-       from media_spend group by 1
-     )
-     select g.campanha, g.investido,
-            (select count(distinct lead_id) from sessions s where s.utm_campaign = g.campanha) visitantes,
-            (select count(distinct e.lead_id) from events e join leads l using (lead_id)
-              where e.event_name = 'SubmitMapEmail' and (l.first_touch_campaign = g.campanha or l.last_touch_campaign = g.campanha)) leads,
-            (select count(distinct t.lead_id) from transactions t where t.transaction_status = 'approved' and t.utm_campaign = g.campanha) compradores,
-            (select coalesce(sum(t.amount_gross),0) from transactions t where t.transaction_status = 'approved' and t.utm_campaign = g.campanha) receita
-     from gasto g order by g.investido desc`
-  );
   const porFase = await query<{ fase: number; investido: string }>(
-    "select fase, sum(amount) investido from media_spend where fase is not null group by 1 order by 1"
+    "select fase, sum(valor) investido from investimento_midia where fase is not null group by 1 order by 1"
   );
-  const [{ total }] = await query<{ total: string }>("select coalesce(sum(amount),0) total from media_spend");
-  const linhas = rows.map((r) => {
-    const investido = +r.investido;
-    const leads = +r.leads;
-    const compradores = +r.compradores;
-    const receita = +r.receita;
-    const cpl = leads ? investido / leads : null;
-    const rpl = leads ? receita / leads : null;
-    return {
-      campanha: r.campanha, investido, visitantes: +r.visitantes, leads, compradores, receita,
-      cpl, rpl, cac: compradores ? investido / compradores : null, roas: investido ? receita / investido : null,
-      sinal: sinalMidia(cpl, rpl, investido),
-    };
-  });
-  return { linhas, porFase: porFase.map((f) => ({ fase: f.fase, investido: +f.investido })), total: +total };
+  const [{ total }] = await query<{ total: string }>("select coalesce(sum(valor),0) total from investimento_midia");
+  return { porFase: porFase.map((f) => ({ fase: f.fase, investido: +f.investido })), total: +total };
 }
 
 // ───────────── KPIs de automação (Funis §31) ─────────────

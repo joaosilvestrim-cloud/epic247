@@ -23,9 +23,11 @@ export async function processarWebhook(
       const r = await processarEventoCheckout(q, ev);
       await q(
         `update webhook_events set processing_status = $2, processing_error = null, event_type = $3,
-           last_retry_at = now()
+           last_retry_at = now(), provider_event_id = coalesce(provider_event_id, $4),
+           provider_transaction_id = $5, provider_status_raw = $6, normalized_status = $7
          where id = $1`,
-        [id, r.acao === "ignorada" ? "ignored" : "processed", ev.tipo]
+        [id, r.acao === "ignorada" ? "ignored" : "processed", ev.tipo, ev.eventoProvedorId, ev.transacaoId,
+          ev.statusBruto, ev.status]
       );
       return r;
     });

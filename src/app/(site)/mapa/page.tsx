@@ -2,25 +2,35 @@ import type { Metadata } from "next";
 import MapRunner from "@/components/epic/MapRunner";
 import Retorno from "@/components/epic/Retorno";
 import { Container } from "@/components/epic/ui";
+import JsonLd from "@/components/epic/JsonLd";
+import { HOME } from "@/lib/epic/content/home";
+import { MICRO } from "@/lib/epic/content/microcopy";
 import { FRICCAO } from "@/lib/epic/maps";
+import { metadados, webPageLd } from "@/lib/epic/seo";
 
-export const metadata: Metadata = {
-  title: "Mapa de Fricção",
-  description: "Sete perguntas para descobrir em qual das 10 dimensões a sua vida está pedindo mais atenção hoje.",
-  alternates: { canonical: "/mapa" },
-};
+// Blueprint v1.2 §57.3: ferramenta de auto-observação, não teste clínico.
+const DESCRICAO =
+  "Responda algumas perguntas sobre o que está acontecendo na sua vida agora e descubra qual dimensão parece pedir mais atenção. Gratuito. Resultado imediato. Sem diagnóstico clínico.";
+
+export const metadata: Metadata = metadados({
+  titulo: "Mapa de Fricção",
+  descricao: DESCRICAO,
+  caminho: "/mapa",
+  ogTitulo: HOME.mapa.titulo,
+});
 
 export default function MapaFriccaoPage() {
   return (
     <>
+    <JsonLd dados={webPageLd({ nome: "Mapa de Fricção", descricao: DESCRICAO, caminho: "/mapa" })} />
     <Retorno esconderMapa="/mapa" />
     <section className="grao min-h-[70vh]">
       <Container className="py-16 sm:py-24">
         <MapRunner
           mapType="friccao"
-          titulo="Descubra seu ponto de fricção."
+          titulo={HOME.mapa.titulo}
           tempo={`${FRICCAO.questions.length} perguntas · cerca de ${FRICCAO.estimatedMinutes} · resultado na hora`}
-          resumo="Sete perguntas para descobrir em qual das 10 dimensões a sua vida está pedindo mais atenção hoje. Escolha a alternativa que mais se aproxima de você agora. O resultado aparece na hora, sem pedir e-mail."
+          resumo={`${HOME.mapa.texto.join(" ")} Escolha a alternativa que mais se aproxima de você agora. ${MICRO.mapa.semCerto}`}
           aviso={FRICCAO.disclaimer}
           caminhoResultado="/mapa/resultado"
           perguntas={FRICCAO.questions.map((q) => ({

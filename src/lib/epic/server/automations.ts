@@ -146,14 +146,24 @@ export const AUTOMACOES: Record<string, Automacao> = {
       { step: "D30", horas: 720, template: "protocol_d30", prioridade: 4, suprimir: emMentoria },
     ],
   },
-  // AUT_MENTORING_INTEREST / WAITLIST / PURCHASE
+  // AUT_MENTORING_INTEREST / WAITLIST / PAYMENT_LINK / PURCHASE (RC1 §6, Matriz §26).
+  // Uma confirmação por candidatura: quem volta meses depois recebe de novo.
   AUT_MENTORING_INTEREST: {
-    id: "AUT_MENTORING_INTEREST", versao: "1.0", escopo: "lead",
+    id: "AUT_MENTORING_INTEREST", versao: "1.1", escopo: "application_id",
     etapas: [{ step: "D0", horas: 0, template: "mentoring_interest", prioridade: 1 }],
   },
   AUT_MENTORING_WAITLIST: {
-    id: "AUT_MENTORING_WAITLIST", versao: "1.0", escopo: "lead",
+    id: "AUT_MENTORING_WAITLIST", versao: "1.1", escopo: "application_id",
     etapas: [{ step: "D0", horas: 0, template: "mentoring_waitlist", prioridade: 1 }],
+  },
+  // Vaga confirmada pela equipe: o link de pagamento sai por e-mail transacional.
+  // Escopo por envio: a equipe pode reenviar o link.
+  AUT_MENTORING_PAYMENT_LINK: {
+    id: "AUT_MENTORING_PAYMENT_LINK", versao: "1.0", escopo: "link_id",
+    etapas: [{
+      step: "D0", horas: 0, template: "mentoring_payment_link", prioridade: 1,
+      suprimir: (_p, _c, x) => (x.compraFeita ? "comprou" : null),
+    }],
   },
   AUT_MENTORING_PURCHASE: {
     id: "AUT_MENTORING_PURCHASE", versao: "1.0", escopo: "transaction_id",

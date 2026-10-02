@@ -9,6 +9,9 @@ import EixosMapa from "@/components/epic/EixosMapa";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
+import { paginaDimensao } from "@/lib/epic/content/copy-final";
+import { MICRO } from "@/lib/epic/content/microcopy";
+import { NAO_INDEXAR } from "@/lib/epic/seo";
 import { DIMENSIONS, isDimensionId, type DimensionId } from "@/lib/epic/dimensions";
 import { relacaoDoPar } from "@/lib/epic/maps/relacoes";
 import { getDimensionalMap } from "@/lib/epic/maps";
@@ -22,20 +25,26 @@ import { dimensaoHref } from "@/lib/epic/site";
 
 export const dynamic = "force-dynamic";
 
-// Resultado pessoal: nunca indexado (RF-058).
-export const metadata: Metadata = {
-  title: "Seu resultado",
-  robots: { index: false, follow: false },
-};
-
 type Params = { params: Promise<{ dimensao: string; token: string }> };
 
-const RESULTADO_BAIXO = {
-  titulo: pendente("Nenhuma área concentra uma fricção relevante neste momento."),
-  texto: pendente(
-    "Suas respostas sugerem que esta dimensão está relativamente estável hoje. Isso não significa que nada precise de atenção: talvez a fricção esteja em outro lugar. O Mapa de Fricção ajuda a descobrir por onde começar."
-  ),
-};
+// Resultado pessoal: nunca indexado (RF-058). Metadata genérica da dimensão,
+// canonical na entrada pública do Mapa, nada do resultado (Blueprint v1.2 §57.5).
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { dimensao } = await params;
+  if (!isDimensionId(dimensao)) return { robots: NAO_INDEXAR };
+  return {
+    title: getDimensionalMap(dimensao).title,
+    robots: NAO_INDEXAR,
+    alternates: { canonical: `/mapas/${dimensao}` },
+  };
+}
+
+// Resultado "baixo": os documentos não trazem texto próprio para ele. Usa o
+// vocabulário do Mapa (leitura "Mais estável") e a microcopy da Copy Final §27.8.
+const resultadoBaixo = (dimensao: string) => ({
+  titulo: `Em ${dimensao}, as cinco áreas aparecem como mais estáveis neste momento.`,
+  texto: `${MICRO.mapa.introResultado} Se o movimento continua difícil, a fricção pode estar em outra dimensão. O Mapa de Fricção ajuda a ver onde.`,
+});
 
 /** Sublinha à mão o nome do padrão dentro do título (uma marcação por tela). */
 function comMarca(titulo: string, nome: string) {
@@ -71,6 +80,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
   const relacionadas = cfg.related
     .map((x) => ({ ...x, href: dimensaoHref(x.dimension) }))
     .filter((x): x is typeof x & { href: string } => x.href !== null);
+  const micro = paginaDimensao(dimensao).mapa;
   const data = new Date(salvo.completed_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
@@ -81,17 +91,16 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       <section className="grao border-b border-linha">
         <Container estreito className="pb-16 pt-14 sm:pt-20">
           <p className="font-mono text-sm text-latao-escuro">
-            {cfg.title} · {data}
+            {micro.pronto ?? MICRO.mapa.pronto} · {data}
           </p>
+          <p className="mt-2 text-sm text-mineral-escuro">{MICRO.mapa.introResultado}</p>
 
           {r.kind === "low" ? (
             <>
               <h1 className="entrada mt-5 font-display text-[2.1rem] font-normal leading-[1.15] text-grafite sm:text-[2.8rem]">
-                <C v={RESULTADO_BAIXO.titulo} />
+                {resultadoBaixo(d.name).titulo}
               </h1>
-              <p className="mt-6 text-lg leading-relaxed text-grafite/80">
-                <C v={RESULTADO_BAIXO.texto} />
-              </p>
+              <p className="mt-6 text-lg leading-relaxed text-grafite/80">{resultadoBaixo(d.name).texto}</p>
             </>
           ) : (
             <>
@@ -186,7 +195,14 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       {/* 6 · Captura */}
       <section>
         <Container estreito className="py-14">
-          <CapturaResultado token={token} mapType={dimensao} jaConhecido={Boolean(perfil?.email)} />
+          <CapturaResultado
+            token={token}
+            mapType={dimensao}
+            jaConhecido={Boolean(perfil?.email)}
+            titulo={micro.capturaTitulo ?? undefined}
+            texto={micro.capturaTexto ?? undefined}
+            botao={micro.capturaCta ?? undefined}
+          />
         </Container>
       </section>
 

@@ -1,0 +1,4517 @@
+{
+  "energia": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "ENERGIA"
+        ],
+        "titulo": [
+          "Você está cansado porque sua vida exige demais ou porque sua energia está sendo drenada antes mesmo de o dia começar?"
+        ],
+        "sub": [
+          "Nem todo cansaço é falta de sono.",
+          "Sua energia também é afetada pela forma como você dorme, se alimenta, lida com o estado de alerta, usa sua atenção e movimenta o corpo."
+        ],
+        "apoio": [
+          "Às vezes você não precisa de mais disciplina.",
+          "Precisa descobrir onde está perdendo combustível."
+        ],
+        "cta": [
+          "Descubra onde sua energia está vazando"
+        ],
+        "cta2": [
+          "Entenda esta dimensão"
+        ],
+        "micro": [
+          "Mapa gratuito. 15 perguntas. Resultado imediato."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "eyebrow": [
+          "QUANDO O DIA COMEÇA ANTES DE VOCÊ"
+        ],
+        "titulo": [
+          "Talvez você não esteja sem disciplina. Talvez esteja tentando funcionar sem combustível."
+        ],
+        "texto": [
+          "Você dorme, mas não sente que recuperou.",
+          "Começa o dia no café, entra na urgência e vai empurrando.",
+          "Quando finalmente sobra um pedaço do dia para você, já não sobra energia suficiente para usá-lo."
+        ],
+        "cenas": [
+          "Você acorda cansado e já começa o dia tentando compensar.",
+          "Sua disposição oscila e você busca café, açúcar ou algum estímulo para continuar funcionando.",
+          "O trabalho termina, mas sua cabeça continua ligada no que falta, no que pode dar errado ou no que precisa ser resolvido amanhã.",
+          "Você passa o dia respondendo mensagens, alternando telas, resolvendo interrupções e termina mentalmente exausto sem sentir avanço proporcional.",
+          "Seu dia exige muito da cabeça e quase nada do corpo.",
+          "Você sabe que algumas coisas poderiam ajudar a recuperar sua energia, mas está cansado demais para começar justamente por elas."
+        ],
+        "fechamento": [
+          "O cansaço pode parecer uma coisa só.",
+          "Mas os caminhos que levam até ele não são iguais."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Energia Significa no Epic247",
+        "eyebrow": [
+          "ENERGIA É INFRAESTRUTURA"
+        ],
+        "titulo": [
+          "Energia não é motivação.",
+          "É a condição que torna o resto possível."
+        ],
+        "texto": [
+          "Quando falta energia, tudo fica mais caro.",
+          "Pensar custa mais.",
+          "Decidir custa mais.",
+          "Começar custa mais.",
+          "Sustentar custa mais.",
+          "Por isso Energia é uma das dez dimensões da Infraestrutura Humana.",
+          "Ela não explica toda dificuldade de mudança, mas influencia diretamente sua capacidade de estar presente, escolher e agir."
+        ],
+        "destaque": [
+          "Antes de exigir mais de você, vale entender com qual combustível você está tentando viver."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção de Energia",
+        "titulo": [
+          "Seu cansaço pode estar vindo de lugares diferentes."
+        ],
+        "sub": [
+          "O Mapa de Energia observa cinco áreas da sua rotina. Nenhuma delas funciona como diagnóstico de saúde. Elas ajudam a perceber onde existe mais fricção hoje."
+        ],
+        "cards": [
+          {
+            "titulo": "Sono Quebrado",
+            "pergunta": "Você está dormindo ou realmente recuperando?",
+            "texto": "Horas na cama e sensação de recuperação não são a mesma coisa. Regularidade, qualidade percebida e a forma como você começa o dia importam para entender este padrão."
+          },
+          {
+            "titulo": "Combustível Instável",
+            "pergunta": "Sua disposição se sustenta ou oscila o dia inteiro?",
+            "texto": "Longos intervalos, rotina irregular e tentativas frequentes de compensação podem transformar o dia em uma sequência de picos e quedas."
+          },
+          {
+            "titulo": "Alerta Constante",
+            "pergunta": "O dia termina, mas você continua ligado?",
+            "texto": "Quando a demanda acaba e seu sistema continua em estado de prontidão, pausa nem sempre vira recuperação."
+          },
+          {
+            "titulo": "Atenção Sequestrada",
+            "pergunta": "Quanto da sua energia está sendo gasta só para voltar ao que você estava fazendo?",
+            "texto": "Interrupções, notificações e trocas constantes de contexto podem desgastar muito antes de qualquer tarefa parecer realmente concluída."
+          },
+          {
+            "titulo": "Corpo Parado",
+            "pergunta": "Seu dia exige tudo da cabeça e quase nada do corpo?",
+            "texto": "Movimento não entra aqui como performance esportiva. Entra como parte básica de uma rotina que também precisa do corpo para funcionar."
+          }
+        ],
+        "fechamento": [
+          "O objetivo não é descobrir “o que você tem”.",
+          "É perceber onde vale olhar primeiro."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Energia",
+        "eyebrow": [
+          "DESCUBRA SEU PRINCIPAL VAZAMENTO"
+        ],
+        "titulo": [
+          "Onde sua energia parece estar sendo drenada hoje?"
+        ],
+        "texto": [
+          "O Mapa de Energia é uma autoavaliação educativa com 15 perguntas sobre rotina e percepção de energia.",
+          "Ele compara cinco áreas:",
+          "• Sono Quebrado",
+          "• Combustível Instável",
+          "• Alerta Constante",
+          "• Atenção Sequestrada",
+          "• Corpo Parado",
+          "Ao final, você recebe:",
+          "• seu principal ponto de atenção;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão dominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Energia"
+        ],
+        "micro": [
+          "Leva cerca de 3 a 4 minutos. O resultado aparece na hora."
+        ],
+        "nota": [
+          "Este Mapa é uma ferramenta educativa de autoavaliação sobre hábitos e rotina. Ele não diagnostica condições médicas, nutricionais ou psicológicas e não substitui orientação profissional."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "eyebrow": [
+          "NÃO É UMA NOTA SOBRE VOCÊ"
+        ],
+        "titulo": [
+          "Seu resultado não diz se sua energia está “boa” ou “ruim”."
+        ],
+        "texto": [
+          "Você não recebe um número como 58 de 100.",
+          "O EPIC247 mostra como as cinco áreas aparecem em relação umas às outras neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "Mais estável",
+              "Vale observar",
+              "Merece atenção",
+              "Principal ponto de atenção"
+            ]
+          }
+        ],
+        "exemplo": [
+          "“Seu maior vazamento de energia hoje parece estar em Atenção Sequestrada.”"
+        ],
+        "apoio": [
+          "Seu mapa não mede saúde. Ele mostra onde, na sua rotina, existe mais fricção percebida neste momento."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Energia"
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento",
+        "eyebrow": [
+          "ENTENDER ANTES DE CORRIGIR"
+        ],
+        "titulo": [
+          "Você não precisa mudar cinco coisas amanhã."
+        ],
+        "texto": [
+          "O primeiro passo do EPIC não é criar uma rotina perfeita.",
+          "É observar melhor o padrão que mais pesa hoje e experimentar uma mudança pequena o suficiente para caber na vida real."
+        ],
+        "cards": [
+          {
+            "titulo": "Sono Quebrado",
+            "primeiro": "Durante 7 dias, registre horário aproximado de sono e uma palavra para sua sensação de recuperação ao acordar."
+          },
+          {
+            "titulo": "Combustível Instável",
+            "primeiro": "Observe em que horários sua disposição cai e o que aconteceu nas duas horas anteriores."
+          },
+          {
+            "titulo": "Alerta Constante",
+            "primeiro": "Crie um momento fixo de 3 minutos no fim do dia para marcar a transição entre demanda e pausa."
+          },
+          {
+            "titulo": "Atenção Sequestrada",
+            "primeiro": "Proteja um único bloco curto para uma atividade importante sem notificações nem alternância de telas."
+          },
+          {
+            "titulo": "Corpo Parado",
+            "primeiro": "Acrescente uma pequena janela de movimento a um ponto fixo da rotina, compatível com suas condições atuais."
+          }
+        ],
+        "fechamento": [
+          "Primeiro enxergar. Depois ajustar."
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "plano",
+        "nome": "Plano Epic Energia 7 Dias",
+        "eyebrow": [
+          "DO RESULTADO PARA A PRÁTICA"
+        ],
+        "titulo": [
+          "Seu mapa mostrou onde olhar. O Plano ajuda você a testar o que fazer com isso."
+        ],
+        "texto": [
+          "O Plano EPIC Energia transforma seu resultado em uma semana de observação e movimento intencional.",
+          "Ele é personalizado a partir das suas respostas no Mapa de Energia e organiza:",
+          "• seu foco dos próximos 7 dias;",
+          "• o padrão principal a observar;",
+          "• uma coisa para reduzir;",
+          "• três movimentos simples;",
+          "• uma prática diária mínima;",
+          "• uma pergunta de reflexão;",
+          "• um conteúdo recomendado;",
+          "• um critério de revisão no dia 7."
+        ],
+        "destaque": [
+          "Personalizado a partir das suas respostas.",
+          "Não é uma análise individual feita pessoalmente pela Ju."
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Energia de 7 dias"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "kit",
+        "nome": "Kit Energia",
+        "eyebrow": [
+          "QUANDO VOCÊ QUER APROFUNDAR"
+        ],
+        "titulo": [
+          "Entender o vazamento é o começo. Construir uma nova estrutura exige prática."
+        ],
+        "texto": [
+          "O Kit Energia aprofunda a dimensão com material para compreender, observar e trabalhar os diferentes pontos de fricção da sua energia cotidiana.",
+          "Ajudar você a sair de uma leitura genérica de “estou cansado” e construir uma abordagem mais estruturada para o padrão que mais apareceu no seu Mapa."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "Manual Energia;",
+              "Workbook de aplicação;",
+              "ferramentas práticas."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Energia"
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "LEIA. VEJA. TESTE."
+        ],
+        "titulo": [
+          "Energia também se aprende observando a própria vida."
+        ],
+        "texto": [
+          "Nem tudo precisa virar produto.",
+          "Nesta dimensão, o EPIC247 reúne artigos, vídeos, histórias, referências e ferramentas para ajudar você a entender melhor sono, rotina, atenção, pausa e movimento sem transformar tudo em regra universal."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Sono",
+              "Rotina e alimentação",
+              "Estado de alerta e pausa",
+              "Atenção",
+              "Movimento"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos sobre Energia"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "eyebrow": [
+          "UMA HISTÓRIA TAMBÉM PODE MUDAR O JEITO COMO VOCÊ SE ENXERGA"
+        ],
+        "titulo": [
+          "Livre"
+        ],
+        "texto": [
+          "Em “Livre”, a travessia física e emocional da personagem oferece uma boa lente para pensar sobre desgaste, presença, corpo, recuperação e reconstrução de ritmo."
+        ],
+        "cta": [
+          "Ver repertório da dimensão"
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "conexoes",
+        "nome": "Conexão com Outras Dimensões",
+        "eyebrow": [
+          "ENERGIA NÃO EXPLICA TUDO"
+        ],
+        "titulo": [
+          "Às vezes o cansaço é o ponto de entrada. Não necessariamente o ponto final."
+        ],
+        "texto": [
+          "Se sua energia estiver relativamente estável e o movimento continuar difícil, outras dimensões podem estar pedindo atenção."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Energia + Ação",
+            "texto": "Você até quer fazer, mas talvez esteja tentando agir com pouca sustentação cotidiana."
+          },
+          {
+            "titulo": "Energia + Felicidade",
+            "texto": "Você pode estar funcionalmente ativo e ainda sentir pouca recuperação, prazer ou sentido."
+          },
+          {
+            "titulo": "Energia + Mentalidade",
+            "texto": "Mesmo com combustível, sua interpretação pode continuar transformando esforço em paralisia."
+          },
+          {
+            "titulo": "Energia + Planejamento",
+            "texto": "Sem direção e prioridade, energia disponível também pode ser desperdiçada."
+          },
+          {
+            "titulo": "Energia + Amor",
+            "texto": "Rotinas lotadas podem deixar pouca energia para presença, vínculo e aquilo que não cabe em uma lista de tarefas."
+          }
+        ],
+        "cta": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "protocolo",
+        "nome": "Protocolo",
+        "eyebrow": [
+          "ENERGIA É UMA DAS DEZ PEÇAS"
+        ],
+        "titulo": [
+          "Você pode começar recuperando combustível. Mas talvez queira reconstruir a infraestrutura inteira."
+        ],
+        "texto": [
+          "O Protocolo EPIC247 conecta Energia a Mentalidade, Autoconhecimento, Felicidade, Planejamento, Coragem, Ação, Inteligência, Excelência e Amor.",
+          "São dez dimensões organizadas como um sistema de transformação pessoal aplicada.",
+          "Você não precisa começar pelo começo.",
+          "Mas pode usar o sistema completo quando perceber que uma única dimensão já não explica o que está acontecendo."
+        ],
+        "preco": [
+          "R$497"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Você não precisa consertar sua vida inteira hoje."
+        ],
+        "sub": [
+          "Precisa descobrir qual vazamento merece atenção primeiro."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Energia"
+        ],
+        "cta2": [
+          "Explorar outra dimensão"
+        ],
+        "micro": [
+          "Gratuito. 15 perguntas. Resultado imediato."
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Energia | Descubra onde sua energia está sendo drenada | EPIC247",
+      "description": "Faça o Mapa de Energia do EPIC247 e veja qual área da sua rotina mais pede atenção entre sono, alimentação, alerta, atenção e movimento.",
+      "ogTitle": "Você está cansado porque sua vida exige demais ou porque sua energia está sendo drenada?",
+      "ogDescription": "Descubra onde sua energia parece estar vazando e receba um primeiro movimento prático para começar.",
+      "canonical": "/dimensoes/energia"
+    },
+    "mapa": {
+      "intro": "Responda 15 perguntas sobre sua rotina e veja onde sua energia parece encontrar mais fricção hoje.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Energia está pronto.",
+      "tituloResultado": null,
+      "duplo": "Seu mapa mostra dois vazamentos muito próximos: [DRENO A] e [DRENO B]. Em vez de forçar um vencedor, vale observar como essas duas áreas aparecem juntas na sua rotina.",
+      "capturaTitulo": "Quer guardar seu Mapa de Energia e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já apareceu. Deixe seu nome e e-mail para receber a leitura das cinco áreas, recomendações e conteúdos relacionados.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa EPIC é uma ferramenta educativa de autoavaliação sobre hábitos e rotina. Ele não diagnostica condições médicas, nutricionais ou psicológicas e não substitui orientação profissional.",
+      "alerta": "Se você está vivendo um cansaço intenso, persistente, novo ou incapacitante, não use este resultado para explicar sozinho o que está acontecendo. Procure avaliação profissional adequada."
+    }
+  },
+  "mentalidade": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "MENTALIDADE"
+        ],
+        "titulo": [
+          "O jeito como você está pensando está ajudando você a avançar ou criando argumentos cada vez melhores para continuar no mesmo lugar?"
+        ],
+        "sub": [
+          "Pensar mais nem sempre produz mais clareza. Às vezes produz simulações, justificativas, medo de errar e a sensação de que ainda falta alguma coisa antes de agir."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Mentalidade"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez o problema não seja falta de inteligência. Talvez seja o jeito como você está usando a sua."
+        ],
+        "texto": [
+          "Você pesquisa mais um pouco.",
+          "Compara cenários.",
+          "Revê possibilidades.",
+          "Tenta antecipar tudo o que pode dar errado.",
+          "E, quanto mais pensa, mais difícil parece decidir."
+        ],
+        "cenas": [
+          "Você já tem informação suficiente, mas continua procurando mais.",
+          "Você chama de prudência o que, em alguns momentos, pode ser apenas adiamento.",
+          "Um erro pesa mais do que deveria porque parece dizer alguma coisa sobre quem você é.",
+          "Você encontra justificativas muito convincentes para não fazer justamente aquilo que mais expõe você.",
+          "Em situações de pressão, responde primeiro e só depois percebe o que realmente queria ter dito."
+        ],
+        "fechamento": [
+          "A mente pode ser uma ferramenta poderosa de escolha.",
+          "Também pode se transformar num sistema sofisticado de proteção contra desconforto, incerteza e exposição."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Mentalidade Significa no Epic247",
+        "eyebrow": [
+          "NÃO É PENSAR POSITIVO"
+        ],
+        "titulo": [
+          "Mentalidade é a forma como você interpreta antes de escolher."
+        ],
+        "texto": [
+          "No EPIC247, Mentalidade não significa repetir frases positivas, eliminar pensamentos difíceis ou tentar controlar a mente o tempo inteiro.",
+          "Significa perceber como suas interpretações influenciam:",
+          "• o que você tenta;",
+          "• o que você evita;",
+          "• o significado que dá ao erro;",
+          "• como reage à pressão;",
+          "• e quando pensar está ajudando ou apenas adiando movimento."
+        ],
+        "destaque": [
+          "Às vezes a mesma inteligência que resolve problemas também cria explicações sofisticadas para não atravessá-los."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção de Mentalidade",
+        "titulo": [
+          "Cinco formas de a mente aumentar a fricção."
+        ],
+        "cards": [
+          {
+            "titulo": "Excesso de Análise",
+            "pergunta": "Pensar mais ainda melhora sua decisão ou só posterga o momento de agir?",
+            "texto": "Simular cenários, prever riscos e buscar informação pode ajudar. O problema começa quando pensar deixa de produzir clareza e passa a manter você longe da experiência real."
+          },
+          {
+            "titulo": "Crenças Operacionais",
+            "pergunta": "Quantas decisões você encerra antes de testar porque “não é esse tipo de pessoa”?",
+            "texto": "Algumas interpretações sobre quem você é funcionam como regras invisíveis. Elas definem o que parece possível antes de a realidade ter chance de responder."
+          },
+          {
+            "titulo": "Medo do Erro",
+            "pergunta": "Quando algo dá errado, você avalia o resultado ou começa a avaliar a si mesmo?",
+            "texto": "Quando erro e identidade se misturam, aprender fica mais caro. Tentar passa a carregar o risco de provar algo que você não quer acreditar sobre si."
+          },
+          {
+            "titulo": "Autoproteção",
+            "pergunta": "Sua justificativa é realmente uma decisão ou uma forma inteligente de evitar desconforto?",
+            "texto": "Nem toda desistência é falta de vontade. Às vezes uma justificativa racional está protegendo sua imagem, sua sensação de competência ou seu medo de julgamento."
+          },
+          {
+            "titulo": "Reatividade",
+            "pergunta": "Você escolhe sua resposta ou apenas percebe depois o que gostaria de ter feito diferente?",
+            "texto": "Sob pressão, o espaço entre estímulo e resposta pode desaparecer. E decisões importantes passam a servir mais ao alívio imediato do que ao que realmente importa."
+          }
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Mentalidade",
+        "eyebrow": [
+          "ENTENDA SEU PADRÃO"
+        ],
+        "titulo": [
+          "Descubra onde sua forma de pensar está criando mais fricção hoje."
+        ],
+        "texto": [
+          "O Mapa de Mentalidade observa cinco áreas: Excesso de Análise, Crenças Operacionais, Medo do Erro, Autoproteção e Reatividade.",
+          "Em poucos minutos, você recebe:",
+          "• seu padrão predominante;",
+          "• uma segunda fricção relacionada;",
+          "• leitura das cinco áreas;",
+          "• interpretação do resultado;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Mentalidade"
+        ],
+        "micro": [
+          "Gratuito. Resultado imediato. Sem diagnóstico psicológico."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O objetivo não é dizer “como sua mente é”. É mostrar onde vale observar primeiro."
+        ],
+        "texto": [
+          "Seu resultado não será apresentado como nota geral, inteligência emocional ou classificação psicológica.",
+          "Você verá as cinco áreas com leituras como:",
+          "• Mais estável",
+          "• Vale observar",
+          "• Merece atenção",
+          "• Principal ponto de fricção"
+        ],
+        "listas": [
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "O Simulador",
+              "O Definido",
+              "O Provador",
+              "O Advogado Interno",
+              "O Automático"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes descrevem padrões de momento, não identidades fixas."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Exemplos de Primeiro Movimento",
+        "titulo": [
+          "Antes de tentar mudar sua mente inteira, observe um padrão."
+        ],
+        "cards": [
+          {
+            "titulo": "O Simulador",
+            "primeiro": "Divida uma decisão em duas colunas: “o que já sei” e “o que só descobrirei agindo”."
+          },
+          {
+            "titulo": "O Definido",
+            "primeiro": "Transforme uma crença sobre si em hipótese: “Até hoje, em algumas situações, eu tenho agido como se…”."
+          },
+          {
+            "titulo": "O Provador",
+            "primeiro": "Pegue um erro recente e separe em três linhas: fato, interpretação e aprendizado."
+          },
+          {
+            "titulo": "O Advogado Interno",
+            "primeiro": "Pergunte: “Se eu fizesse isso, o que eu estaria arriscando sentir sobre mim ou sobre como os outros me veem?”."
+          },
+          {
+            "titulo": "O Automático",
+            "primeiro": "Defina uma pausa mínima antes de uma resposta importante e pergunte: “o que quero produzir com essa resposta?”."
+          }
+        ],
+        "fechamento": [
+          "Mentalidade melhora menos quando você tenta controlar pensamentos e mais quando aprende a enxergar quais deles ainda merecem orientar uma decisão."
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "plano",
+        "nome": "Plano Epic Mentalidade 7 Dias",
+        "eyebrow": [
+          "TRANSFORME RECONHECIMENTO EM TESTE"
+        ],
+        "titulo": [
+          "Seu padrão ficou mais claro. Agora teste uma forma diferente de responder a ele por 7 dias."
+        ],
+        "texto": [
+          "O Plano EPIC Mentalidade é personalizado a partir das suas respostas e transforma o resultado do Mapa em uma semana de observação e pequenos testes."
+        ],
+        "listas": [
+          {
+            "titulo": "Pode incluir",
+            "itens": [
+              "padrão mental a observar;",
+              "pensamento recorrente;",
+              "crença operacional a testar;",
+              "um erro para transformar em dado;",
+              "uma justificativa para investigar;",
+              "uma pausa funcional entre estímulo e resposta;",
+              "reflexão e revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Mentalidade de 7 dias"
+        ],
+        "micro": [
+          "Personalizado automaticamente a partir das suas respostas."
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "kit",
+        "nome": "Kit Mentalidade",
+        "eyebrow": [
+          "APROFUNDE A DIMENSÃO"
+        ],
+        "titulo": [
+          "Entender o padrão é diferente de aprender a trabalhar com ele."
+        ],
+        "texto": [
+          "O Kit Mentalidade aprofunda os mecanismos que aparecem no Mapa e organiza ferramentas práticas para observar, testar e revisar padrões de interpretação e decisão."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "Manual Mentalidade",
+              "Workbook Mentalidade",
+              "exercícios e ferramentas práticas"
+            ]
+          },
+          {
+            "titulo": "Temas centrais",
+            "itens": [
+              "crenças operacionais;",
+              "interpretação do erro;",
+              "análise excessiva;",
+              "autoproteção;",
+              "decisão;",
+              "mindfulness funcional."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Mentalidade"
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "conexoes",
+        "nome": "Conexão com Outras Dimensões",
+        "eyebrow": [
+          "NEM TODA HESITAÇÃO COMEÇA NA MENTE"
+        ],
+        "titulo": [
+          "Às vezes Mentalidade é a fricção. Às vezes é apenas onde o problema aparece."
+        ],
+        "texto": [
+          "Se você está exausto, pensar pior pode ser consequência de falta de Energia.",
+          "Se você não sabe o que realmente quer, a questão pode estar em Autoconhecimento.",
+          "Se você já sabe o que fazer, mas não atravessa risco ou exposição, talvez seja Coragem.",
+          "Se já entendeu o padrão, mas ainda não transforma clareza em comportamento, talvez seja Ação.",
+          "Se a questão principal aparece depois da experiência, na capacidade de aprender e ajustar, pode ser Inteligência."
+        ],
+        "cta": [
+          "Explorar outras dimensões"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "IDEIAS PARA PENSAR MELHOR SOBRE COMO VOCÊ PENSA"
+        ],
+        "titulo": [
+          "Mentalidade também pode ser treinada pela forma como você observa a própria experiência."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Excesso de análise e decisão",
+              "Erro, identidade e aprendizado",
+              "Crenças que viram regras",
+              "Autoproteção e justificativas",
+              "Pausa, presença e reatividade"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Mentalidade"
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "eyebrow": [
+          "ASSISTA. LEIA. OUÇA."
+        ],
+        "titulo": [
+          "Às vezes uma história mostra um padrão antes que um conceito consiga explicar."
+        ],
+        "texto": [
+          "O repertório de Mentalidade reúne filmes, livros, estudos, entrevistas e referências que ajudam a observar interpretação, erro, decisão e perseverança por outros ângulos."
+        ],
+        "filme": [
+          "À Procura da Felicidade"
+        ],
+        "cta": [
+          "Ver repertório de Mentalidade"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "protocolo",
+        "nome": "Protocolo",
+        "eyebrow": [
+          "MENTALIDADE É UMA PARTE DA INFRAESTRUTURA"
+        ],
+        "titulo": [
+          "Pensar diferente ajuda. Mas algumas mudanças exigem mais do que pensamento."
+        ],
+        "texto": [
+          "Mentalidade é uma das dez dimensões da Infraestrutura Humana.",
+          "Talvez sua fricção principal esteja aqui hoje.",
+          "Mas mudanças sustentáveis também podem depender de Energia, Autoconhecimento, Planejamento, Coragem, Ação e das outras dimensões do sistema.",
+          "O Protocolo EPIC247 integra as dez dimensões em uma jornada estruturada de transformação pessoal aplicada."
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez você não precise controlar melhor seus pensamentos."
+        ],
+        "sub": [
+          "Precise perceber quais deles ainda merecem comandar suas decisões."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Mentalidade"
+        ],
+        "cta2": [
+          "Explorar o EPIC247"
+        ],
+        "marca": [
+          "Da vida que acontece para a vida que você escolhe."
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Mentalidade | Entenda como seus padrões de pensamento influenciam decisões | EPIC247",
+      "description": "Faça o Mapa de Mentalidade do EPIC247 e identifique fricções em análise, crenças, medo do erro, autoproteção e reatividade. Resultado imediato.",
+      "ogTitle": "O jeito como você pensa está ajudando você a avançar?",
+      "ogDescription": "Descubra onde seus padrões de interpretação estão criando mais fricção e encontre um primeiro movimento prático.",
+      "canonical": "/dimensoes/mentalidade"
+    },
+    "mapa": {
+      "intro": "Este Mapa observa como você pensa, interpreta e responde em situações do cotidiano. Não existe resposta certa. Responda pensando em como você tem funcionado recentemente.",
+      "calculando": "Organizando seus padrões de resposta…",
+      "pronto": "Seu Mapa de Mentalidade está pronto.",
+      "tituloResultado": null,
+      "duplo": "Seu mapa mostra duas fricções muito próximas. Em vez de forçar um vencedor, vale observar como esses padrões podem aparecer juntos na sua rotina.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já está disponível. Deixe seu nome e e-mail para receber a leitura completa, seu segundo padrão e recomendações.",
+      "capturaCta": "Enviar meu Mapa de Mentalidade completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não diagnostica ansiedade, TDAH, transtornos psicológicos ou qualquer condição de saúde mental e não substitui avaliação ou acompanhamento profissional.",
+      "alerta": null
+    }
+  },
+  "autoconhecimento": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "AUTOCONHECIMENTO"
+        ],
+        "titulo": [
+          "As escolhas que você está fazendo ainda combinam com quem você se tornou?"
+        ],
+        "sub": [
+          "Às vezes a vida continua funcionando em torno de papéis, metas e expectativas que fizeram sentido em outra fase.",
+          "Autoconhecimento, aqui, não é pensar indefinidamente sobre si. É construir clareza suficiente para escolher melhor."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Autoconhecimento"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez você não esteja perdido. Talvez esteja tentando viver com um mapa antigo."
+        ],
+        "texto": [
+          "Você sabe cumprir papéis.",
+          "Sabe ser profissional, parceiro, mãe, pai, filho, líder, responsável.",
+          "Mas existe uma diferença entre saber funcionar e saber se escutar."
+        ],
+        "cenas": [
+          "Você sabe explicar muito bem o que faz, mas tem mais dificuldade de dizer quem está se tornando.",
+          "Algumas metas continuam de pé, mas você já não sabe se ainda as escolheria hoje.",
+          "Você toma decisões importantes e depois percebe que protegeu expectativas, mas sacrificou algo que era importante para você.",
+          "Diz “sim” para evitar desconforto e só percebe o custo quando já ultrapassou o próprio limite.",
+          "Sua rotina ainda parece organizada para uma versão antiga de você.",
+          "Você conquistou algo que queria e descobriu que isso já não responde à mesma pergunta de antes."
+        ],
+        "fechamento": [
+          "Autoconhecimento começa quando você deixa de perguntar apenas “o que devo fazer?” e passa a investigar “o que, de fato, faz sentido para mim agora?”."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "O ENDEREÇO DE PARTIDA"
+        ],
+        "titulo": [
+          "Você não consegue escolher uma direção nova sem perceber de onde está partindo."
+        ],
+        "texto": [
+          "No EPIC247, Autoconhecimento é um processo estruturado.",
+          "Ele envolve perceber como você se vê, o que valoriza, o que deseja, o que precisa proteger e o quanto sua rotina atual está coerente com tudo isso.",
+          "Não é procurar uma “essência secreta”.",
+          "É construir um mapa suficientemente claro para tomar decisões mais alinhadas."
+        ],
+        "destaque": [
+          "Quem eu sou hoje?",
+          "O que realmente importa?",
+          "O que ainda quero?",
+          "O que já não cabe?",
+          "Minha vida está refletindo isso?"
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde o autoconhecimento pode perder nitidez."
+        ],
+        "cards": [
+          {
+            "titulo": "Identidade",
+            "pergunta": "Quem é você além dos papéis que precisa desempenhar?",
+            "texto": "Profissão, responsabilidades e expectativas podem ocupar tanto espaço que fica difícil perceber a identidade atual por baixo deles."
+          },
+          {
+            "titulo": "Valores",
+            "pergunta": "O que realmente orienta suas decisões quando duas coisas importantes entram em conflito?",
+            "texto": "Valores só deixam de ser discurso quando começam a funcionar como critério de escolha."
+          },
+          {
+            "titulo": "Desejos",
+            "pergunta": "Você quer isso ou aprendeu que deveria querer?",
+            "texto": "Alguns objetivos vêm de desejo próprio. Outros podem vir de comparação, validação, expectativa ou de uma versão antiga de você."
+          },
+          {
+            "titulo": "Limites",
+            "pergunta": "Você sabe o que não quer mais sustentar?",
+            "texto": "Limite não é afastamento. É critério sobre o que entra, o que permanece e o que deixa de caber."
+          },
+          {
+            "titulo": "Coerência",
+            "pergunta": "Sua rotina confirma a pessoa que você diz querer se tornar?",
+            "texto": "Às vezes a clareza já existe, mas a vida cotidiana continua obedecendo uma direção anterior."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não definem quem você é.",
+          "Elas ajudam a mostrar onde existe mais distância entre identidade, intenção e vida real neste momento."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Autoconhecimento",
+        "eyebrow": [
+          "ONDE ESTÁ A DISTÂNCIA?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Autoconhecimento."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Identidade, Valores, Desejos, Limites e Coerência.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco dimensões internas do Mapa;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Autoconhecimento"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação. Não diagnostica personalidade, trauma, transtorno ou condição psicológica."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não diz “quem você é”. Ele mostra onde vale olhar primeiro."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica qual delas apresenta maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Identidade → O Personagem",
+              "Valores → O Desalinhado",
+              "Desejos → O Herdeiro",
+              "Limites → O Disponível",
+              "Coerência → O Dividido"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são atalhos editoriais para descrever um padrão de momento. Não são identidades fixas."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Clareza começa com uma boa pergunta, não com uma resposta perfeita."
+        ],
+        "cards": [
+          {
+            "titulo": "Identidade",
+            "perfil": "O Personagem",
+            "reconhecimento": "Talvez você saiba explicar muito bem o que faz, mas tenha mais dificuldade de dizer quem está se tornando.",
+            "primeiro": "Escreva duas listas curtas: “quem eu preciso ser para funcionar” e “quem eu percebo que sou quando não preciso provar nada”. Observe onde elas se encontram e onde se afastam."
+          },
+          {
+            "titulo": "Valores",
+            "perfil": "O Desalinhado",
+            "reconhecimento": "Você pode estar cumprindo prioridades que funcionam por fora e contradizem algo importante por dentro.",
+            "primeiro": "Escolha uma decisão recente que ainda incomoda e responda: “qual valor eu protegi?” e “qual valor eu sacrifiquei?”."
+          },
+          {
+            "titulo": "Desejos",
+            "perfil": "O Herdeiro",
+            "reconhecimento": "Talvez você esteja perseguindo algo que um dia fez sentido sem ter parado para perguntar se ainda quer chegar lá.",
+            "primeiro": "Pegue três objetivos atuais e complete: “eu quero isso porque…”. Depois observe quais respostas falam de desejo próprio e quais falam de reconhecimento, obrigação ou expectativa."
+          },
+          {
+            "titulo": "Limites",
+            "perfil": "O Disponível",
+            "reconhecimento": "Você pode estar tão acostumado a ser disponível que só percebe o próprio limite quando já passou dele.",
+            "primeiro": "Identifique um “sim” recorrente que costuma gerar ressentimento, cansaço ou perda de prioridade. Antes de mudá-lo, escreva qual medo aparece quando imagina dizer “não”."
+          },
+          {
+            "titulo": "Coerência",
+            "perfil": "O Dividido",
+            "reconhecimento": "Talvez você não esteja sem direção. Talvez sua agenda ainda esteja obedecendo uma direção antiga.",
+            "primeiro": "Escolha uma semana comum e marque uma ação que confirma a pessoa que você quer se tornar e uma que ainda reforça um padrão que pretende deixar para trás."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Autoconhecimento 7 Dias",
+        "eyebrow": [
+          "DO RECONHECIMENTO PARA A ESCOLHA"
+        ],
+        "titulo": [
+          "Sete dias para observar quem você é, o que importa e onde sua vida ainda está desalinhada."
+        ],
+        "texto": [
+          "O Plano EPIC Autoconhecimento é personalizado a partir das suas respostas no Mapa.",
+          "Ele transforma o resultado em uma semana curta de observação e alinhamento."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "Eu Atual: o padrão a observar;",
+              "Eu Futuro: a direção que deseja testar;",
+              "valor central em tensão;",
+              "uma crença ou expectativa a investigar;",
+              "um “sim” ou “não” que precisa ser percebido;",
+              "uma ação de alinhamento;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Autoconhecimento"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Autoconhecimento",
+        "eyebrow": [
+          "QUANDO UMA SEMANA NÃO É SUFICIENTE"
+        ],
+        "titulo": [
+          "Aprofunde o mapa de quem você é e de como quer viver daqui para frente."
+        ],
+        "texto": [
+          "O Kit Autoconhecimento reúne Manual, Workbook e ferramentas práticas para trabalhar esta dimensão com mais profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Exercícios sobre",
+            "itens": [
+              "Eu Atual;",
+              "Eu Futuro;",
+              "inventário de valores;",
+              "crenças e expectativas;",
+              "autoimagem;",
+              "feedback externo;",
+              "o que manter;",
+              "o que mudar;",
+              "plano de alinhamento."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Autoconhecimento"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda dúvida sobre a vida é falta de autoconhecimento."
+        ],
+        "texto": [
+          "Às vezes você já sabe quem é e o que quer, mas a fricção está em outro lugar."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Felicidade",
+            "texto": "Você sabe o que importa, mas sua vida perdeu presença, prazer, significado ou sensação de realização."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "Você sabe o que quer, mas ainda não transformou isso em rota."
+          },
+          {
+            "titulo": "Coragem",
+            "texto": "A escolha já está clara, mas assumir essa escolha tem custo, risco ou consequência."
+          },
+          {
+            "titulo": "Amor",
+            "texto": "Pertencimento, vínculo e expectativa relacional estão pesando sobre identidade ou limites."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "Interpretações rígidas e crenças recorrentes estão reduzindo a percepção de possibilidades."
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "ENTENDER TAMBÉM É PARTE DO CAMINHO"
+        ],
+        "titulo": [
+          "Ideias para se escutar com mais precisão."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Quem sou eu além do que faço?",
+              "Como revisar objetivos que já não combinam com você.",
+              "Valores: o que realmente entra na decisão.",
+              "O custo de dizer “sim” quando queria dizer “não”.",
+              "A diferença entre desejo, obrigação e validação.",
+              "Quando sua agenda revela uma identidade antiga."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Autoconhecimento"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias ajudam a perceber quem estamos nos tornando."
+        ],
+        "filme": [
+          "Comer, Rezar e Amar"
+        ],
+        "cta": [
+          "Ver repertório de Autoconhecimento"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "AUTOCONHECIMENTO É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Clareza sobre si ajuda a escolher. Mas escolha também precisa de energia, coragem, ação e contexto."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 14.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez você não precise descobrir uma versão secreta de si mesmo."
+        ],
+        "sub": [
+          "Precisa perceber quais partes da sua vida ainda estão sendo decididas por uma versão que já mudou."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Autoconhecimento"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Autoconhecimento | Descubra onde sua vida está desalinhada | EPIC247",
+      "description": "Faça o Mapa de Autoconhecimento EPIC247 e observe fricções em Identidade, Valores, Desejos, Limites e Coerência. Resultado imediato e um primeiro passo prático.",
+      "ogTitle": "As escolhas que você está fazendo ainda combinam com quem você se tornou?",
+      "ogDescription": "Explore Autoconhecimento no EPIC247 e descubra onde existe mais distância entre quem você é, o que valoriza, o que deseja e a forma como vive hoje.",
+      "canonical": "/dimensoes/autoconhecimento"
+    },
+    "mapa": {
+      "intro": "Vamos olhar para a distância entre quem você é, o que valoriza e a forma como está vivendo hoje.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Autoconhecimento está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Em Autoconhecimento, essas áreas podem se influenciar. Em vez de forçar uma resposta única, vale observar a relação entre as duas.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não diagnostica personalidade, trauma, transtornos ou condições psicológicas e não substitui acompanhamento profissional.",
+      "alerta": null
+    }
+  },
+  "felicidade": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "FELICIDADE"
+        ],
+        "titulo": [
+          "Você está vivendo bem agora ou adiando a vida para depois da próxima conquista?"
+        ],
+        "sub": [
+          "Felicidade, no EPIC247, não é euforia nem recompensa final.",
+          "É a capacidade de construir presença, envolvimento, conexão, significado e realização enquanto a vida ainda está acontecendo."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Felicidade"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez a sua vida não esteja ruim. Talvez esteja acontecendo depressa demais para ser vivida."
+        ],
+        "texto": [
+          "Você resolve uma coisa e já pensa na próxima.",
+          "Conclui uma meta e ela rapidamente vira obrigação cumprida.",
+          "Tem gente por perto, mas pouco tempo de presença real.",
+          "Funciona, entrega, avança.",
+          "E ainda assim pode surgir a sensação de que a vida boa continua sempre um pouco mais adiante."
+        ],
+        "cenas": [
+          "Algo bom acontece e, poucos minutos depois, sua cabeça já voltou para o próximo problema.",
+          "Sua agenda está cheia, mas quase nada na semana faz você se sentir realmente envolvido.",
+          "Você conversa com muita gente, mas sente falta de trocas em que possa estar inteiro.",
+          "Cumpre responsabilidades sem conseguir responder por que aquilo ainda importa.",
+          "Faz progresso, mas quase nunca permite que ele conte como progresso.",
+          "Você pensa: “quando isso passar”, “quando eu conseguir”, “quando eu tiver tempo”."
+        ],
+        "fechamento": [
+          "Talvez a questão não seja “como ser feliz?”.",
+          "Talvez seja descobrir qual parte da experiência de viver ficou pequena demais no caminho."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "A BAGAGEM CERTA PARA A JORNADA CERTA"
+        ],
+        "titulo": [
+          "Felicidade não precisa esperar a vida ficar pronta."
+        ],
+        "texto": [
+          "No EPIC247, Felicidade é tratada como experiência cotidiana e prática de vida.",
+          "Não significa estar bem o tempo todo.",
+          "Não elimina sofrimento, dificuldade ou incerteza.",
+          "Esta dimensão observa cinco elementos da experiência:",
+          "• emoções positivas;",
+          "• engajamento;",
+          "• relações;",
+          "• significado;",
+          "• realização.",
+          "A pergunta central não é se você está “feliz ou infeliz”.",
+          "É quanto espaço sua vida atual oferece para essas cinco experiências."
+        ],
+        "destaque": [
+          "Não é positividade ingênua.",
+          "É aprender a perceber, nutrir e organizar experiências que tornam a jornada mais habitável."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde a experiência de viver pode ficar pequena."
+        ],
+        "cards": [
+          {
+            "titulo": "Emoções Positivas",
+            "pergunta": "Você consegue perceber o que já é bom antes de correr para a próxima coisa?",
+            "texto": "Prazer, leveza e apreciação podem existir no cotidiano e ainda assim passar despercebidos quando tudo vira preparação para depois."
+          },
+          {
+            "titulo": "Engajamento",
+            "pergunta": "Você está ocupado ou realmente envolvido com alguma coisa?",
+            "texto": "Uma rotina pode funcionar muito bem e ainda oferecer poucos momentos de curiosidade, presença e absorção real."
+          },
+          {
+            "titulo": "Relações",
+            "pergunta": "Você está cercado de pessoas ou acompanhado de verdade?",
+            "texto": "Quantidade de contato não é a mesma coisa que qualidade de conexão, confiança e presença."
+          },
+          {
+            "titulo": "Significado",
+            "pergunta": "Você sabe por que aquilo que faz ainda importa?",
+            "texto": "Significado não exige uma missão grandiosa. Pode surgir da conexão entre rotina, valores, pessoas, contribuição e aquilo que você considera relevante."
+          },
+          {
+            "titulo": "Realização",
+            "pergunta": "Você consegue reconhecer progresso antes de transformá-lo em nova cobrança?",
+            "texto": "Conquistas podem perder valor quando nunca recebem tempo suficiente para serem registradas como avanço."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não produzem uma nota de felicidade.",
+          "Elas ajudam a mostrar onde sua experiência cotidiana parece mais estreita neste momento."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Felicidade",
+        "eyebrow": [
+          "COMO VOCÊ ESTÁ VIVENDO O CAMINHO?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Felicidade."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Emoções Positivas, Engajamento, Relações, Significado e Realização.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Felicidade"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa não mede “nível de felicidade” e não diagnostica depressão, anedonia, transtornos de humor ou qualquer condição psicológica."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "Seu resultado mostra onde vale ampliar espaço para viver melhor agora."
+        ],
+        "texto": [
+          "O Mapa compara cinco áreas e identifica qual delas apresenta maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Emoções Positivas → O Adiador do Agora",
+              "Engajamento → O Funcional",
+              "Relações → O Cercado",
+              "Significado → O Desconectado",
+              "Realização → O Inacabado"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes descrevem um padrão de momento. Não definem identidade nem estado clínico."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Viver melhor pode começar por uma pequena mudança na forma como você percebe a semana."
+        ],
+        "cards": [
+          {
+            "titulo": "Emoções Positivas",
+            "perfil": "O Adiador do Agora",
+            "reconhecimento": "Você pode estar usando o presente como corredor para chegar a um futuro onde finalmente pretende viver.",
+            "primeiro": "Durante 7 dias, escolha um momento positivo por dia e permaneça deliberadamente alguns segundos nele antes de passar para a próxima tarefa. Registre apenas o que aconteceu e o que percebeu."
+          },
+          {
+            "titulo": "Engajamento",
+            "perfil": "O Funcional",
+            "reconhecimento": "Você pode estar ocupado quase o tempo todo e envolvido de verdade em muito pouco.",
+            "primeiro": "Identifique uma atividade da última semana em que se sentiu mais presente, curioso ou absorvido. Pergunte o que havia nela: desafio, autonomia, criação, aprendizado, contato humano ou outra característica."
+          },
+          {
+            "titulo": "Relações",
+            "perfil": "O Cercado",
+            "reconhecimento": "Talvez você não esteja sozinho. Talvez esteja pouco acompanhado de verdade.",
+            "primeiro": "Escolha uma relação importante e crie uma pequena interação sem função prática. Uma conversa, mensagem, encontro ou gesto cujo único objetivo seja presença e conexão."
+          },
+          {
+            "titulo": "Significado",
+            "perfil": "O Desconectado",
+            "reconhecimento": "Você pode estar avançando e, ao mesmo tempo, se perguntando para onde isso tudo está levando.",
+            "primeiro": "Escolha uma atividade relevante da sua rotina e complete: “isso importa para mim porque…”, “isso ajuda quem ou o quê?” e “se eu parasse de fazer isso, o que perderia sentido?”."
+          },
+          {
+            "titulo": "Realização",
+            "perfil": "O Inacabado",
+            "reconhecimento": "Você pode estar produzindo resultados sem permitir que eles contem como resultado.",
+            "primeiro": "Liste três avanços dos últimos 90 dias que normalmente descartaria como pequenos ou incompletos. Para cada um, registre o que ele exigiu de você e o que agora existe que antes não existia."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Felicidade 7 Dias",
+        "eyebrow": [
+          "SETE DIAS PARA DEVOLVER ESPAÇO À EXPERIÊNCIA"
+        ],
+        "titulo": [
+          "Uma semana para observar onde sua vida já pode ser vivida melhor."
+        ],
+        "texto": [
+          "O Plano EPIC Felicidade é personalizado a partir das suas respostas no Mapa.",
+          "Ele organiza uma semana curta de práticas de presença, engajamento, relação, significado e reconhecimento de progresso."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "o padrão a observar;",
+              "um momento a saborear;",
+              "uma atividade de engajamento;",
+              "uma relação a nutrir;",
+              "uma pergunta de significado;",
+              "um progresso a reconhecer;",
+              "um micro-hábito diário;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Felicidade"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Felicidade",
+        "eyebrow": [
+          "QUANDO VOCÊ QUER TRABALHAR A EXPERIÊNCIA COMO UM TODO"
+        ],
+        "titulo": [
+          "Aprofunde os elementos que tornam a jornada mais viva, presente e significativa."
+        ],
+        "texto": [
+          "O Kit Felicidade reúne Manual, Workbook e ferramentas práticas para trabalhar esta dimensão com mais profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Exercícios e práticas sobre",
+            "itens": [
+              "emoções positivas;",
+              "engajamento;",
+              "relações;",
+              "significado;",
+              "realização;",
+              "gratidão;",
+              "saborear experiências;",
+              "contribuição;",
+              "atividades prazerosas frequentes."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Felicidade"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Às vezes a felicidade não é a origem da fricção."
+        ],
+        "texto": [
+          "Pode existir pouco espaço para prazer, presença ou significado porque outra dimensão está pressionando o sistema."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Energia",
+            "texto": "Você quer viver melhor, mas está exausto demais para sustentar presença ou prazer."
+          },
+          {
+            "titulo": "Autoconhecimento",
+            "texto": "Você sente que falta algo, mas ainda não sabe com clareza o que deseja, valoriza ou quer construir."
+          },
+          {
+            "titulo": "Amor",
+            "texto": "A principal tensão está em pertencimento, vínculo, intimidade ou relação consigo."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "Você sabe o que importa, mas sua rotina não reserva espaço real para isso."
+          },
+          {
+            "titulo": "Excelência",
+            "texto": "Cobrança por desempenho pode estar impedindo você de reconhecer progresso e satisfação."
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "VIVER MELHOR TAMBÉM SE APRENDE"
+        ],
+        "titulo": [
+          "Ideias para perceber mais do caminho enquanto ele acontece."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Por que a próxima conquista nunca parece suficiente.",
+              "A diferença entre estar ocupado e estar engajado.",
+              "Relações funcionais e relações que realmente sustentam.",
+              "Como reconhecer progresso sem perder ambição.",
+              "Significado cotidiano sem precisar encontrar uma “grande missão”.",
+              "O valor de saborear experiências antes de correr para a próxima."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Felicidade"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias lembram que a vida não começa depois."
+        ],
+        "filme": [
+          "Antes de Partir"
+        ],
+        "cta": [
+          "Ver repertório de Felicidade"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "FELICIDADE É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Viver melhor depende da experiência. Mas também depende da infraestrutura que sustenta essa experiência."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar por Felicidade ou integrar energia, identidade, planejamento, coragem, ação e as demais dimensões pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 14.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez você não precise esperar a vida melhorar para começar a vivê-la melhor."
+        ],
+        "sub": [
+          "Precisa descobrir qual parte da experiência ficou pequena demais no caminho."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Felicidade"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Felicidade | Descubra onde sua experiência ficou pequena | EPIC247",
+      "description": "Faça o Mapa de Felicidade EPIC247 e observe fricções em Emoções Positivas, Engajamento, Relações, Significado e Realização. Resultado imediato e primeiro passo prático.",
+      "ogTitle": "Você está vivendo bem agora ou adiando a vida para depois da próxima conquista?",
+      "ogDescription": "Explore Felicidade no EPIC247 e descubra onde existe menos espaço para presença, envolvimento, conexão, significado ou realização na sua vida hoje.",
+      "canonical": "/dimensoes/felicidade"
+    },
+    "mapa": {
+      "intro": "Vamos olhar para a qualidade da experiência que sua rotina está oferecendo hoje.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Felicidade está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Em Felicidade, essas áreas podem se influenciar. Em vez de forçar uma resposta única, vale observar como elas aparecem juntas no cotidiano.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não mede nível de felicidade, não diagnostica condições psicológicas e não substitui avaliação profissional quando houver sofrimento persistente, intenso ou prejuízo relevante de funcionamento.",
+      "alerta": null
+    }
+  },
+  "planejamento": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "PLANEJAMENTO"
+        ],
+        "titulo": [
+          "Você sabe onde quer chegar ou apenas está se mantendo em movimento?"
+        ],
+        "sub": [
+          "Planejamento não é tentar prever tudo. É construir direção suficiente para agir, medir o que acontece e ajustar a rota sem perder de vista o que importa."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Planejamento"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez você não precise de mais disciplina. Talvez precise de uma rota melhor."
+        ],
+        "texto": [
+          "Você pode ter objetivos, boa vontade e até uma agenda cheia.",
+          "Mesmo assim, alguma coisa continua escapando.",
+          "Às vezes o problema está no destino pouco claro.",
+          "Às vezes no plano que ignora a realidade.",
+          "Às vezes em prioridades demais.",
+          "Às vezes na falta de uma forma simples de medir se existe avanço."
+        ],
+        "cenas": [
+          "Você começa projetos importantes sem conseguir dizer exatamente o que precisa estar diferente ao final.",
+          "O plano parece ótimo até encontrar tempo, orçamento, dependências ou energia reais.",
+          "Tudo é prioridade e, por isso, quase nada recebe proteção suficiente.",
+          "Você trabalha muito, mas tem dificuldade de responder se está realmente avançando.",
+          "Continua insistindo em uma rota porque mudar parece admitir que o plano falhou.",
+          "Você revisa objetivos, mas raramente define quais evidências fariam mudar de estratégia."
+        ],
+        "fechamento": [
+          "Planejar melhor não é controlar mais.",
+          "É criar direção, critério e capacidade de revisão."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "O MAPA E A ROTA"
+        ],
+        "titulo": [
+          "Rota clara reduz desperdício. Rota rígida cria desperdício novo."
+        ],
+        "texto": [
+          "No EPIC247, Planejamento é direção mínima viável, leitura da realidade, escolha de prioridade, acompanhamento de progresso e ajuste contínuo.",
+          "Não é controle do resultado final.",
+          "Não é transformar sua vida em planilha.",
+          "Não é preencher frameworks por preencher.",
+          "É conseguir responder cinco perguntas:",
+          "Onde quero chegar?",
+          "Com quais condições reais estou lidando?",
+          "O que vem primeiro?",
+          "Como saberei se estou avançando?",
+          "Quando preciso ajustar a rota?"
+        ],
+        "destaque": [
+          "Objetivo sem rota vira desejo.",
+          "Rota sem realidade vira fantasia.",
+          "Rota sem revisão vira rigidez."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde um plano costuma perder força."
+        ],
+        "cards": [
+          {
+            "titulo": "Direção",
+            "pergunta": "Você consegue descrever com clareza o resultado que quer produzir?",
+            "texto": "Quando o destino é amplo demais, atividade substitui progresso e qualquer esforço pode parecer útil."
+          },
+          {
+            "titulo": "Realidade",
+            "pergunta": "Seu plano considera tempo, recursos, restrições e dependências reais?",
+            "texto": "Um bom plano não diminui a ambição. Ele traduz ambição para as condições concretas do momento."
+          },
+          {
+            "titulo": "Prioridade",
+            "pergunta": "O que realmente precisa vir primeiro?",
+            "texto": "Se tudo recebe status de prioridade, sua agenda começa a decidir por você."
+          },
+          {
+            "titulo": "Progresso",
+            "pergunta": "Como você sabe que está avançando?",
+            "texto": "Sem indicadores simples, esforço e movimento podem ser confundidos com resultado."
+          },
+          {
+            "titulo": "Adaptação",
+            "pergunta": "Você sabe quando insistir e quando revisar a rota?",
+            "texto": "Mudar estratégia não é abandonar o objetivo. Às vezes é a única forma de continuar comprometido com ele."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem sua competência.",
+          "Elas mostram onde seu planejamento pode estar perdendo capacidade de transformar intenção em execução."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Planejamento",
+        "eyebrow": [
+          "ONDE SUA ROTA ESTÁ PERDENDO FORÇA?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Planejamento."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Direção, Realidade, Prioridade, Progresso e Adaptação.",
+          "Ao final, você verá:",
+          "• sua principal fricção de Planejamento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Planejamento"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação. Não mede inteligência, competência ou capacidade profissional."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não diz se você “sabe planejar”. Ele mostra onde a rota está mais vulnerável."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica qual delas apresenta maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Direção → O Navegador sem Destino",
+              "Realidade → O Otimista Operacional",
+              "Prioridade → O Colecionador de Prioridades",
+              "Progresso → O Ocupado sem Painel",
+              "Adaptação → O Fiel ao Plano"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são descrições editoriais de padrão. Não são identidades fixas nem avaliações de competência."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Um plano melhora quando a próxima pergunta fica mais precisa."
+        ],
+        "cards": [
+          {
+            "titulo": "Direção",
+            "perfil": "O Navegador sem Destino",
+            "reconhecimento": "Você pode ter uma agenda cheia de movimento e ainda não saber exatamente o que precisa estar diferente ao final do caminho.",
+            "primeiro": "Complete três frases: “Eu quero…”, “isso importa porque…”, “vou saber que avancei quando…”."
+          },
+          {
+            "titulo": "Realidade",
+            "perfil": "O Otimista Operacional",
+            "reconhecimento": "O plano funciona muito bem até encontrar a agenda, o orçamento, o tempo ou as dependências reais.",
+            "primeiro": "Escolha um objetivo e liste quatro coisas: recursos disponíveis, restrições, obstáculos previsíveis e uma premissa que você está assumindo como verdadeira."
+          },
+          {
+            "titulo": "Prioridade",
+            "perfil": "O Colecionador de Prioridades",
+            "reconhecimento": "Se tudo é prioridade, sua agenda acaba decidindo por você.",
+            "primeiro": "Escolha uma única prioridade para os próximos 7 dias e escreva explicitamente o que ficará em segundo plano para protegê-la."
+          },
+          {
+            "titulo": "Progresso",
+            "perfil": "O Ocupado sem Painel",
+            "reconhecimento": "Você sabe o quanto trabalhou. Talvez saiba menos sobre o quanto avançou.",
+            "primeiro": "Escolha um objetivo e defina um indicador de execução e um indicador de resultado para acompanhar durante 7 dias."
+          },
+          {
+            "titulo": "Adaptação",
+            "perfil": "O Fiel ao Plano",
+            "reconhecimento": "Talvez você esteja tentando salvar o plano quando deveria estar protegendo o objetivo.",
+            "primeiro": "Escolha um plano atual e escreva: “qual evidência me faria ajustar a rota?” e “qual alternativa eu testaria primeiro?”."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Planejamento 7 Dias",
+        "eyebrow": [
+          "DA INTENÇÃO PARA A ROTA"
+        ],
+        "titulo": [
+          "Sete dias para transformar um objetivo em direção executável."
+        ],
+        "texto": [
+          "O Plano EPIC Planejamento é personalizado a partir das suas respostas no Mapa.",
+          "Ele organiza uma semana curta para você construir uma rota mais clara, realista e revisável."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "resultado que importa;",
+              "por que esse resultado importa;",
+              "recursos e restrições atuais;",
+              "uma prioridade protegida;",
+              "próximo passo executável;",
+              "indicador simples de progresso;",
+              "Plano B ou gatilho de revisão;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Planejamento"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Planejamento",
+        "eyebrow": [
+          "UMA ROTA MAIS COMPLETA"
+        ],
+        "titulo": [
+          "Construa um sistema de planejamento que sobreviva à realidade."
+        ],
+        "texto": [
+          "O Kit Planejamento reúne Manual, Workbook e ferramentas práticas para aprofundar esta dimensão."
+        ],
+        "listas": [
+          {
+            "titulo": "Exercícios sobre",
+            "itens": [
+              "definição de resultado;",
+              "levantamento de recursos e restrições;",
+              "premissas e obstáculos;",
+              "modelagem;",
+              "metas;",
+              "priorização;",
+              "indicadores;",
+              "Plano B;",
+              "revisão dinâmica."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Planejamento"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda falta de execução é problema de planejamento."
+        ],
+        "texto": [
+          "Às vezes a rota está clara e a fricção está em outro lugar."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Autoconhecimento",
+            "texto": "Você ainda não sabe se o objetivo é realmente seu."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "O planejamento virou uma forma sofisticada de continuar pensando sem agir."
+          },
+          {
+            "titulo": "Coragem",
+            "texto": "A rota está clara, mas risco, exposição ou consequência impedem o passo."
+          },
+          {
+            "titulo": "Ação",
+            "texto": "Existe um plano executável, mas o próximo movimento não acontece."
+          },
+          {
+            "titulo": "Inteligência",
+            "texto": "A realidade mudou e agora você precisa aprender, adaptar e revisar a estratégia."
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "PLANEJAR MELHOR É VER MELHOR"
+        ],
+        "titulo": [
+          "Ideias para construir direção sem transformar a vida em controle."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Como transformar desejo em resultado concreto.",
+              "A diferença entre meta e rota.",
+              "Como escolher uma prioridade quando tudo parece importante.",
+              "O que medir para não confundir esforço com progresso.",
+              "Como construir um Plano B sem sabotar o Plano A.",
+              "Quando mudar de rota é sinal de inteligência, não de fracasso."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Planejamento"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias mostram que um bom plano depende tanto de preparação quanto de adaptação."
+        ],
+        "filme": [
+          "Onze Homens e um Segredo"
+        ],
+        "cta": [
+          "Ver repertório de Planejamento"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "PLANEJAMENTO É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Uma boa rota ajuda. Mas seguir a rota exige outras partes da sua infraestrutura."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 14.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez você não precise de um plano mais completo."
+        ],
+        "sub": [
+          "Precisa de uma rota clara o bastante para começar e flexível o bastante para sobreviver à realidade."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Planejamento"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Planejamento | Transforme intenção em uma rota executável | EPIC247",
+      "description": "Faça o Mapa de Planejamento EPIC247 e observe fricções em Direção, Realidade, Prioridade, Progresso e Adaptação. Resultado imediato e primeiro passo prático.",
+      "ogTitle": "Você sabe onde quer chegar ou apenas está se mantendo em movimento?",
+      "ogDescription": "Explore Planejamento no EPIC247 e descubra onde sua rota está perdendo força entre objetivo, realidade, prioridade, progresso e adaptação.",
+      "canonical": "/dimensoes/planejamento"
+    },
+    "mapa": {
+      "intro": "Vamos olhar para como você transforma intenção em uma rota executável e revisável.",
+      "calculando": "Organizando sua rota…",
+      "pronto": "Seu Mapa de Planejamento está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Em Planejamento, essas áreas funcionam em conjunto. Em vez de forçar um único diagnóstico, vale observar a relação entre as duas.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não mede competência, produtividade ou capacidade profissional e não promete eliminar incerteza.",
+      "alerta": null
+    }
+  },
+  "coragem": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "CORAGEM"
+        ],
+        "titulo": [
+          "Você já sabe o que precisa fazer. O que ainda está impedindo você de girar a chave?"
+        ],
+        "sub": [
+          "Nem toda hesitação é falta de clareza.",
+          "Às vezes a decisão já existe, mas o medo das consequências, da exposição ou da incerteza ainda está decidindo por você."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Coragem"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez você não esteja indeciso. Talvez esteja tentando evitar o custo de decidir."
+        ],
+        "texto": [
+          "Existe um momento em que saber deixa de ser o problema.",
+          "Você já pensou, avaliou, imaginou cenários e talvez até tenha decidido internamente.",
+          "O que falta é atravessar o segundo entre saber e fazer."
+        ],
+        "cenas": [
+          "Você continua chamando de dúvida uma escolha que internamente já parece madura.",
+          "Sabe o que quer, mas fica preso pensando em quem pode se decepcionar, se afastar ou julgar.",
+          "Adia o movimento porque ainda procura uma garantia que a situação talvez nunca ofereça.",
+          "Tem dificuldade de se posicionar quando isso torna você mais visível.",
+          "Planeja de novo quando, no fundo, sabe que o próximo passo já não é mais planejamento.",
+          "A decisão existe por dentro, mas nada no mundo real ainda confirma que ela foi tomada."
+        ],
+        "fechamento": [
+          "Coragem começa quando o medo deixa de ser uma nuvem e passa a ser algo suficientemente claro para ser atravessado com responsabilidade."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "GIRAR A CHAVE"
+        ],
+        "titulo": [
+          "Coragem não é ausência de medo. É impedir que o medo decida sozinho."
+        ],
+        "texto": [
+          "No EPIC247, Coragem é a capacidade de agir mesmo sem controle do resultado.",
+          "Isso não significa ignorar riscos, “ir com medo mesmo” em qualquer situação ou transformar impulsividade em virtude.",
+          "Significa:",
+          "• nomear a decisão;",
+          "• entender o que você teme perder;",
+          "• separar risco real de medo difuso;",
+          "• distinguir o que pode controlar do que não pode;",
+          "• preparar prevenção e reparo quando fizer sentido;",
+          "• criar um primeiro gesto proporcional e responsável."
+        ],
+        "destaque": [
+          "“Desconfortável de propósito. Necessário de verdade.”"
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde a coragem pode perder força entre intenção e movimento."
+        ],
+        "cards": [
+          {
+            "titulo": "Decisão",
+            "pergunta": "Você ainda está em dúvida ou apenas evita admitir que já escolheu?",
+            "texto": "Buscar mais clareza pode virar forma de adiar uma decisão que já amadureceu."
+          },
+          {
+            "titulo": "Consequência",
+            "pergunta": "O que você teme que mude depois da sua escolha?",
+            "texto": "Às vezes o medo não está no ato, mas no que pode acontecer com relações, papéis, segurança e expectativas depois dele."
+          },
+          {
+            "titulo": "Exposição",
+            "pergunta": "O que muda quando sua decisão deixa de ser privada e passa a ser vista?",
+            "texto": "Alguns movimentos assustam porque tornam sua posição, desejo ou tentativa visíveis."
+          },
+          {
+            "titulo": "Incerteza",
+            "pergunta": "Quanta garantia você precisa antes de agir?",
+            "texto": "Existem decisões importantes que oferecem informação suficiente, mas nunca certeza absoluta."
+          },
+          {
+            "titulo": "Travessia",
+            "pergunta": "Qual gesto tornaria sua decisão real?",
+            "texto": "A travessia começa no primeiro movimento concreto que impede a escolha de voltar a ser apenas pensamento."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem “quanto corajoso” você é.",
+          "Elas ajudam a mostrar em que ponto o medo está ganhando mais poder sobre uma decisão neste momento."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Coragem",
+        "eyebrow": [
+          "ONDE O MOVIMENTO ESTÁ TRAVANDO?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Coragem."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Decisão, Consequência, Exposição, Incerteza e Travessia.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático e seguro."
+        ],
+        "cta": [
+          "Começar meu Mapa de Coragem"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa. Não diagnostica ansiedade, trauma, fobia ou qualquer condição psicológica."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "Seu resultado não mede bravura. Ele mostra onde o medo está pesando mais."
+        ],
+        "listas": [
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Decisão → O Quase Decidido",
+              "Consequência → O Protetor",
+              "Exposição → O Invisível",
+              "Incerteza → O Garantidor",
+              "Travessia → O Hesitante"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são rótulos editoriais de momento, nunca identidades fixas."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "cards": [
+          {
+            "titulo": "Decisão",
+            "perfil": "O Quase Decidido",
+            "reconhecimento": "Você pode estar pedindo mais clareza para uma decisão que já está clara o bastante para exigir movimento.",
+            "primeiro": "Complete: “Se eu parasse de chamar isso de dúvida, qual decisão eu teria de admitir que já tomei?”. Não execute ainda. Primeiro nomeie com precisão."
+          },
+          {
+            "titulo": "Consequência",
+            "perfil": "O Protetor",
+            "reconhecimento": "Você pode saber o que quer e ainda assim se sentir responsável por proteger todos os impactos da sua escolha.",
+            "primeiro": "Divida uma folha em duas colunas: “o que posso influenciar” e “o que não posso controlar”. Coloque cada consequência imaginada em uma delas."
+          },
+          {
+            "titulo": "Exposição",
+            "perfil": "O Invisível",
+            "reconhecimento": "Enquanto está apenas na sua cabeça, ninguém pode rejeitar, criticar ou interpretar o que você quer fazer.",
+            "primeiro": "Escolha uma microexposição segura e proporcional: compartilhar uma ideia, pedir feedback, enviar uma mensagem ou declarar uma posição para alguém de confiança."
+          },
+          {
+            "titulo": "Incerteza",
+            "perfil": "O Garantidor",
+            "reconhecimento": "Você não precisa de certeza para agir, mas talvez esteja tratando certeza como pré-requisito.",
+            "primeiro": "Liste três riscos reais da decisão e, para cada um, escreva uma ação possível de prevenção ou reparo."
+          },
+          {
+            "titulo": "Travessia",
+            "perfil": "O Hesitante",
+            "reconhecimento": "Você já decidiu por dentro, mas ainda não fez nada que torne impossível fingir que a decisão não existe.",
+            "primeiro": "Identifique uma microação concreta, proporcional e segura que transforme intenção em movimento: marcar uma conversa, reservar um horário, enviar uma mensagem ou assumir um primeiro compromisso real."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Coragem 7 Dias",
+        "eyebrow": [
+          "DO MEDO DIFUSO PARA O MOVIMENTO RESPONSÁVEL"
+        ],
+        "titulo": [
+          "Sete dias para entender o que está segurando sua decisão e preparar uma travessia possível."
+        ],
+        "texto": [
+          "O Plano EPIC Coragem é personalizado a partir das suas respostas no Mapa."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "a decisão ou situação a observar;",
+              "a ameaça imaginada mais recorrente;",
+              "o que está sob seu controle;",
+              "o que pode ser prevenido;",
+              "o que pode ser reparado;",
+              "o custo da inércia;",
+              "uma microexposição ou microação de travessia;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Coragem"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Coragem",
+        "eyebrow": [
+          "QUANDO O MEDO PRECISA SER DISSECADO"
+        ],
+        "titulo": [
+          "Transforme medo difuso em risco nomeado, escolha consciente e movimento proporcional."
+        ],
+        "texto": [
+          "O Kit Coragem reúne Manual, Workbook e ferramentas práticas para aprofundar conversas internas, emoções paralisantes, análise de medo, prevenção, reparo, custo da inércia, exposição gradual e ritual de partida."
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Coragem"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda hesitação é falta de coragem."
+        ],
+        "texto": [
+          "Às vezes a fricção está antes ou depois dela."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Autoconhecimento",
+            "texto": "Você ainda não sabe com clareza o que quer."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "Ruminação, interpretações rígidas ou exigência de certeza estão dominando."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "A decisão existe, mas ainda não há uma rota executável."
+          },
+          {
+            "titulo": "Ação",
+            "texto": "A escolha já foi assumida e o problema passou a ser começar ou sustentar."
+          },
+          {
+            "titulo": "Amor",
+            "texto": "Vínculo, pertencimento, agradar ou medo de perder relações pesam mais que o risco da decisão em si."
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "ENTENDER O MEDO MUDA A FORMA DE ATRAVESSÁ-LO"
+        ],
+        "titulo": [
+          "Ideias para decisões que pedem movimento."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Quando dúvida vira adiamento.",
+              "O custo invisível de proteger todas as consequências.",
+              "Medo de se expor: quando a decisão também é sobre ser visto.",
+              "Como separar risco real de medo difuso.",
+              "O custo da inércia.",
+              "O primeiro gesto que transforma intenção em realidade."
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Coragem"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias mostram que coragem não começa quando o medo desaparece."
+        ],
+        "filme": [
+          "Joy"
+        ],
+        "cta": [
+          "Ver repertório de Coragem"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "CORAGEM É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Decidir importa. Atravessar também."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 14.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez você não precise de mais certeza."
+        ],
+        "sub": [
+          "Talvez precise descobrir o que, exatamente, está tentando proteger antes de girar a chave."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Coragem"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Coragem | Descubra onde sua decisão está travando | EPIC247",
+      "description": "Faça o Mapa de Coragem EPIC247 e observe fricções em Decisão, Consequência, Exposição, Incerteza e Travessia. Resultado imediato e primeiro passo prático.",
+      "ogTitle": "Você já sabe o que precisa fazer. O que ainda está impedindo você de girar a chave?",
+      "ogDescription": "Descubra onde o medo está pesando mais entre sua decisão e o movimento concreto.",
+      "canonical": "/dimensoes/coragem"
+    },
+    "mapa": {
+      "intro": "Vamos olhar para o ponto entre saber e fazer.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Coragem está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Coragem raramente trava em um único ponto. Em vez de forçar uma resposta única, vale observar como as duas áreas se relacionam.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa. Ele não diagnostica ansiedade, trauma, fobia ou outras condições psicológicas e não substitui suporte profissional apropriado.",
+      "alerta": null
+    }
+  },
+  "acao": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "AÇÃO"
+        ],
+        "titulo": [
+          "Você sabe o que precisa fazer. Então por que o próximo passo continua não acontecendo?"
+        ],
+        "sub": [
+          "Nem toda inação é falta de disciplina.",
+          "Às vezes o problema está no começo, no tamanho da tarefa, na distração, na dificuldade de sustentar ritmo ou no tempo que você leva para retomar depois de uma interrupção."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Ação"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez você não precise de mais motivação. Talvez precise descobrir onde sua intenção perde força."
+        ],
+        "texto": [
+          "Você entende o problema.",
+          "Já pensou no plano.",
+          "Talvez até saiba qual é o próximo passo.",
+          "Mesmo assim, alguma coisa se perde antes de virar comportamento."
+        ],
+        "cenas": [
+          "Você pesquisa, organiza e prepara mais do que executa.",
+          "Quanto mais importante o projeto, mais difícil parece começar de forma simples.",
+          "Abre uma tarefa importante e, poucos minutos depois, está resolvendo mensagens, abas e pequenas pendências.",
+          "Começa com muita intensidade e perde ritmo quando a novidade acaba.",
+          "Um dia ruim vira três, cinco, dez dias longe daquilo que queria sustentar.",
+          "Você recomeça várias vezes, mas raramente sente que apenas continuou."
+        ],
+        "fechamento": [
+          "Ação não começa quando tudo está pronto.",
+          "Começa quando o próximo passo fica pequeno o bastante para acontecer."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "COLOCAR NA ESTRADA"
+        ],
+        "titulo": [
+          "O ideal abandonado vale menos do que o mínimo que realmente acontece."
+        ],
+        "texto": [
+          "No EPIC247, Ação é a dimensão que transforma intenção em comportamento.",
+          "Ela não pergunta apenas se você “faz” ou “não faz”.",
+          "Pergunta em que ponto do caminho sua execução começa a perder força.",
+          "Às vezes é antes do início.",
+          "Às vezes a tarefa ficou grande demais.",
+          "Às vezes o ambiente fragmenta sua atenção.",
+          "Às vezes você começa forte demais para sustentar.",
+          "Às vezes a dificuldade real é voltar depois da interrupção."
+        ],
+        "destaque": [
+          "Clareza → Ação → Consistência."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde intenção pode deixar de virar comportamento."
+        ],
+        "cards": [
+          {
+            "titulo": "Início",
+            "pergunta": "Quanto tempo existe entre saber o próximo passo e realmente começar?",
+            "texto": "Preparação, pesquisa, organização e busca de certeza podem virar formas socialmente aceitáveis de adiar o primeiro movimento."
+          },
+          {
+            "titulo": "Fricção",
+            "pergunta": "O que acontece quando a tarefa parece grande, importante ou desconfortável?",
+            "texto": "Quanto maior o peso percebido, maior pode ser a tendência de transformar ação simples em projeto complexo."
+          },
+          {
+            "titulo": "Distração",
+            "pergunta": "Sua atenção permanece onde você decidiu colocá-la?",
+            "texto": "Tarefas menores, mensagens e pequenas pendências podem oferecer alívio rápido justamente quando algo importante exige profundidade."
+          },
+          {
+            "titulo": "Consistência",
+            "pergunta": "Seu ritmo depende de motivação ou consegue sobreviver aos dias comuns?",
+            "texto": "Começar forte não garante continuidade. A intensidade inicial precisa caber na realidade que vem depois."
+          },
+          {
+            "titulo": "Retomada",
+            "pergunta": "Quanto custa para você voltar depois que a sequência quebra?",
+            "texto": "Uma interrupção não precisa virar recomeço total. O tempo de retorno pode ser mais importante do que a perfeição da sequência."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem produtividade.",
+          "Elas mostram onde existe mais atrito entre intenção e comportamento neste momento."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Ação",
+        "eyebrow": [
+          "ONDE SUA AÇÃO TRAVA?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Ação."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Início, Fricção, Distração, Consistência e Retomada.",
+          "Ao final, você verá:",
+          "• seu principal ponto de fricção;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Ação"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação comportamental. Não diagnostica TDAH, depressão, ansiedade ou qualquer condição médica ou psicológica."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não pergunta se você é procrastinador. Ele mostra onde sua intenção está perdendo força."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica onde existe maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Início → O Preparador",
+              "Fricção → O Perfeccionista",
+              "Distração → O Disperso",
+              "Consistência → O Arrancador",
+              "Retomada → O Reiniciador"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes descrevem padrões de momento. Não são diagnósticos nem identidades fixas."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Movimento não exige uma transformação inteira. Exige um próximo passo real."
+        ],
+        "cards": [
+          {
+            "titulo": "Início",
+            "perfil": "O Preparador",
+            "reconhecimento": "Você não está parado porque não sabe nada. Pode estar parado porque quer saber o suficiente para não precisar começar no desconforto.",
+            "primeiro": "Escolha uma tarefa real e escreva qual é a menor versão executável dela que cabe em 10 minutos. Faça essa versão antes de melhorar o plano."
+          },
+          {
+            "titulo": "Fricção",
+            "perfil": "O Perfeccionista",
+            "reconhecimento": "O projeto ficou tão importante que ficou difícil demais começar de forma imperfeita.",
+            "primeiro": "Pergunte: “qual versão disso seria pequena demais para me assustar, mas real o suficiente para contar como avanço?”."
+          },
+          {
+            "titulo": "Distração",
+            "perfil": "O Disperso",
+            "reconhecimento": "Você começa o que importa e, poucos minutos depois, está resolvendo outra coisa que parecia urgente.",
+            "primeiro": "Proteja 20 minutos para uma única tarefa importante, sem notificações, abas extras ou pequenas pendências."
+          },
+          {
+            "titulo": "Consistência",
+            "perfil": "O Arrancador",
+            "reconhecimento": "Você não tem dificuldade de começar de novo. Tem dificuldade de continuar quando deixa de parecer novo.",
+            "primeiro": "Reduza por 7 dias uma ação importante para uma versão mínima que você consiga cumprir inclusive num dia ruim."
+          },
+          {
+            "titulo": "Retomada",
+            "perfil": "O Reiniciador",
+            "reconhecimento": "Talvez seu problema não seja cair. Seja demorar demais para voltar depois que caiu.",
+            "primeiro": "Defina sua regra de retorno: qual é a menor ação que você fará no primeiro dia possível, sem tentar compensar o que perdeu?"
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Ação 7 Dias",
+        "eyebrow": [
+          "DO RESULTADO PARA O MOVIMENTO"
+        ],
+        "titulo": [
+          "Sete dias para transformar intenção em uma sequência pequena o bastante para acontecer."
+        ],
+        "texto": [
+          "O Plano EPIC Ação é personalizado a partir das suas respostas no Mapa.",
+          "Ele traduz seu padrão predominante em uma semana curta de execução e observação."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "o padrão a observar;",
+              "uma coisa para reduzir;",
+              "três movimentos simples;",
+              "uma ação mínima diária;",
+              "um gatilho de execução;",
+              "uma regra de retomada;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Ação"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Ação",
+        "eyebrow": [
+          "QUANDO O PROBLEMA NÃO É SABER O QUE FAZER"
+        ],
+        "titulo": [
+          "Construa um sistema de ação que dependa menos de motivação e mais de desenho."
+        ],
+        "texto": [
+          "O Kit Ação reúne Manual, Workbook e ferramentas práticas para trabalhar a execução com mais profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Pode incluir",
+            "itens": [
+              "identificação do padrão predominante;",
+              "redução de fricção;",
+              "definição de mínimo viável;",
+              "proteção de atenção;",
+              "estrutura de consistência;",
+              "regra do Não Zerar;",
+              "retomada rápida;",
+              "desenho de gatilhos de execução."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Ação"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda inação é um problema de ação."
+        ],
+        "texto": [
+          "Às vezes o próximo passo não acontece porque a fricção está em outra dimensão."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Energia",
+            "texto": "Você sabe o que fazer, mas não tem recurso físico ou mental para sustentar."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "A execução trava antes do começo porque análise, antecipação ou exigência de certeza dominam."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "A intenção existe, mas ainda não virou prioridade, sequência ou rota clara."
+          },
+          {
+            "titulo": "Coragem",
+            "texto": "Você já sabe o que quer fazer, mas consequência, risco ou exposição ainda seguram o movimento."
+          },
+          {
+            "titulo": "Excelência",
+            "texto": "Você já executa, mas agora a questão é qualidade, refinamento e evolução consistente."
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "ENTENDER O PADRÃO AJUDA A MUDAR O DESENHO"
+        ],
+        "titulo": [
+          "Ideias para começar melhor, sustentar melhor e voltar mais rápido."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Síndrome do Preparo Eterno.",
+              "Quando o perfeito impede o possível.",
+              "Como reduzir uma tarefa até ela caber no próximo passo.",
+              "Distração ou alívio? O que você procura quando foge da tarefa.",
+              "Consistência não é intensidade.",
+              "A Regra do Não Zerar.",
+              "Por que recomeçar pode custar mais do que retomar."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Ação"
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias mostram como pequenas ações mudam sistemas inteiros."
+        ],
+        "filme": [
+          "A Corrente do Bem"
+        ],
+        "cta": [
+          "Ver repertório de Ação"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "AÇÃO É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Ação move. Mas o que você consegue sustentar depende também de energia, clareza, coragem e capacidade de adaptação."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 14.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Você não precisa esperar a versão perfeita do plano."
+        ],
+        "sub": [
+          "Precisa descobrir qual é o próximo passo pequeno o bastante para acontecer."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Ação"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Ação | Descubra onde sua intenção perde força | EPIC247",
+      "description": "Faça o Mapa de Ação EPIC247 e observe fricções em Início, Fricção, Distração, Consistência e Retomada. Resultado imediato e um primeiro passo prático.",
+      "ogTitle": "Você sabe o que precisa fazer. Então por que o próximo passo continua não acontecendo?",
+      "ogDescription": "Explore Ação no EPIC247 e descubra em que ponto sua intenção está perdendo força antes de virar comportamento.",
+      "canonical": "/dimensoes/acao"
+    },
+    "mapa": {
+      "intro": "Vamos observar em que ponto sua intenção costuma perder força antes de virar comportamento.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Ação está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Padrões de ação costumam se alimentar. Em vez de forçar uma resposta única, vale observar como as duas aparecem na mesma sequência.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação comportamental. Ele não diagnostica TDAH, depressão, ansiedade ou qualquer condição médica ou psicológica e não substitui avaliação profissional adequada.",
+      "alerta": null
+    }
+  },
+  "inteligencia": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "INTELIGÊNCIA"
+        ],
+        "titulo": [
+          "O que acontece com você quando a realidade deixa de obedecer ao plano?"
+        ],
+        "sub": [
+          "Inteligência, no EPIC247, não é saber mais quando tudo está funcionando.",
+          "É conseguir interpretar melhor, recompor estado, aprender, adaptar e continuar quando alguma coisa sai do previsto."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Inteligência"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Seu pneu vai furar em algum momento. A pergunta é o que você faz depois."
+        ],
+        "texto": [
+          "Planos falham.",
+          "Pessoas frustram.",
+          "Resultados não saem como esperado.",
+          "Contextos mudam.",
+          "A diferença não está em evitar todo imprevisto.",
+          "Está na forma como você responde quando ele chega."
+        ],
+        "cenas": [
+          "Um obstáculo vira rapidamente prova de que “não era para você”.",
+          "Uma crítica, rejeição ou falha ocupa espaço por muito mais tempo do que gostaria.",
+          "Você sofre tanto com o resultado que demora para enxergar o que ele está mostrando.",
+          "Continua tentando recuperar a rota antiga quando a realidade já mudou.",
+          "Em momentos de pressão, toma decisões para aliviar o que sente agora e se arrepende depois.",
+          "Quando algo sai errado, você até sabe o que deveria fazer, mas demora a voltar ao estado em que consegue fazer."
+        ],
+        "fechamento": [
+          "Inteligência aplicada começa quando o imprevisto deixa de ser apenas interrupção e passa a virar informação."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "LIDAR COM IMPREVISTOS"
+        ],
+        "titulo": [
+          "Adaptar não é abandonar a rota. É preservar o que importa quando o caminho muda."
+        ],
+        "texto": [
+          "No EPIC247, Inteligência é a capacidade de se adaptar à mudança.",
+          "Ela combina três camadas do método:",
+          "• Resiliência;",
+          "• Inteligência Emocional;",
+          "• Inteligência Artificial como apoio.",
+          "No Mapa, essa lógica foi traduzida em cinco fricções humanas observáveis.",
+          "A IA não entra como eixo de pontuação. Ela permanece como ferramenta e repertório, seguindo um princípio simples:"
+        ],
+        "destaque": [
+          "IA é copiloto. Você é piloto."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde sua capacidade de responder ao inesperado pode perder força."
+        ],
+        "cards": [
+          {
+            "titulo": "Realidade",
+            "pergunta": "Você consegue separar o que aconteceu da história que sua cabeça construiu sobre isso?",
+            "texto": "Fato e interpretação podem se misturar tão rápido que o obstáculo vira conclusão antes de virar informação."
+          },
+          {
+            "titulo": "Recuperação",
+            "pergunta": "Quanto tempo você leva para voltar depois que algo abala seu estado?",
+            "texto": "Resiliência não é não cair. É conseguir encontrar uma próxima ação possível antes que a queda paralise a viagem inteira."
+          },
+          {
+            "titulo": "Aprendizado",
+            "pergunta": "Quando algo não funciona, você consegue extrair dado sem transformar o resultado em veredito?",
+            "texto": "Aprender não exige gostar do erro. Exige conseguir usá-lo para melhorar a próxima tentativa."
+          },
+          {
+            "titulo": "Adaptação",
+            "pergunta": "Você consegue mudar a estratégia sem sentir que está desistindo do objetivo?",
+            "texto": "A realidade pode exigir outra rota. Inteligência é preservar direção sem idolatrar o plano original."
+          },
+          {
+            "titulo": "Agência Emocional",
+            "pergunta": "Você consegue reconhecer o que sente antes que a emoção escolha por você?",
+            "texto": "O objetivo não é eliminar emoção. É recuperar espaço suficiente para decidir de forma mais consciente."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem “nível de inteligência”.",
+          "Elas mostram onde sua resposta ao imprevisto parece perder mais força neste momento."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Inteligência",
+        "eyebrow": [
+          "COMO VOCÊ RESPONDE QUANDO A ROTA MUDA?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Inteligência."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Realidade, Recuperação, Aprendizado, Adaptação e Agência Emocional.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Inteligência"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação. Não mede QI, capacidade cognitiva, “nível de inteligência” ou diagnóstico emocional."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não diz o quanto você é inteligente. Ele mostra onde sua resposta ao inesperado pode estar pedindo atenção."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica onde existe maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Realidade → O Intérprete",
+              "Recuperação → O Demorado para Voltar",
+              "Aprendizado → O Ferido pelo Resultado",
+              "Adaptação → O Fiel à Rota",
+              "Agência Emocional → O Governado pelo Momento"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são descrições editoriais de momento. Não são rótulos fixos de personalidade ou capacidade."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Quando a realidade muda, inteligência começa pela próxima resposta possível."
+        ],
+        "cards": [
+          {
+            "titulo": "Realidade",
+            "perfil": "O Intérprete",
+            "reconhecimento": "O obstáculo pode estar virando resposta final antes de virar informação.",
+            "primeiro": "Pegue um imprevisto recente e escreva duas linhas: “o que aconteceu de fato” e “o que eu concluí a partir disso”."
+          },
+          {
+            "titulo": "Recuperação",
+            "perfil": "O Demorado para Voltar",
+            "reconhecimento": "Talvez você não caia mais do que os outros. Talvez demore mais para voltar.",
+            "primeiro": "Monte seu “estepe” pessoal com três recursos reais: uma pessoa que pode acionar, uma ação física simples que ajuda a recompor estado e uma microação que mantém o caminho vivo."
+          },
+          {
+            "titulo": "Aprendizado",
+            "perfil": "O Ferido pelo Resultado",
+            "reconhecimento": "Quando o resultado machuca demais, fica difícil escutar o que ele está tentando ensinar.",
+            "primeiro": "Responda sobre um episódio recente: “o que eu repetiria?”, “o que eu mudaria?” e “o que só descobri porque tentei?”."
+          },
+          {
+            "titulo": "Adaptação",
+            "perfil": "O Fiel à Rota",
+            "reconhecimento": "Você pode estar tentando provar que o plano estava certo quando o que importa é continuar a viagem.",
+            "primeiro": "Escreva três rotas alternativas que preservem o objetivo sem repetir exatamente a estratégia atual."
+          },
+          {
+            "titulo": "Agência Emocional",
+            "perfil": "O Governado pelo Momento",
+            "reconhecimento": "A emoção pode ser verdadeira sem precisar decidir sozinha o que você fará.",
+            "primeiro": "Pergunte: “o que estou sentindo?”, “onde isso aparece no meu corpo?” e “qual ação inteligente continua possível apesar disso?”."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Inteligência 7 Dias",
+        "eyebrow": [
+          "DO IMPREVISTO PARA A RESPOSTA"
+        ],
+        "titulo": [
+          "Sete dias para observar como você reage, se recompõe, aprende e adapta."
+        ],
+        "texto": [
+          "O Plano EPIC Inteligência é personalizado a partir das suas respostas no Mapa.",
+          "Ele transforma seu padrão predominante em uma semana curta de observação e resposta prática."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "o imprevisto ou padrão a observar;",
+              "fato objetivo x interpretação;",
+              "estado emocional predominante;",
+              "recurso de retorno disponível;",
+              "aprendizado extraído;",
+              "rota alternativa possível;",
+              "próxima microação;",
+              "pessoa ou rede de apoio a acionar quando necessário;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Inteligência"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Inteligência",
+        "eyebrow": [
+          "QUANDO O CAMINHO MUDA"
+        ],
+        "titulo": [
+          "Construa um sistema de retorno, aprendizado e adaptação para quando a realidade sair do script."
+        ],
+        "texto": [
+          "O Kit Inteligência reúne Manual, Workbook e ferramentas práticas para trabalhar esta dimensão em profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Pode incluir",
+            "itens": [
+              "fato x interpretação;",
+              "recomposição de estado;",
+              "rede de apoio;",
+              "aprendizado com obstáculos;",
+              "improvisação e rotas alternativas;",
+              "agência emocional;",
+              "inteligência social;",
+              "uso responsável de Inteligência Artificial como apoio."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Inteligência"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "livre",
+        "nome": "Inteligência Artificial Dentro da Dimensão",
+        "eyebrow": [
+          "IA COMO APOIO"
+        ],
+        "titulo": [
+          "A tecnologia pode ampliar clareza. A decisão continua sendo sua."
+        ],
+        "texto": [
+          "No EPIC247, Inteligência Artificial entra como recurso de apoio, não como substituta de julgamento humano.",
+          "Ela pode ajudar a:",
+          "• organizar reflexão;",
+          "• testar alternativas;",
+          "• treinar conversas difíceis;",
+          "• construir planos de contingência;",
+          "• apoiar rotinas e hábitos;",
+          "• ampliar clareza."
+        ],
+        "destaque": [
+          "IA é copiloto. Você é piloto."
+        ],
+        "fechamento": [
+          "Nenhuma ferramenta substitui coragem, identidade, vínculo, responsabilidade ou decisão humana."
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem todo problema diante do imprevisto é falta de adaptação."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Energia",
+            "texto": "A recuperação pode estar comprometida porque falta recurso físico ou mental para voltar."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "Interpretações rígidas ou medo do erro podem bloquear aprendizado antes mesmo da adaptação."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "Talvez falte Plano B, recurso ou rota alternativa preparada."
+          },
+          {
+            "titulo": "Ação",
+            "texto": "Você sabe como adaptar, mas a próxima microação não acontece."
+          },
+          {
+            "titulo": "Amor",
+            "texto": "Isolamento ou falta de rede de apoio podem tornar cada queda mais longa."
+          }
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "APRENDER A RESPONDER TAMBÉM SE TREINA"
+        ],
+        "titulo": [
+          "Ideias para voltar, aprender e adaptar melhor."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Fato ou interpretação? Como separar uma coisa da outra.",
+              "Resiliência sem culto à força.",
+              "O que fazer depois que algo dá errado.",
+              "Como transformar resultado em dado.",
+              "Adaptar sem abandonar o objetivo.",
+              "Emoção como informação, não comando automático.",
+              "Como usar IA sem terceirizar julgamento.",
+              "Rede de apoio como infraestrutura de retorno."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Inteligência"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias mostram o que acontece quando o caminho muda e a pessoa precisa mudar junto."
+        ],
+        "filme": [
+          "Jerry Maguire"
+        ],
+        "cta": [
+          "Ver repertório de Inteligência"
+        ]
+      },
+      {
+        "n": 15,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "INTELIGÊNCIA É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Adaptar ajuda a continuar. Mas a direção da viagem depende de todo o sistema."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 15.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Seu pneu vai furar em algum momento."
+        ],
+        "sub": [
+          "O que define a viagem não é evitar todo imprevisto, mas construir um sistema para voltar, aprender e continuar."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Inteligência"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Inteligência | Como você responde quando a realidade muda | EPIC247",
+      "description": "Faça o Mapa de Inteligência EPIC247 e observe fricções em Realidade, Recuperação, Aprendizado, Adaptação e Agência Emocional. Resultado imediato e primeiro passo prático.",
+      "ogTitle": "O que acontece com você quando a realidade deixa de obedecer ao plano?",
+      "ogDescription": "Explore Inteligência no EPIC247 e descubra onde sua capacidade de responder, recuperar, aprender e adaptar está pedindo mais atenção.",
+      "canonical": "/dimensoes/inteligencia"
+    },
+    "mapa": {
+      "intro": "Vamos observar como você costuma responder quando algo sai do esperado.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Inteligência está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Inteligência funciona como um sistema de retorno. Interpretação, emoção, recuperação, aprendizado e adaptação podem se influenciar mutuamente.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não mede QI, capacidade cognitiva ou maturidade emocional e não substitui suporte profissional adequado em situações de sofrimento intenso, crise, trauma, violência ou perda grave.",
+      "alerta": null
+    }
+  },
+  "excelencia": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "EXCELÊNCIA"
+        ],
+        "titulo": [
+          "Você está melhorando de verdade ou apenas repetindo com mais esforço?"
+        ],
+        "sub": [
+          "Excelência, no EPIC247, não é exigir mais de si o tempo todo.",
+          "É aprender a elevar qualidade com método, feedback e refinamento sem transformar melhoria em autodestruição."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Excelência"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Talvez o próximo nível não exija mais esforço. Talvez exija uma forma melhor de aprender com o que você já faz."
+        ],
+        "texto": [
+          "Você entrega.",
+          "Tem experiência.",
+          "Sabe fazer muita coisa bem.",
+          "Mesmo assim, existe uma diferença entre repetir competência e construir excelência."
+        ],
+        "cenas": [
+          "Você demora mais do que deveria porque tudo parece precisar estar em nível máximo.",
+          "Faz a mesma atividade há anos, mas percebe que o resultado parou de evoluir.",
+          "Trabalha duro, mas recebe pouco feedback objetivo sobre a qualidade da execução.",
+          "Depois que algo funciona, tende a repetir sem revisar o que poderia ser melhor.",
+          "Boas entregas dependem de pressão, horas extras ou uma versão heroica de você.",
+          "Você confunde esforço com evolução e intensidade com qualidade."
+        ],
+        "fechamento": [
+          "Excelência começa quando fazer bem deixa de ser acaso e passa a virar sistema."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "DIRIGIR CADA VEZ MELHOR"
+        ],
+        "titulo": [
+          "Melhora contínua não é perfeição. É aprimoramento intencional."
+        ],
+        "texto": [
+          "No EPIC247, Excelência é a capacidade de buscar resultados melhores de forma contínua, com método, consciência e prática deliberada.",
+          "Ela não é repetição automática.",
+          "Não é cobrança destrutiva.",
+          "Não é tentar fazer tudo em nível máximo.",
+          "É saber:",
+          "• qual padrão uma entrega realmente precisa;",
+          "• o que exatamente deve ser treinado;",
+          "• como buscar feedback útil;",
+          "• como transformar experiência em refinamento;",
+          "• como sustentar qualidade sem depender de esforço extremo."
+        ],
+        "destaque": [
+          "Feito. Bom. Excelente.",
+          "Nem tudo precisa chegar ao mesmo nível."
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde a busca por qualidade pode perder inteligência."
+        ],
+        "cards": [
+          {
+            "titulo": "Padrão",
+            "pergunta": "Você sabe quando algo está bom o suficiente e quando realmente merece excelência?",
+            "texto": "Sem critério de parada, padrão alto pode virar atraso, complexidade e perfeccionismo funcional."
+          },
+          {
+            "titulo": "Prática",
+            "pergunta": "Você está treinando o que precisa melhorar ou apenas repetindo o que já sabe fazer?",
+            "texto": "Experiência acumula repetições. Prática deliberada escolhe uma habilidade específica e trabalha nela com intenção."
+          },
+          {
+            "titulo": "Feedback",
+            "pergunta": "Sua ideia de qualidade é confirmada pela realidade ou apenas pelo seu próprio julgamento?",
+            "texto": "Sem retorno objetivo, é fácil repetir tanto acertos parciais quanto erros invisíveis."
+          },
+          {
+            "titulo": "Refinamento",
+            "pergunta": "Depois que algo funciona, você aprende com a execução ou simplesmente repete?",
+            "texto": "Excelência nasce quando cada ciclo produz pequenos ajustes conscientes."
+          },
+          {
+            "titulo": "Sustentabilidade",
+            "pergunta": "Sua qualidade consegue sobreviver à vida comum?",
+            "texto": "Se toda boa entrega depende de pressão, sacrifício ou esforço extraordinário, o sistema ainda não está excelente."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem “quanto você é excelente”.",
+          "Elas mostram onde sua busca por qualidade pode estar perdendo eficiência, aprendizado ou sustentabilidade."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Excelência",
+        "eyebrow": [
+          "ONDE SUA MELHORIA ESTÁ TRAVANDO?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Excelência."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Padrão, Prática, Feedback, Refinamento e Sustentabilidade.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Excelência"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação. Não mede valor pessoal, desempenho absoluto ou “nível de excelência”."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não diz se você é excelente ou não. Ele mostra onde seu sistema de melhoria pode estar perdendo força."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica onde existe maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Padrão → O Perfeccionista Funcional",
+              "Prática → O Repetidor",
+              "Feedback → O Autossuficiente",
+              "Refinamento → O Competente Estagnado",
+              "Sustentabilidade → O Herói da Entrega"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são rótulos editoriais de momento. Não são identidades fixas nem julgamentos de competência."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Melhoria começa quando você transforma repetição em aprendizado."
+        ],
+        "cards": [
+          {
+            "titulo": "Padrão",
+            "perfil": "O Perfeccionista Funcional",
+            "reconhecimento": "Você pode estar tentando entregar nível máximo em coisas que só precisavam estar bem resolvidas.",
+            "primeiro": "Escolha uma entrega atual e defina três critérios: mínimo aceitável, bom e excelente. Decida qual nível essa entrega realmente merece."
+          },
+          {
+            "titulo": "Prática",
+            "perfil": "O Repetidor",
+            "reconhecimento": "Você pode estar ficando mais experiente sem necessariamente ficar melhor.",
+            "primeiro": "Escolha uma habilidade importante e responda: “qual parte específica dela, se eu melhorar 10%, teria maior impacto no resultado?”. Treine apenas essa parte numa sessão curta."
+          },
+          {
+            "titulo": "Feedback",
+            "perfil": "O Autossuficiente",
+            "reconhecimento": "Você pode estar avaliando sua evolução quase exclusivamente pelo esforço que fez, e não pela qualidade do retorno que recebeu.",
+            "primeiro": "Escolha uma entrega recente e peça uma única resposta objetiva a alguém relevante: “qual mudança aumentaria mais a qualidade disso?”."
+          },
+          {
+            "titulo": "Refinamento",
+            "perfil": "O Competente Estagnado",
+            "reconhecimento": "Talvez você não esteja piorando. Mas também pode ter parado de aprender com o que já faz bem.",
+            "primeiro": "Ao terminar sua próxima entrega, responda apenas três perguntas: o que manter, o que ajustar, o que elevar."
+          },
+          {
+            "titulo": "Sustentabilidade",
+            "perfil": "O Herói da Entrega",
+            "reconhecimento": "Se toda boa entrega exige uma versão heroica de você, o sistema ainda não está excelente.",
+            "primeiro": "Escolha uma entrega recorrente e identifique uma melhoria de processo que permita manter qualidade usando menos improviso ou esforço extraordinário."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Excelência 7 Dias",
+        "eyebrow": [
+          "DA REPETIÇÃO PARA O REFINAMENTO"
+        ],
+        "titulo": [
+          "Sete dias para transformar esforço em aprendizado mais consciente."
+        ],
+        "texto": [
+          "O Plano EPIC Excelência é personalizado a partir das suas respostas no Mapa.",
+          "Ele traduz seu padrão predominante em uma semana curta de observação, prática e refinamento."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "o padrão atual a observar;",
+              "o que significa “bom o suficiente” nessa área;",
+              "uma sub-habilidade a treinar;",
+              "uma sessão curta de prática deliberada;",
+              "uma fonte de feedback;",
+              "um ciclo manter / ajustar / elevar;",
+              "uma micro melhoria de 1%;",
+              "uma ação de cuidado ou extra mile proporcional;",
+              "pergunta de reflexão;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Excelência"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Excelência",
+        "eyebrow": [
+          "QUALIDADE COM MÉTODO"
+        ],
+        "titulo": [
+          "Construa um sistema de excelência que aprenda com cada repetição."
+        ],
+        "texto": [
+          "O Kit Excelência reúne Manual, Workbook e ferramentas práticas para trabalhar esta dimensão com mais profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Pode incluir",
+            "itens": [
+              "padrão mínimo;",
+              "diferença entre feito, bom e excelente;",
+              "micro melhoria;",
+              "prática deliberada;",
+              "zonas de conforto, aprendizado e pânico;",
+              "feedback útil;",
+              "refinamento;",
+              "cultura de excelência;",
+              "extra mile proporcional."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Excelência"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "livre",
+        "nome": "Excelência Não É Heroísmo",
+        "eyebrow": [
+          "QUALIDADE QUE SOBREVIVE À VIDA REAL"
+        ],
+        "titulo": [
+          "Mais esforço não é sinônimo de mais excelência."
+        ],
+        "texto": [
+          "No EPIC247, excelência sustentável importa tanto quanto qualidade.",
+          "“Extra mile” não significa trabalhar mais horas, aceitar exploração ou ignorar limites.",
+          "Significa cuidado, presença, qualidade e intenção adicional quando isso faz sentido."
+        ],
+        "destaque": [
+          "Excelência não exige que cada entrega prove o seu valor pessoal."
+        ],
+        "fechamento": [
+          "Uma cultura de excelência precisa funcionar também nos dias comuns."
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda exigência alta é excelência."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Mentalidade",
+            "texto": "A busca por qualidade pode estar dominada por medo do erro ou ameaça à identidade."
+          },
+          {
+            "titulo": "Planejamento",
+            "texto": "Talvez falte critério claro de resultado, prioridade ou nível esperado de entrega."
+          },
+          {
+            "titulo": "Ação",
+            "texto": "O principal problema ainda pode estar em começar ou construir consistência básica."
+          },
+          {
+            "titulo": "Inteligência",
+            "texto": "Feedback e imprevistos podem exigir adaptação antes de refinamento."
+          },
+          {
+            "titulo": "Energia",
+            "texto": "A qualidade pode estar dependendo de sobrecarga em vez de um sistema sustentável."
+          }
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "FAZER MELHOR TAMBÉM SE APRENDE"
+        ],
+        "titulo": [
+          "Ideias para elevar qualidade sem elevar destruição."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Excelência não é perfeição.",
+              "Feito, bom ou excelente: como escolher o padrão certo.",
+              "Por que repetir não é o mesmo que praticar.",
+              "O que é prática deliberada na vida real.",
+              "Como pedir feedback que realmente ajuda.",
+              "Micro melhorias que acumulam.",
+              "Como revisar uma entrega sem transformar tudo em autocrítica.",
+              "O custo oculto do heroísmo recorrente."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Excelência"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias mostram que excelência é construída muito antes do reconhecimento."
+        ],
+        "filme": [
+          "Homens de Honra"
+        ],
+        "cta": [
+          "Ver repertório de Excelência"
+        ]
+      },
+      {
+        "n": 15,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "EXCELÊNCIA É UMA DAS 10 DIMENSÕES"
+        ],
+        "titulo": [
+          "Melhorar importa. Mas o que você escolhe melhorar depende de todo o sistema."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Você pode começar exatamente onde sua vida pede atenção hoje ou integrar todas elas pelo Protocolo EPIC247."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 15.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez o próximo nível não exija que você se esforce mais."
+        ],
+        "sub": [
+          "Talvez exija que você aprenda melhor com cada repetição."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Excelência"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Excelência | Melhoria contínua sem perfeccionismo | EPIC247",
+      "description": "Faça o Mapa de Excelência EPIC247 e observe fricções em Padrão, Prática, Feedback, Refinamento e Sustentabilidade. Resultado imediato e um primeiro movimento prático.",
+      "ogTitle": "Você está melhorando de verdade ou apenas repetindo com mais esforço?",
+      "ogDescription": "Explore Excelência no EPIC247 e descubra onde sua busca por qualidade está perdendo método, aprendizado ou sustentabilidade.",
+      "canonical": "/dimensoes/excelencia"
+    },
+    "mapa": {
+      "intro": "Vamos observar como você busca qualidade, aprende com a prática e sustenta seu padrão ao longo do tempo.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Excelência está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Excelência funciona como um sistema. Padrão, prática, feedback, refinamento e sustentabilidade podem se influenciar mutuamente.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não mede valor pessoal, produtividade absoluta ou “nível de excelência” e não deve ser usado para justificar sobrecarga, exploração ou esforço extremo.",
+      "alerta": null
+    }
+  },
+  "amor": {
+    "blocos": [
+      {
+        "n": 1,
+        "tipo": "hero",
+        "nome": "Hero",
+        "eyebrow": [
+          "AMOR"
+        ],
+        "titulo": [
+          "Depois de conquistar, mudar e crescer, você ainda consegue habitar a própria vida com presença e vínculo?"
+        ],
+        "sub": [
+          "Amor, no EPIC247, não é romance como recompensa no fim da jornada.",
+          "É a dimensão que pergunta se a transformação que você construiu também produziu mais presença, conexão, respeito por si, pertencimento e capacidade de compartilhar quem você se tornou."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Amor"
+        ],
+        "cta2": [
+          "Entender esta dimensão"
+        ],
+        "micro": [
+          "15 perguntas. Resultado imediato. Autoavaliação educativa, não clínica."
+        ]
+      },
+      {
+        "n": 2,
+        "tipo": "reconhecimento",
+        "nome": "Reconhecimento",
+        "titulo": [
+          "Você pode estar cercado de pessoas, cumprindo todos os papéis e ainda sentir falta de conexão."
+        ],
+        "texto": [
+          "A vida pode estar cheia.",
+          "De compromissos.",
+          "De mensagens.",
+          "De pessoas.",
+          "De entregas.",
+          "E ainda assim faltar espaço para presença, intimidade, reconhecimento e sentido compartilhado."
+        ],
+        "cenas": [
+          "Você fala com pessoas importantes todos os dias, mas quase tudo gira em torno de rotina, agenda e obrigação.",
+          "Está fisicamente presente numa conversa, mas sua atenção continua dividida entre telas, problemas e próximas tarefas.",
+          "É capaz de compreender erros de quem ama, mas trata os próprios como prova de insuficiência.",
+          "Em alguns ambientes, sente que precisa editar partes de si para continuar pertencendo.",
+          "Conquistou coisas importantes, mas ainda procura o que fazer com tudo o que aprendeu e com a pessoa que se tornou.",
+          "Sua rotina está tão orientada a resolver que entusiasmo, generosidade e celebração começam a parecer acessórios."
+        ],
+        "fechamento": [
+          "Vínculo não é apenas ter pessoas por perto.",
+          "É conseguir estar inteiro o bastante para encontrar o outro e também a si mesmo."
+        ]
+      },
+      {
+        "n": 3,
+        "tipo": "significado",
+        "nome": "O Que Esta Dimensão Significa",
+        "eyebrow": [
+          "A CHEGADA QUE TRANSFORMA"
+        ],
+        "titulo": [
+          "A transformação só fica completa quando também muda a forma como você se relaciona."
+        ],
+        "texto": [
+          "No EPIC247, Amor fecha o Protocolo porque devolve sentido humano a tudo o que veio antes.",
+          "Depois de regular energia, organizar a mente, clarificar identidade, treinar felicidade, planejar, atravessar medo, agir, adaptar e refinar, permanece uma pergunta:",
+          "Por isso, Amor aqui trabalha conexão real, presença, relação consigo, pertencimento e expansão.",
+          "Não como abstração poética, mas como comportamento cotidiano."
+        ],
+        "destaque": [
+          "Tudo isso aproximou você da vida e das pessoas ou apenas tornou você mais eficiente em atravessá-las?"
+        ]
+      },
+      {
+        "n": 4,
+        "tipo": "pontos",
+        "nome": "Os 5 Pontos de Fricção",
+        "titulo": [
+          "Cinco lugares onde vínculo e sentido humano podem perder espaço."
+        ],
+        "cards": [
+          {
+            "titulo": "Conexão",
+            "pergunta": "Suas relações importantes conseguem ultrapassar rotina, obrigação e funcionamento?",
+            "texto": "Estar perto não significa necessariamente sentir-se conhecido, escutado ou conectado."
+          },
+          {
+            "titulo": "Presença",
+            "pergunta": "Quando você está com alguém, consegue realmente estar ali?",
+            "texto": "Contato frequente pode coexistir com atenção fragmentada e pouca disponibilidade real."
+          },
+          {
+            "titulo": "Relação Consigo",
+            "pergunta": "Você consegue se responsabilizar sem transformar falha em ataque pessoal?",
+            "texto": "Autocompaixão não significa ausência de critério. Significa corrigir sem reduzir a própria dignidade."
+          },
+          {
+            "titulo": "Pertencimento",
+            "pergunta": "Você tem espaços em que consegue existir sem precisar se editar para caber?",
+            "texto": "Pertencer não é ser aceito em qualquer lugar. É ter relações em que você não precisa desaparecer para continuar fazendo parte."
+          },
+          {
+            "titulo": "Expansão",
+            "pergunta": "Aquilo que você aprendeu e construiu também encontra caminhos para beneficiar outras pessoas?",
+            "texto": "Transformação ganha outra dimensão quando vira presença, contribuição, entusiasmo e compartilhamento."
+          }
+        ],
+        "fechamento": [
+          "Essas cinco áreas não medem “capacidade de amar”.",
+          "Elas ajudam a observar onde existe maior distância entre funcionamento e vínculo, realização e sentido humano, ou transformação externa e relação consigo."
+        ]
+      },
+      {
+        "n": 5,
+        "tipo": "mapa",
+        "nome": "Mapa de Amor",
+        "eyebrow": [
+          "ONDE O VÍNCULO ESTÁ PERDENDO ESPAÇO?"
+        ],
+        "titulo": [
+          "Faça seu Mapa de Amor."
+        ],
+        "texto": [
+          "Responda 15 perguntas sobre Conexão, Presença, Relação Consigo, Pertencimento e Expansão.",
+          "Ao final, você verá:",
+          "• sua principal fricção neste momento;",
+          "• uma segunda área relacionada;",
+          "• a leitura das cinco áreas;",
+          "• uma interpretação do padrão predominante;",
+          "• um primeiro movimento prático."
+        ],
+        "cta": [
+          "Começar meu Mapa de Amor"
+        ],
+        "micro": [
+          "Resultado imediato. Você não precisa informar e-mail para ver sua leitura principal."
+        ],
+        "nota": [
+          "O Mapa é uma ferramenta educativa de autoavaliação. Não diagnostica apego, trauma, dependência emocional, transtorno, abuso ou qualquer condição psicológica."
+        ]
+      },
+      {
+        "n": 6,
+        "tipo": "resultado",
+        "nome": "Como O Resultado Aparece",
+        "titulo": [
+          "O resultado não diz se você ama bem ou mal. Ele mostra onde vínculo, presença ou relação consigo parecem pedir mais atenção."
+        ],
+        "texto": [
+          "Seu Mapa compara cinco áreas e identifica onde existe maior fricção percebida neste momento."
+        ],
+        "listas": [
+          {
+            "titulo": "Leituras",
+            "itens": [
+              "mais estável",
+              "vale observar",
+              "merece atenção",
+              "principal ponto de fricção"
+            ]
+          },
+          {
+            "titulo": "Perfis",
+            "itens": [
+              "Conexão → O Funcionalmente Próximo",
+              "Presença → O Presente Ausente",
+              "Relação Consigo → O Juiz Interno",
+              "Pertencimento → O Adaptado Demais",
+              "Expansão → O Realizado Isolado"
+            ]
+          }
+        ],
+        "nota": [
+          "Esses nomes são descrições editoriais de momento. Não definem sua forma de amar nem funcionam como diagnóstico relacional."
+        ]
+      },
+      {
+        "n": 7,
+        "tipo": "movimento",
+        "nome": "Primeiro Movimento Por Perfil",
+        "titulo": [
+          "Vínculo se constrói em movimentos pequenos o bastante para caber na vida real."
+        ],
+        "cards": [
+          {
+            "titulo": "Conexão",
+            "perfil": "O Funcionalmente Próximo",
+            "reconhecimento": "Você pode falar com alguém todos os dias e ainda assim sentir falta de uma conversa em que realmente esteve ali.",
+            "primeiro": "Escolha uma pessoa segura e pergunte: “como você está de verdade com isso?”. Depois escute sem tentar consertar imediatamente."
+          },
+          {
+            "titulo": "Presença",
+            "perfil": "O Presente Ausente",
+            "reconhecimento": "Seu corpo está na conversa, mas uma parte da sua atenção continua respondendo à vida inteira ao mesmo tempo.",
+            "primeiro": "Crie hoje um único micro-momento de presença total com alguém: alguns minutos sem tela, sem multitarefa e sem antecipar a próxima tarefa."
+          },
+          {
+            "titulo": "Relação Consigo",
+            "perfil": "O Juiz Interno",
+            "reconhecimento": "Você pode aceitar imperfeições em quem ama e tratar as próprias como prova de que ainda não é suficiente.",
+            "primeiro": "Escolha um erro recente e escreva como falaria sobre ele com alguém que respeita e quer ajudar. Depois leia novamente usando o seu próprio nome."
+          },
+          {
+            "titulo": "Pertencimento",
+            "perfil": "O Adaptado Demais",
+            "reconhecimento": "Talvez você esteja cercado de gente e ainda assim precise deixar pedaços seus do lado de fora para permanecer ali.",
+            "primeiro": "Identifique um espaço em que se sente mais inteiro e outro em que mais se reduz. Observe qual comportamento seu muda entre os dois."
+          },
+          {
+            "titulo": "Expansão",
+            "perfil": "O Realizado Isolado",
+            "reconhecimento": "Talvez você já tenha conquistado coisas importantes e ainda esteja procurando o que fazer com a pessoa que se tornou.",
+            "primeiro": "Escolha uma habilidade, experiência ou aprendizado e pergunte: “qual é a menor forma de isso melhorar a vida de alguém nesta semana?”."
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "tipo": "captura",
+        "nome": "Captura Pós-resultado",
+        "titulo": [
+          "Quer guardar seu mapa e receber a leitura completa?"
+        ],
+        "texto": [
+          "Seu resultado principal já é seu.",
+          "Deixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo."
+        ],
+        "cta": [
+          "Enviar meu mapa completo"
+        ]
+      },
+      {
+        "n": 9,
+        "tipo": "plano",
+        "nome": "Plano Epic Amor 7 Dias",
+        "eyebrow": [
+          "DO RECONHECIMENTO PARA O VÍNCULO"
+        ],
+        "titulo": [
+          "Sete dias para criar mais presença, conexão e respeito por si na vida que já existe."
+        ],
+        "texto": [
+          "O Plano EPIC Amor é personalizado a partir das suas respostas no Mapa.",
+          "Ele transforma seu padrão predominante em uma semana curta de observação e prática relacional."
+        ],
+        "listas": [
+          {
+            "titulo": "Inclui",
+            "itens": [
+              "seu foco dos próximos 7 dias;",
+              "relação ou situação a observar;",
+              "um micro-momento diário de presença;",
+              "uma conversa ou gesto de conexão;",
+              "um exercício breve de autocompaixão;",
+              "um ponto de pertencimento a reconhecer ou proteger;",
+              "uma ação de compartilhamento ou contribuição;",
+              "uma prática de gratidão ou reconhecimento;",
+              "pergunta de reflexão;",
+              "conteúdo recomendado;",
+              "revisão no dia 7."
+            ]
+          }
+        ],
+        "preco": [
+          "R$29"
+        ],
+        "cta": [
+          "Quero meu Plano EPIC Amor"
+        ],
+        "micro": [
+          "Personalizado a partir das suas respostas. Não é análise individual da Ju."
+        ]
+      },
+      {
+        "n": 10,
+        "tipo": "kit",
+        "nome": "Kit Amor",
+        "eyebrow": [
+          "QUANDO O VÍNCULO PRECISA DE ESPAÇO"
+        ],
+        "titulo": [
+          "Aprofunde a forma como você se relaciona consigo, com os outros e com aquilo que construiu."
+        ],
+        "texto": [
+          "O Kit Amor reúne Manual, Workbook e ferramentas práticas para trabalhar esta dimensão com mais profundidade."
+        ],
+        "listas": [
+          {
+            "titulo": "Pode incluir",
+            "itens": [
+              "micro-momentos de conexão intencional;",
+              "escuta e conversas mais honestas;",
+              "autocompaixão prática;",
+              "redução de autocrítica;",
+              "pertencimento e autenticidade;",
+              "gratidão e reconhecimento;",
+              "carta de verdade, gratidão, perdão ou reconhecimento, com envio opcional;",
+              "conversa de reparo, quando segura e adequada;",
+              "inventário de compartilhamento;",
+              "celebração da jornada."
+            ]
+          }
+        ],
+        "preco": [
+          "R$97"
+        ],
+        "cta": [
+          "Conhecer o Kit Amor"
+        ]
+      },
+      {
+        "n": 11,
+        "tipo": "livre",
+        "nome": "Vínculo com Segurança",
+        "eyebrow": [
+          "PRESENÇA NÃO É OBRIGAÇÃO DE RECONEXÃO"
+        ],
+        "titulo": [
+          "Nem toda relação precisa ser aproximada. Toda prática precisa respeitar contexto, consentimento e segurança."
+        ],
+        "texto": [
+          "O EPIC247 não usa o resultado do Mapa para dizer se uma relação deve terminar, continuar ou ser reparada.",
+          "Reconexão não é recomendação automática.",
+          "Conversas difíceis não devem ser estimuladas de forma genérica quando existe risco, coerção, violência ou insegurança."
+        ],
+        "destaque": [
+          "Presença e vínculo só fazem sentido quando também existe segurança."
+        ]
+      },
+      {
+        "n": 12,
+        "tipo": "conexoes",
+        "nome": "Conexões com Outras Dimensões",
+        "titulo": [
+          "Nem toda distância relacional começa nesta dimensão."
+        ],
+        "conexoes": [
+          {
+            "titulo": "Autoconhecimento",
+            "texto": "Talvez você ainda esteja tentando entender quem é, o que deseja e quais limites precisa proteger."
+          },
+          {
+            "titulo": "Felicidade",
+            "texto": "Existe vínculo, mas falta prazer, significado, engajamento ou realização mais ampla."
+          },
+          {
+            "titulo": "Mentalidade",
+            "texto": "Interpretações rígidas e autocrítica podem dominar a relação consigo."
+          },
+          {
+            "titulo": "Coragem",
+            "texto": "Existe uma conversa ou posicionamento necessário, mas medo de consequência impede o movimento."
+          },
+          {
+            "titulo": "Inteligência",
+            "texto": "O desafio central pode estar em regular emoção e reparar relações durante turbulência."
+          }
+        ]
+      },
+      {
+        "n": 13,
+        "tipo": "editorial",
+        "nome": "Conteúdo Editorial",
+        "eyebrow": [
+          "VÍNCULO TAMBÉM SE CONSTRÓI NO COTIDIANO"
+        ],
+        "titulo": [
+          "Ideias para estar mais presente, conectar melhor e habitar a própria vida com mais inteireza."
+        ],
+        "listas": [
+          {
+            "titulo": "Trilhas",
+            "itens": [
+              "Estar perto não é o mesmo que estar conectado.",
+              "O que a atenção fragmentada faz com as relações.",
+              "Autocompaixão sem autoindulgência.",
+              "O custo de se editar para pertencer.",
+              "Como reconhecer vínculos em que você consegue ser inteiro.",
+              "Gratidão sem positividade forçada.",
+              "Compartilhar o que você construiu sem transformar contribuição em obrigação.",
+              "Celebração como parte da transformação."
+            ]
+          },
+          {
+            "titulo": "Formatos",
+            "itens": [
+              "Artigos",
+              "Vídeos",
+              "Newsletter",
+              "Repertório"
+            ]
+          }
+        ],
+        "cta": [
+          "Explorar conteúdos de Amor"
+        ]
+      },
+      {
+        "n": 14,
+        "tipo": "repertorio",
+        "nome": "Repertório",
+        "titulo": [
+          "Algumas histórias lembram que cuidado, presença e humanidade também transformam."
+        ],
+        "filme": [
+          "Patch Adams"
+        ],
+        "cta": [
+          "Ver repertório de Amor"
+        ]
+      },
+      {
+        "n": 15,
+        "tipo": "protocolo",
+        "nome": "Protocolo + Fechamento",
+        "eyebrow": [
+          "AMOR É A 10ª DIMENSÃO"
+        ],
+        "titulo": [
+          "Chegar não é apenas conquistar o que você queria. É perceber quem você se tornou no caminho e como essa pessoa habita o mundo."
+        ],
+        "texto": [
+          "O EPIC247 organiza dez dimensões da Infraestrutura Humana.",
+          "Amor fecha o sistema porque devolve presença, vínculo e sentido humano à transformação."
+        ],
+        "destaque": [
+          "Energia → Mentalidade → Autoconhecimento → Felicidade → Planejamento → Coragem → Ação → Inteligência → Excelência → Amor"
+        ],
+        "cta": [
+          "Conhecer o Protocolo EPIC247"
+        ],
+        "cta2": [
+          "Explorar as 10 dimensões"
+        ]
+      },
+      {
+        "n": 15.5,
+        "tipo": "fechamento",
+        "nome": "Fechamento",
+        "titulo": [
+          "Talvez a chegada não seja apenas conquistar o que você queria."
+        ],
+        "sub": [
+          "Talvez seja conseguir habitar a própria vida com mais presença, vínculo e respeito por quem você se tornou."
+        ],
+        "cta": [
+          "Fazer meu Mapa de Amor"
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Amor | Presença, conexão e pertencimento | EPIC247",
+      "description": "Faça o Mapa de Amor EPIC247 e observe fricções em Conexão, Presença, Relação Consigo, Pertencimento e Expansão. Resultado imediato e um primeiro movimento prático.",
+      "ogTitle": "Depois de conquistar, mudar e crescer, você ainda consegue habitar a própria vida com presença e vínculo?",
+      "ogDescription": "Explore Amor no EPIC247 e descubra onde conexão, presença, relação consigo, pertencimento e contribuição estão pedindo mais atenção.",
+      "canonical": "/dimensoes/amor"
+    },
+    "mapa": {
+      "intro": "Vamos observar como vínculo, presença, relação consigo, pertencimento e contribuição aparecem na sua vida hoje.",
+      "calculando": "Organizando suas respostas…",
+      "pronto": "Seu Mapa de Amor está pronto.",
+      "tituloResultado": "Seu principal ponto de fricção hoje parece estar em [ÁREA].",
+      "duplo": "Seu mapa mostra duas fricções muito próximas: [ÁREA A] e [ÁREA B]. Vínculo funciona como sistema. Presença, conexão, relação consigo, pertencimento e expansão podem se influenciar mutuamente.",
+      "capturaTitulo": "Quer guardar seu mapa e receber a leitura completa?",
+      "capturaTexto": "Seu resultado principal já é seu.\nDeixe seu nome e e-mail para receber a leitura completa das cinco áreas, sua segunda fricção, sinais cotidianos, uma pergunta de observação e recomendações de conteúdo.",
+      "capturaCta": "Enviar meu mapa completo",
+      "responsabilidade": "Este Mapa é uma ferramenta educativa de autoavaliação. Ele não diagnostica apego, trauma, dependência emocional, transtorno, abuso ou qualquer condição psicológica. Não recomenda reconexão, ruptura ou reparo de relações. Segurança, consentimento e contexto devem sempre prevalecer.",
+      "alerta": null
+    }
+  }
+}

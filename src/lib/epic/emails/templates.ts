@@ -63,6 +63,9 @@ const botao = (texto: string, href: string): BlocoEmail => ({ tipo: "botao", tex
 const pequeno = (texto: string): BlocoEmail => ({ tipo: "pequeno", texto });
 const lista = (itens: string[]): BlocoEmail => ({ tipo: "lista", itens });
 const se = <T,>(cond: unknown, ...b: T[]): T[] => (cond ? b : []);
+/** "o Kit", "a Mentoria": artigo do produto nos textos de checkout. */
+const fem = (d: DadosEmail) => Boolean(d.produtoNome?.startsWith("Mentoria"));
+const o = (d: DadosEmail) => (fem(d) ? "a" : "o");
 
 /**
  * Texto do CMS (o mesmo markdown mínimo da página) em blocos de e-mail:
@@ -381,44 +384,74 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
     blocos: [t(ola(d)), t("Para algumas pessoas, o próximo passo é acompanhamento individual. A Mentoria EPIC tem poucas vagas, por capacidade real da Ju."), botao("Conhecer a Mentoria", d.mentoriaUrl)],
   }),
 
-  // ─────────────── Mentoria ───────────────
+  // ─────────────── Mentoria (Microcopy §21 a §23) ───────────────
+  // Todos transacionais: a pessoa pediu. Nada de agenda, canal ou prazo
+  // antes da operação definir (Microcopy §22).
   mentoring_interest: (d) => ({
-    assunto: "Recebemos seu interesse na Mentoria EPIC",
-    preheader: "Próximos passos.",
+    assunto: "Recebemos seu interesse na Mentoria EPIC Individual",
+    preheader: "O envio do formulário não reserva automaticamente uma vaga.",
     aprovado: false,
-    blocos: [t(ola(d)), t("Recebemos o seu interesse na Mentoria EPIC Individual. A equipe vai ler o que você escreveu e responder em até dois dias úteis com os próximos passos.")],
+    blocos: [
+      t(ola(d)),
+      t("Recebemos seu interesse na Mentoria EPIC Individual."),
+      t("Vamos revisar as informações e retornar pelos dados informados. O envio deste formulário não reserva automaticamente uma vaga."),
+    ],
   }),
   mentoring_waitlist: (d) => ({
-    assunto: "Você está na lista de espera da Mentoria",
-    preheader: "Transparência sobre as vagas.",
+    assunto: "Você entrou na lista de espera da Mentoria EPIC Individual",
+    preheader: "Avisaremos quando houver possibilidade real de abertura de uma nova vaga.",
     aprovado: false,
-    blocos: [t(ola(d)), t("As vagas da Mentoria estão preenchidas neste ciclo. A limitação é real: é a capacidade da Ju de acompanhar cada pessoa com qualidade."), t("Você está na lista de espera. Avisamos quando uma vaga abrir, sem prometer antes da hora.")],
+    blocos: [
+      t(ola(d)),
+      t("Você entrou na lista de espera da Mentoria EPIC Individual."),
+      t("Avisaremos quando houver possibilidade real de abertura de uma nova vaga."),
+      pequeno("A limitação é operacional. Não é escassez artificial."),
+    ],
   }),
+  mentoring_payment_link: (d) => {
+    if (!d.checkoutUrl) throw new Error("sem link de pagamento");
+    return {
+      assunto: "Existe uma vaga disponível para seguirmos",
+      preheader: "O caminho para concluir o pagamento da Mentoria.",
+      aprovado: false,
+      blocos: [
+        t(ola(d)),
+        destaque("Existe uma vaga disponível para seguirmos."),
+        t("Aqui está o caminho para concluir o pagamento da Mentoria EPIC Individual pelo checkout da Kiwify."),
+        botao("Ir para o pagamento", d.checkoutUrl),
+        pequeno("O pagamento será concluído no checkout da Kiwify. A participação é confirmada depois da confirmação do pagamento."),
+      ],
+    };
+  },
   mentoring_welcome: (d) => ({
-    assunto: "Bem-vindo à Mentoria EPIC",
-    preheader: "Onboarding.",
+    assunto: "Pagamento confirmado",
+    preheader: "Sua participação na Mentoria EPIC Individual está confirmada.",
     aprovado: false,
-    blocos: [t(ola(d)), t("Sua vaga na Mentoria está confirmada. Nos próximos dias você recebe o convite para o diagnóstico inicial e o primeiro encontro.")],
+    blocos: [
+      t(ola(d)),
+      destaque("Pagamento confirmado. Sua participação na Mentoria EPIC Individual está confirmada."),
+      t("Vamos retornar pelos dados informados para combinar os próximos passos."),
+    ],
   }),
 
   // ─────────────── Checkout abandonado (sem urgência falsa) ───────────────
   checkout_t1h: (d) => ({
-    assunto: `Ficou alguma dúvida sobre o ${d.produtoNome}?`,
+    assunto: `Ficou alguma dúvida sobre ${o(d)} ${d.produtoNome}?`,
     preheader: "O link continua aqui.",
     aprovado: false,
-    blocos: [t(ola(d)), t(`Vimos que você começou a compra do ${d.produtoNome} e não terminou. Se foi algo no pagamento, o link continua funcionando.`), ...se(d.checkoutUrl, botao("Voltar para o checkout", d.checkoutUrl!))],
+    blocos: [t(ola(d)), t(`Vimos que você começou a compra ${fem(d) ? "da" : "do"} ${d.produtoNome} e não terminou. Se foi algo no pagamento, o link continua funcionando.`), ...se(d.checkoutUrl, botao("Voltar para o checkout", d.checkoutUrl!))],
   }),
   checkout_t24h: (d) => ({
-    assunto: `O que o ${d.produtoNome} entrega`,
+    assunto: `O que ${o(d)} ${d.produtoNome} entrega`,
     preheader: "Para decidir com calma.",
     aprovado: false,
-    blocos: [t(ola(d)), t(`Se a dúvida é o que vem no ${d.produtoNome}, a página do produto explica tudo. Decidir com calma é melhor do que decidir com pressa.`), ...se(d.checkoutUrl, botao("Rever o produto", d.checkoutUrl!))],
+    blocos: [t(ola(d)), t(`Se a dúvida é o que vem ${fem(d) ? "na" : "no"} ${d.produtoNome}, a página do produto explica tudo. Decidir com calma é melhor do que decidir com pressa.`), ...se(d.checkoutUrl, botao("Rever o produto", d.checkoutUrl!))],
   }),
   checkout_t72h: (d) => ({
     assunto: "Uma última lembrança",
     preheader: "Depois disso, não insistimos.",
     aprovado: false,
-    blocos: [t(ola(d)), t(`Esta é a última mensagem sobre o ${d.produtoNome}. Se não for o momento, tudo bem: o conteúdo gratuito continua disponível.`), botao("Ver ideias gratuitas", d.ideiasUrl)],
+    blocos: [t(ola(d)), t(`Esta é a última mensagem sobre ${o(d)} ${d.produtoNome}. Se não for o momento, tudo bem: o conteúdo gratuito continua disponível.`), botao("Ver ideias gratuitas", d.ideiasUrl)],
   }),
 
   // ─────────────── Reativação ───────────────

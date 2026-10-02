@@ -14,11 +14,13 @@ const NAV = [
   { href: "/admin/epic/leads", label: "Leads" },
   { href: "/admin/epic/vendas", label: "Vendas" },
   { href: "/admin/epic/midia", label: "Mídia" },
+  { href: "/admin/epic/conteudo", label: "Conteúdo" },
   { href: "/admin/epic/produtos", label: "Produtos" },
   { href: "/admin/epic/emails", label: "E-mails" },
   { href: "/admin/epic/editorial", label: "Banco de ideias" },
   { href: "/admin/epic/ideias", label: "Ideias no site" },
   { href: "/admin/epic/caixa", label: "Caixa de entrada" },
+  { href: "/admin/epic/mentoria", label: "Mentoria" },
 ];
 
 export default async function AdminEpicLayout({ children }: { children: React.ReactNode }) {

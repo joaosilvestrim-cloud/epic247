@@ -1,56 +1,107 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import IdeiasLista from "@/components/epic/IdeiasLista";
-import { C, Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
-import { pendente, type Copy } from "@/lib/epic/content/copy";
-import { HOME } from "@/lib/epic/content/home";
+import JsonLd from "@/components/epic/JsonLd";
+import MarcaMao from "@/components/epic/MarcaMao";
+import { Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
+import { JU, type SecaoJu } from "@/lib/epic/content/ju";
+import { metadados, SITE } from "@/lib/epic/seo";
 import { listarConteudos } from "@/lib/epic/server/conteudo";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Ju Ferreira",
-  description: "Engenheira, mestre em Administração e criadora do EPIC247.",
-  alternates: { canonical: "/ju" },
+// SEO da Copy Final §22; Person só com dado biográfico público (Blueprint v1.2 §57.10).
+export const metadata: Metadata = metadados({
+  titulo: JU.seo.titulo,
+  tituloAbsoluto: true,
+  descricao: JU.seo.descricao,
+  caminho: "/ju",
+  ogTipo: "profile",
+});
+
+const PESSOA = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Ju Ferreira",
+  url: `${SITE}/ju`,
+  description: JU.seo.descricao,
+  worksFor: { "@type": "Organization", name: "EPIC247", url: SITE },
 };
 
-// Biografia aprovada no site do Ciclo 1. Para o 2.0, a copy da página da Ju
-// está PENDENTE no Blueprint (§30): fica como rascunho até nova aprovação.
-const BIO: Copy[] = [
-  pendente("Ju Ferreira é engenheira de formação."),
-  pendente(
-    "Não à toa. Durante anos, ela acreditou que a solução para qualquer problema era mais esforço, mais método, mais controle. Era o tipo de pessoa que sofria se tirava 9 em vez de 10, não por ego, mas porque achava que precisava."
-  ),
-  pendente(
-    "O resultado foi previsível: alto desempenho por fora, exaustão crônica por dentro. Estava sempre fazendo, mas raramente chegando."
-  ),
-  pendente(
-    "O ponto de virada não foi um livro, nem uma palestra. Foi perceber que o obstáculo não era falta de método. Era excesso de trava interna."
-  ),
-  pendente(
-    "A partir daí, começou a construir o que viria a ser o EPIC247: não como professora ensinando teoria, mas como engenheira resolvendo um problema real. O dela."
-  ),
-  pendente(
-    "Organizou o que aprendeu na prática. Testou. Ajustou. Eliminou o que não resistia ao dia ruim. Manteve o que funcionava mesmo quando a motivação tinha ido embora."
-  ),
-  pendente(
-    "Hoje, além do EPIC247, Ju atua na intersecção de saúde, educação e tecnologia, é mestre em Administração e mãe de duas meninas gêmeas que, segundo ela, ensinam mais sobre resiliência do que qualquer módulo."
-  ),
-];
+/** Linha curta vira ritmo (uma palavra, uma frase); a longa é parágrafo. */
+function Linha({ texto }: { texto: string }) {
+  const curta = texto.length <= 42;
+  return <p className={curta ? "font-display text-[1.25rem] leading-snug text-grafite" : ""}>{texto}</p>;
+}
+
+function Secao({ s, numero }: { s: SecaoJu; numero: number }) {
+  const id = s.titulo === "O EPIC247" ? "epic247" : undefined;
+  return (
+    <section id={id} className="scroll-mt-24 border-t border-linha">
+      <Container className="grid gap-8 py-16 sm:py-20 lg:grid-cols-[16rem_1fr] lg:gap-16">
+        <div className="revelar">
+          <p className="font-mono text-sm text-latao-escuro">{String(numero).padStart(2, "0")}</p>
+          <h2 className="mt-3 font-display text-[1.6rem] leading-tight text-grafite">{s.titulo}</h2>
+        </div>
+        <div className="max-w-2xl">
+          <div className="revelar space-y-3 text-[17px] leading-relaxed text-grafite/85">
+            {s.linhas.map((l) => (
+              <Linha key={l} texto={l} />
+            ))}
+          </div>
+          {s.destaque && (
+            <p className="revelar mt-10 border-l-2 border-latao pl-6 font-display text-[1.6rem] leading-snug text-grafite sm:text-[1.9rem]">
+              {s.destaque}
+            </p>
+          )}
+          {s.depois && (
+            <div className="revelar mt-8 space-y-3 text-[17px] leading-relaxed text-grafite/85">
+              {s.depois.map((l) => (
+                <p key={l}>{l}</p>
+              ))}
+            </div>
+          )}
+          {s.cta && (
+            <p className="mt-10">
+              <TextCTA href={s.cta.href}>{s.cta.label}</TextCTA>
+            </p>
+          )}
+        </div>
+      </Container>
+    </section>
+  );
+}
 
 export default async function JuPage() {
   const [settings, ideias] = await Promise.all([getSettings(), listarConteudos({ limite: 4 })]);
+  const h = JU.hero;
 
   return (
     <>
+      <JsonLd dados={PESSOA} />
+
+      {/* 1 · Hero */}
       <section className="grao border-b border-linha">
         <Container className="grid items-end gap-12 pb-20 pt-14 sm:pt-20 md:grid-cols-[1fr_20rem] md:gap-16">
           <div>
-            <p className="font-mono text-sm text-latao-escuro">Ju Ferreira</p>
-            <h1 className="entrada mt-5 font-display text-[2.2rem] font-normal leading-[1.15] text-grafite sm:text-[3rem]">
-              {HOME.ju.mensagem}
+            <p className="entrada-suave font-mono text-sm text-latao-escuro">{h.nome}</p>
+            <h1 className="entrada mt-5 font-display text-[2rem] font-normal leading-[1.18] text-grafite sm:text-[2.7rem]">
+              {h.titulo}
             </h1>
+            <div className="entrada mt-8 max-w-2xl space-y-5 text-lg leading-relaxed text-grafite/80" style={{ "--atraso": "180ms" } as React.CSSProperties}>
+              {h.texto.map((t) => (
+                <p key={t}>{t}</p>
+              ))}
+              <p className="font-display text-[1.35rem] italic leading-snug text-grafite">
+                <MarcaMao atraso={1100}>{h.pergunta}</MarcaMao>
+              </p>
+              <p>{h.depois}</p>
+            </div>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+              <PrimaryCTA href={h.ctaPrimario.href}>{h.ctaPrimario.label}</PrimaryCTA>
+              <TextCTA href={h.ctaSecundario.href}>{h.ctaSecundario.label}</TextCTA>
+            </div>
           </div>
           {settings.juPhotoUrl && (
             <div className="foto-revela relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-epic)]">
@@ -60,36 +111,61 @@ export default async function JuPage() {
         </Container>
       </section>
 
-      <section>
-        <Container estreito className="py-20">
-          <div className="prosa revelar-lista space-y-5 text-lg leading-relaxed text-grafite/85">
-            {BIO.map((p, i) => (
-              <p key={i} className={i === 0 ? "font-display text-2xl text-grafite" : ""}>
-                <C v={p} />
-              </p>
+      {/* 2 a 9 · A investigação, em primeira pessoa */}
+      {JU.secoes.map((s, i) => (
+        <Secao key={s.titulo} s={s} numero={i + 1} />
+      ))}
+
+      {/* 10 · Ideias */}
+      <section className="bg-papel-escuro">
+        <Container className="grid gap-12 py-20 sm:py-24 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
+          <div className="revelar">
+            <h2 className="font-display text-[2rem] leading-tight text-grafite sm:text-[2.4rem]">{JU.ideias.titulo}</h2>
+            <div className="mt-6 space-y-2 text-[17px] leading-relaxed text-grafite/80">
+              {JU.ideias.linhas.map((l) => (
+                <p key={l}>{l}</p>
+              ))}
+            </div>
+            <p className="mt-8">
+              <TextCTA href="/ideias">{JU.ideias.cta}</TextCTA>
+            </p>
+          </div>
+          {ideias.length > 0 && <IdeiasLista itens={ideias} />}
+        </Container>
+      </section>
+
+      {/* 11 · Trabalhar comigo */}
+      <section className="grao bg-tinta text-papel">
+        <Container className="grid gap-10 py-20 sm:py-24 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+          <h2 className="revelar font-display text-[2rem] leading-tight sm:text-[2.4rem]">{JU.trabalhar.titulo}</h2>
+          <div>
+            <div className="space-y-2 text-[17px] leading-relaxed text-papel/80">
+              {JU.trabalhar.linhas.map((l) => (
+                <p key={l}>{l}</p>
+              ))}
+            </div>
+            <div className="mt-10">
+              <PrimaryCTA href="/mentoria" escuro>
+                {JU.trabalhar.cta}
+              </PrimaryCTA>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* 12 · Fechamento */}
+      <section className="grao">
+        <Container estreito className="py-24 text-center">
+          <div className="revelar space-y-2 text-lg leading-relaxed text-grafite/80">
+            {JU.fechamento.linhas.map((l) => (
+              <p key={l}>{l}</p>
             ))}
           </div>
-          <p className="mt-8 font-mono text-sm text-mineral-escuro">Engenheira · Mestre em Administração</p>
-        </Container>
-      </section>
-
-      <section className="bg-papel-escuro">
-        <Container className="py-20">
-          <SectionTitle numero="01" className="mb-10">
-            O que a Ju tem pensado
-          </SectionTitle>
-          <IdeiasLista itens={ideias} />
-        </Container>
-      </section>
-
-      <section>
-        <Container className="flex flex-col gap-6 py-20 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-lg font-display text-2xl leading-snug text-grafite">
-            Quer trabalhar com a Ju de perto?
+          <p className="revelar mx-auto mt-10 max-w-2xl font-display text-[1.8rem] leading-snug text-grafite sm:text-[2.3rem]">
+            {JU.fechamento.pergunta}
           </p>
-          <div className="flex flex-wrap items-center gap-6">
-            <PrimaryCTA href="/mentoria">Conhecer a Mentoria</PrimaryCTA>
-            <TextCTA href="/mapa">Começar pelo Mapa</TextCTA>
+          <div className="mt-10 flex justify-center">
+            <PrimaryCTA href="/mapa">{JU.fechamento.cta}</PrimaryCTA>
           </div>
         </Container>
       </section>

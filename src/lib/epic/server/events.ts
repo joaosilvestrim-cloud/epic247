@@ -16,10 +16,15 @@ export const EVENTOS_AUTOMACAO = [
   "PlanDay7Completed", "KitDelivered", "ProtocolActivated", "MentoringBooked",
   "RecoveredCheckout", "CrossDimensionMapStarted", "ResumeMap", "NewsletterSignup", "ContactSubmitted",
   "ResultEmailOpened", "ResultEmailClicked", "ResultFeedback", "LifecycleChanged",
+  // Mentoria piloto (RC1 §6, Funis §54): lista de espera, link liberado e compra.
+  "MentoringWaitlist", "MentoringPaymentLinkSent", "PurchaseMentoring",
 ] as const;
 
+// Pagamento (Modelo de Dados §65, RC1 §11): só o webhook do provedor emite.
+export const EVENTOS_PAGAMENTO = ["PaymentWaiting", "PaymentRefused", "Chargeback"] as const;
+
 export type EventoCore = (typeof EVENTOS_CORE)[number];
-export type EventoNome = EventoCore | (typeof EVENTOS_AUTOMACAO)[number];
+export type EventoNome = EventoCore | (typeof EVENTOS_AUTOMACAO)[number] | (typeof EVENTOS_PAGAMENTO)[number];
 
 /** Eventos que o navegador pode registrar. Compras e e-mails só pelo servidor. */
 export const EVENTOS_DO_NAVEGADOR = new Set<string>([
@@ -57,8 +62,12 @@ export async function registrarEvento(q: Q, nome: EventoNome, d: DadosEvento): P
     `insert into events (event_id, event_name, lead_id, session_id, page_url, referrer,
        utm_source, utm_medium, utm_campaign, utm_content, utm_term, map_type, dimension,
        primary_pattern, secondary_pattern, product_id, product_type, product_price,
-       transaction_id, question_index, props)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+       transaction_id, question_index, props, external_campaign_id, external_adset_id, external_ad_id)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,
+       -- IDs externos de mídia (§55) herdados da sessão, quando ela os trouxe.
+       (select external_campaign_id from sessions where session_id = $4),
+       (select external_adset_id from sessions where session_id = $4),
+       (select external_ad_id from sessions where session_id = $4))
      on conflict (event_id) do nothing
      returning event_id`,
     [

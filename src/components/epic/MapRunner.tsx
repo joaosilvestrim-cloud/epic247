@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { enviar, espelhar, rastrear } from "@/lib/epic/client/track";
+import { MICRO } from "@/lib/epic/content/microcopy";
 import SinalFriccao from "./SinalFriccao";
 
 // MapEngine na tela (Blueprint §10). Um componente para os 11 Mapas.
@@ -27,6 +28,8 @@ interface Props {
   perguntas: PerguntaRunner[];
   /** Ex.: "/mapas/energia/resultado" ou "/mapa/resultado" */
   caminhoResultado: string;
+  /** Frase de cálculo própria do Mapa (Copy Final, microcopy por dimensão). */
+  calculando?: string;
 }
 
 type Estado = "intro" | "resume" | "question" | "calculating" | "error";
@@ -43,6 +46,7 @@ export default function MapRunner(p: Props) {
   const [indice, setIndice] = useState(0);
   const [erro, setErro] = useState<string | null>(null);
   const [iniciando, setIniciando] = useState(false);
+  const [confirmarRecomeco, setConfirmarRecomeco] = useState(false);
   const quartisEnviados = useRef(new Set<number>());
   const tituloPergunta = useRef<HTMLHeadingElement>(null);
   const total = p.perguntas.length;
@@ -106,13 +110,14 @@ export default function MapRunner(p: Props) {
         setEstado("question");
       }
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não foi possível iniciar.");
+      setErro(e instanceof Error && e.message ? e.message : MICRO.erro.texto);
     } finally {
       setIniciando(false);
     }
   }
 
   function recomecar() {
+    setConfirmarRecomeco(false);
     setRespostas({});
     setIndice(0);
     if (mapaId) {
@@ -139,7 +144,7 @@ export default function MapRunner(p: Props) {
       }
       router.push(`${p.caminhoResultado}/${d.token}`);
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não conseguimos calcular agora.");
+      setErro(e instanceof Error && e.message ? e.message : MICRO.erro.texto);
       setEstado("error");
     }
   }
@@ -212,9 +217,10 @@ export default function MapRunner(p: Props) {
           disabled={iniciando}
           className="entrada group mt-10 inline-flex items-center gap-3 rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel transition-[background-color,transform] hover:bg-tinta active:scale-[0.98] disabled:opacity-60"
         >
-          {iniciando ? "Preparando..." : "Começar"}
+          {iniciando ? MICRO.carregando.generico : MICRO.mapa.comecar}
           <span aria-hidden className="h-px w-5 bg-latao transition-all group-hover:w-8" />
         </button>
+        <p className="mt-4 text-sm text-mineral-escuro">{MICRO.mapa.entrada}</p>
         {erro && (
           <p role="alert" className="mt-4 text-sm text-[#9a3b2a]">
             {erro}
@@ -233,22 +239,38 @@ export default function MapRunner(p: Props) {
         <p className="font-mono text-sm text-latao-escuro">
           {respondidas} de {total} respondidas
         </p>
-        <h1 className="mt-4 font-display text-[2.2rem] leading-tight text-grafite">
-          Você começou este Mapa e parou no caminho.
-        </h1>
-        <p className="mt-4 text-lg text-grafite/80">Pode continuar de onde parou ou começar de novo.</p>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <button
-            type="button"
-            onClick={() => setEstado("question")}
-            className="rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel hover:bg-tinta"
-          >
-            Continuar de onde parei
-          </button>
-          <button type="button" onClick={recomecar} className="border-b border-latao pb-0.5 text-[15px]">
-            Começar de novo
-          </button>
-        </div>
+        <h1 className="mt-4 font-display text-[2.2rem] leading-tight text-grafite">{MICRO.mapa.retomadaTitulo}</h1>
+        <p className="mt-4 text-lg text-grafite/80">{MICRO.mapa.depois}</p>
+        {confirmarRecomeco ? (
+          <div className="mt-10 rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-6" role="alertdialog" aria-live="assertive">
+            <p className="text-grafite">{MICRO.mapa.recomecarConfirma}</p>
+            <div className="mt-6 flex flex-wrap items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setConfirmarRecomeco(false)}
+                className="rounded-[var(--radius-epic)] bg-grafite px-6 py-3 text-[15px] font-semibold text-papel hover:bg-tinta"
+              >
+                {MICRO.mapa.manter}
+              </button>
+              <button type="button" onClick={recomecar} className="border-b border-latao pb-0.5 text-[15px]">
+                {MICRO.mapa.recomecar}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <button
+              type="button"
+              onClick={() => setEstado("question")}
+              className="rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel hover:bg-tinta"
+            >
+              {MICRO.mapa.retomar}
+            </button>
+            <button type="button" onClick={() => setConfirmarRecomeco(true)} className="border-b border-latao pb-0.5 text-[15px]">
+              {MICRO.mapa.recomecar}
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -259,7 +281,7 @@ export default function MapRunner(p: Props) {
         <div className="w-48">
           <SinalFriccao escuro={false} tempo />
         </div>
-        <p className="entrada-suave mt-8 font-display text-2xl text-grafite">Montando o seu mapa...</p>
+        <p className="entrada-suave mt-8 font-display text-2xl text-grafite">{p.calculando ?? MICRO.mapa.processando}</p>
       </div>
     );
   }
@@ -267,16 +289,16 @@ export default function MapRunner(p: Props) {
   if (estado === "error") {
     return (
       <div className="mx-auto max-w-2xl" role="alert">
-        <h1 className="font-display text-[2rem] leading-tight text-grafite">Algo falhou do nosso lado.</h1>
+        <h1 className="font-display text-[2rem] leading-tight text-grafite">{MICRO.erro.titulo}</h1>
         <p className="mt-4 text-lg text-grafite/80">{erro}</p>
-        <p className="mt-2 text-grafite/70">Suas {respondidas} respostas estão guardadas.</p>
+        <p className="mt-2 text-grafite/70">Suas {respondidas} respostas continuam salvas.</p>
         <div className="mt-8 flex flex-wrap gap-6">
           <button
             type="button"
             onClick={() => concluir(respostas)}
             className="rounded-[var(--radius-epic)] bg-grafite px-7 py-4 text-[15px] font-semibold text-papel hover:bg-tinta"
           >
-            Tentar de novo
+            {MICRO.erro.tentar}
           </button>
           <button
             type="button"
@@ -302,7 +324,7 @@ export default function MapRunner(p: Props) {
     <div className="mx-auto max-w-2xl">
       <div className="flex items-center justify-between gap-4">
         <p className="font-mono text-sm text-mineral-escuro" aria-live="polite">
-          <span className="text-grafite">{String(indice + 1).padStart(2, "0")}</span> / {String(total).padStart(2, "0")}
+          {MICRO.mapa.progresso(indice + 1, total)}
         </p>
         {indice > 0 && (
           <button
@@ -310,7 +332,7 @@ export default function MapRunner(p: Props) {
             onClick={() => setIndice((i) => Math.max(0, i - 1))}
             className="text-sm text-mineral-escuro hover:text-grafite"
           >
-            Voltar
+            {MICRO.mapa.voltar}
           </button>
         )}
       </div>
