@@ -3,6 +3,7 @@ import Link from "next/link";
 import BotaoCheckout from "@/components/epic/BotaoCheckout";
 import JsonLd from "@/components/epic/JsonLd";
 import { produtoLd } from "@/lib/epic/seo";
+import Depoimentos from "@/components/epic/Depoimentos";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { Container, PrimaryCTA, SectionTitle, TextCTA } from "@/components/epic/ui";
 import { MANIFESTO } from "@/lib/epic/content/home";
@@ -123,6 +124,7 @@ export default async function ProtocoloPage() {
           </div>
         </Container>
       </section>
+      <Depoimentos lugar="protocolo" />
     </>
   );
 }

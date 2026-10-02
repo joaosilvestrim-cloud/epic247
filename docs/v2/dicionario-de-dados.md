@@ -67,6 +67,8 @@ city. Dono: ANALYTICS. Local é por cidade, nunca endereço. Sem IP gravado.
 | primary/secondary_dimension, primary/secondary_pattern, result_kind, result_band_primary, scores | Comportamental | `scores` guarda os eixos (score_axis_01 a 05) com os nomes do documento de cada Mapa |
 | result_token | Pseudônimo | aleatório de 24 bytes; revisita o resultado sem expor respostas (§32) |
 | utm_* | Comportamental | atribuição no momento do Mapa |
+| feedback, feedback_comment, feedback_at | Comportamental | "Este resultado faz sentido?" (sim, em_parte, nao) e comentário opcional (seção 17 dos Mapas) |
+| chosen_pattern | Comportamental | no empate, a área que a pessoa escolheu para começar; o Plano parte dela (Mapa de Energia §8) |
 
 ## Produto (`products`)
 
@@ -110,7 +112,9 @@ Refund, Unsubscribe. Eventos de automação: ResultEmailSent,
 ResultEmailOpened, ResultEmailClicked, MapNurtureStarted,
 MapNurtureConversion, PlanDelivered, PlanDay7Completed, KitDelivered,
 ProtocolActivated, MentoringBooked, RecoveredCheckout,
-CrossDimensionMapStarted, ResumeMap, NewsletterSignup, ContactSubmitted.
+CrossDimensionMapStarted, ResumeMap, NewsletterSignup, ContactSubmitted,
+ResultFeedback e LifecycleChanged (gravado pelo banco a cada mudança de
+estágio, com o anterior e o novo em `props`).
 O navegador só consegue registrar eventos de visualização; compra e e-mail
 vêm sempre do servidor.
 

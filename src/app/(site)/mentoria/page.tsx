@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import FormMentoria from "@/components/epic/FormMentoria";
+import Depoimentos from "@/components/epic/Depoimentos";
 import Visualizacao from "@/components/epic/Visualizacao";
 import { C, Container, SectionTitle } from "@/components/epic/ui";
 import { pendente } from "@/lib/epic/content/copy";
@@ -97,6 +98,7 @@ export default async function MentoriaPage() {
           )}
         </Container>
       </section>
+      <Depoimentos lugar="mentoria" />
     </>
   );
 }

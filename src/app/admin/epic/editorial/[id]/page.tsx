@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aviso, brl, Secao, Titulo } from "@/components/epic/admin/ui";
-import { DIMENSION_IDS, DIMENSIONS } from "@/lib/epic/dimensions";
+import { DIMENSAO_CONTEUDO } from "@/lib/epic/content/dimensoes";
+import { DIMENSION_IDS, DIMENSIONS, isDimensionId } from "@/lib/epic/dimensions";
 import {
   adicionarDerivacao, excluirDerivacao, excluirIdeiaEditorial, salvarIdeiaEditorial, salvarMetricasDerivacao,
 } from "../../actions";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { query } from "@/lib/epic/server/db";
 import {
-  ESTADOS_ICP, FORMATOS, GATILHOS, linkRastreavel, NIVEIS_CTA, OBJETIVOS, resultadoPorCodigo, UNIVERSOS,
+  ESTADOS_ICP, FORMATOS, GATILHOS, linkRastreavel, NIVEIS_CTA, OBJETIVOS, PORTAS_ICP, resultadoPorCodigo, UNIVERSOS,
 } from "@/lib/epic/server/editorial";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ salvo?: string; erro?: string }> };
@@ -59,6 +60,14 @@ export default async function IdeiaEditorialPage({ params, searchParams }: Props
         </Campo>
         <Seletor nome="dimensao" rotulo="Dimensão" valor={dim} opcoes={DIMENSION_IDS.map((d) => [d, DIMENSIONS[d].name])} />
         <Seletor nome="estado_icp" rotulo="Estado do ICP" valor={i?.estado_icp as string} opcoes={Object.entries(ESTADOS_ICP)} />
+        {(i?.estado_icp || dim) && (
+          <p className="-mt-2 text-xs text-mineral-escuro lg:col-span-2">
+            {i?.estado_icp && PORTAS_ICP[i.estado_icp as string] && (
+              <>Portas principais de {ESTADOS_ICP[i.estado_icp as string]}: {PORTAS_ICP[i.estado_icp as string].map((d) => DIMENSIONS[d as keyof typeof DIMENSIONS].name).join(", ")}.{" "}</>
+            )}
+            {dim && isDimensionId(dim) && <>Filme-âncora de {DIMENSIONS[dim].name}: {DIMENSAO_CONTEUDO[dim].filme} (usar como gatilho, não depender de trechos protegidos).</>}
+          </p>
+        )}
         <Seletor nome="universo" rotulo="Universo editorial" valor={i?.universo as string} opcoes={Object.entries(UNIVERSOS).map(([k, u]) => [k, u.nome])} />
         <Seletor nome="gatilho" rotulo="Gatilho" valor={i?.gatilho as string} opcoes={Object.entries(GATILHOS)} />
         <Seletor nome="objetivo" rotulo="Objetivo" valor={i?.objetivo as string} opcoes={Object.entries(OBJETIVOS)} />

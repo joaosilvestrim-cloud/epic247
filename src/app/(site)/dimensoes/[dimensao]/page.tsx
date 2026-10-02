@@ -42,10 +42,10 @@ export default async function DimensaoPage({ params }: Params) {
   const cont = DIMENSAO_CONTEUDO[dimensao];
   const mapa = getDimensionalMap(dimensao);
   const temMapa = mapaVisivel(dimensao);
-  const [produtos, ideias] = await Promise.all([
-    listarProdutos(),
-    listarConteudos({ dimensao, limite: 4 }),
-  ]);
+  const [produtos, conteudos] = await Promise.all([listarProdutos(), listarConteudos({ dimensao, limite: 12 })]);
+  // Blueprint §8: articles[] e videos[] no bloco editorial; repertoire[] no Repertório.
+  const ideias = conteudos.filter((c) => c.content_type !== "repertorio").slice(0, 4);
+  const repertorio = conteudos.filter((c) => c.content_type === "repertorio").slice(0, 3);
   const plano = produtos.find((p) => p.product_id === `plan_${dimensao}`);
   const kit = produtos.find((p) => p.product_id === `kit_${dimensao}`);
   const ofertas = [plano, kit].filter((p) => vendavel(p) || (!IS_PRODUCTION && p));
@@ -200,6 +200,11 @@ export default async function DimensaoPage({ params }: Params) {
             <p className="font-mono text-xs text-latao-escuro">No cinema</p>
             <p className="mt-2 font-display text-3xl text-grafite">{cont.filme}</p>
           </div>
+          {repertorio.length > 0 && (
+            <div className="mt-10">
+              <IdeiasLista itens={repertorio} />
+            </div>
+          )}
         </Container>
       </section>
 

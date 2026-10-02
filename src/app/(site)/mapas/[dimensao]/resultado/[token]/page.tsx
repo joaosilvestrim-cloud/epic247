@@ -157,7 +157,6 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
         </>
       )}
 
-      {/* 6 · Captura */}
       {/* Feedback qualitativo do resultado (seção 17 dos Mapas, Fricção §10) */}
       <section className="border-t border-linha">
         <Container estreito className="py-12">
@@ -165,6 +164,7 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
         </Container>
       </section>
 
+      {/* 6 · Captura */}
       <section>
         <Container estreito className="py-14">
           <CapturaResultado token={token} mapType={dimensao} jaConhecido={Boolean(perfil?.email)} />

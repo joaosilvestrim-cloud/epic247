@@ -305,7 +305,7 @@ try {
     [lead]
   );
   const tem = (n) => evs.find((e) => e.event_name === n);
-  for (const n of ["StartMap", "CompleteMap", "SubmitMapEmail", "StartCheckout", "Purchase", "PurchasePlan", "Refund"]) {
+  for (const n of ["StartMap", "CompleteMap", "SubmitMapEmail", "StartCheckout", "Purchase", "PurchasePlan", "Refund", "LifecycleChanged", "MapNurtureStarted", "ResultFeedback"]) {
     confere(Boolean(tem(n)), `evento ${n}`);
   }
   confere(tem("StartMap")?.com_sessao && tem("CompleteMap")?.com_sessao, "eventos de Mapa levam session_id");

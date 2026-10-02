@@ -23,6 +23,15 @@ export const ESTADOS_ICP: Record<string, string> = {
   inquieto_em_expansao: "Inquieto em Expansão",
 };
 
+/** Portas principais de cada estado do ICP (ICP e Linguagem Externa §4). */
+export const PORTAS_ICP: Record<string, string[]> = {
+  funcional_exausto: ["energia", "felicidade", "amor"],
+  lucido_imovel: ["mentalidade", "coragem", "acao"],
+  bem_sucedido_desalinhado: ["autoconhecimento", "felicidade", "planejamento"],
+  decidido_com_medo: ["coragem", "planejamento", "acao"],
+  inquieto_em_expansao: ["inteligencia", "excelencia", "amor", "felicidade"],
+};
+
 export const GATILHOS: Record<string, string> = {
   contradicao: "Contradição",
   custo: "Custo",
