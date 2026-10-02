@@ -2,6 +2,8 @@ import "server-only";
 import { Pool, type PoolClient } from "pg";
 
 // Acesso ao Postgres do EPIC247 2.0. Só servidor.
+// As funções rodam em gru1 (vercel.json), ao lado do banco em sa-east-1:
+// cada consulta custa poucos milissegundos, não uma viagem aos EUA.
 //
 // Por que Postgres direto e não supabase-js: o 2.0 precisa de transação de
 // verdade (compra idempotente, merge de identidade, estágio que só sobe) e
@@ -26,7 +28,8 @@ function pool(): Pool {
     globalThis.__epicPool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
-      max: 3,
+      // O pooler do Supabase segura as conexões de verdade; aqui só evita fila.
+      max: 10,
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 12_000,
       keepAlive: true,
@@ -56,8 +59,8 @@ async function conectar(): Promise<PoolClient> {
 export async function withTx<R>(fn: (q: Q, client: PoolClient) => Promise<R>): Promise<R> {
   const client = await conectar();
   try {
-    await client.query("begin");
-    await client.query(`set local search_path to ${SCHEMA}, public, extensions`);
+    // Uma ida e volta só para abrir a transação e fixar o schema.
+    await client.query(`begin; set local search_path to ${SCHEMA}, public, extensions`);
     const q: Q = async (sql, params) => (await client.query(sql, params as unknown[])).rows;
     const out = await fn(q, client);
     await client.query("commit");
