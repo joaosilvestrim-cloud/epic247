@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import BrandLogo from "@/components/brand-logo";
 
 export interface ItemDimensao {
@@ -237,8 +238,10 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
       )}
 
       {/* Menu mobile */}
-      {mobileAberto && (
-        <div className={`menu-entra fixed inset-x-0 bottom-0 overflow-y-auto bg-tinta text-papel lg:hidden ${rolou ? "top-[58px]" : "top-[68px]"}`}>
+      {/* Fora do header (portal): o desfoque do header prenderia um painel fixo
+          dentro dele, com altura zero. No body, ele ocupa a tela abaixo do header. */}
+      {mobileAberto && typeof document !== "undefined" && createPortal(
+        <div className={`menu-entra fixed inset-x-0 bottom-0 z-30 overflow-y-auto bg-tinta text-papel lg:hidden ${rolou ? "top-[58px]" : "top-[68px]"}`}>
           <div className="px-5 pb-12 pt-8">
             {cta && (
               <Link
@@ -252,12 +255,12 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
             {dimensoes.length > 0 && (
               <>
                 <p className="mb-3 font-mono text-xs text-latao">Dimensões</p>
-                <ol className="mb-10 grid grid-cols-2 gap-x-4 gap-y-3">
+                <ol className="mb-10 grid grid-cols-2 gap-x-3 gap-y-3">
                   {dimensoes.map((d, i) => (
                     <li key={d.id} className="opcao-entra" style={{ "--atraso": `${60 + i * 35}ms` } as React.CSSProperties}>
                       <Link href={d.href} className="flex items-baseline gap-2">
                         <span className="font-mono text-[11px] text-latao">{String(d.ordem).padStart(2, "0")}</span>
-                        <span className="font-display text-lg">{d.nome}</span>
+                        <span className="min-w-0 font-display text-[1.02rem] leading-tight sm:text-lg">{d.nome}</span>
                       </Link>
                     </li>
                   ))}
@@ -275,7 +278,7 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
             </ul>
           </div>
         </div>
-      )}
+      , document.body)}
     </header>
   );
 }

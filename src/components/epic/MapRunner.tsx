@@ -449,7 +449,7 @@ export default function MapRunner(p: Props) {
   return (
     <div ref={raiz} className="mx-auto max-w-2xl scroll-mt-24">
       <div className="flex items-center justify-between gap-4">
-        <p className="font-mono text-sm text-mineral-escuro" aria-live="polite">
+        <p className="whitespace-nowrap font-mono text-sm text-mineral-escuro" aria-live="polite">
           Pergunta{" "}
           <span className="relative inline-block min-w-[1.3em] overflow-hidden text-center align-bottom text-grafite">
             <span key={indice} className="numero-troca inline-block">
@@ -467,7 +467,11 @@ export default function MapRunner(p: Props) {
           <span aria-hidden className="transition-transform duration-300 group-hover:-translate-x-1">
             ←
           </span>
-          {MICRO.mapa.voltar}
+          {/* No celular, "Voltar"; o nome completo continua para leitor de tela. */}
+          <span className="sm:hidden" aria-hidden>
+            Voltar
+          </span>
+          <span className="max-sm:sr-only">{MICRO.mapa.voltar}</span>
         </button>
       </div>
       <Progresso total={total} feitas={indice} atual={indice} />
