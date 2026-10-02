@@ -473,3 +473,106 @@ body {
     animation-delay: 0s !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Rolagem (Brand §10: ritmo de cinema, nada de pulso ou salto).
+   Só onde o navegador liga animação à rolagem; sem suporte, tudo
+   aparece pronto, no lugar. Nada depende disto para ser lido.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Traço lateral de latão (citações em destaque). Sem animação, é um filete fixo. */
+.traco-lateral {
+  position: relative;
+}
+.traco-lateral::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-latao);
+  transform-origin: top center;
+}
+
+/* Linha de leitura no pé do header: escondida onde não há timeline de rolagem. */
+.linha-leitura {
+  display: none;
+}
+
+@keyframes mascara-sobe {
+  from { clip-path: inset(0 0 100% 0); translate: 0 0.45em; }
+  to { clip-path: inset(0 0 -0.2em 0); translate: 0 0; }
+}
+@keyframes cena-abre {
+  from { clip-path: inset(0 2.5% round 14px); }
+  to { clip-path: inset(0 0 round 0); }
+}
+@keyframes paralaxe {
+  from { translate: 0 var(--paralaxe, 48px); }
+  to { translate: 0 calc(var(--paralaxe, 48px) * -1); }
+}
+@keyframes crescer-vertical {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes assentar-imagem {
+  from { scale: 1.12; }
+  to { scale: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Título de seção sobe de dentro da própria linha, como corte de cena. */
+    .revelar h2,
+    .titulo-revela {
+      animation: mascara-sobe linear backwards;
+      animation-timeline: view();
+      animation-range: entry 8% entry 62%;
+    }
+
+    /* Blocos escuros se abrem ao entrar na tela. */
+    main section.bg-tinta {
+      animation: cena-abre linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+
+    /* Profundidade: objetos grandes andam um pouco mais devagar que o texto. */
+    .paralaxe {
+      animation: paralaxe linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* O traço da citação se desenha de cima para baixo. */
+    .traco-lateral::before {
+      animation: crescer-vertical linear backwards;
+      animation-timeline: view();
+      animation-range: entry 20% cover 40%;
+    }
+
+    /* Imagens de conteúdo assentam ao chegar. */
+    .imagem-assenta img,
+    img.imagem-assenta {
+      animation: assentar-imagem linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .linha-leitura {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 1px;
+      background: var(--color-latao);
+      transform-origin: left center;
+      animation: crescer-x linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}

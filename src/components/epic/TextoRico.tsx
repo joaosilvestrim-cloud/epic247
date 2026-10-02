@@ -22,7 +22,7 @@ export default function TextoRico({ texto }: { texto: string }) {
           );
         if (b.startsWith("> "))
           return (
-            <blockquote key={i} className="border-l-2 border-latao pl-5 font-display text-2xl leading-snug text-grafite">
+            <blockquote key={i} className="traco-lateral pl-5 font-display text-2xl leading-snug text-grafite">
               {inline(b.replace(/^> ?/gm, ""))}
             </blockquote>
           );

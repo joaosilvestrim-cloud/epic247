@@ -143,7 +143,7 @@ export default async function PlanoPage({ params, searchParams }: Props) {
       {/* 4 · Personalização */}
       <SecaoTexto numero="03" titulo={P.personalizacao.titulo}>
         <Paragrafos linhas={P.personalizacao.texto(d.name)} />
-        <p className="mt-8 border-l-2 border-latao pl-5 font-display text-[1.15rem] italic text-grafite">{P.personalizacao.selo}</p>
+        <p className="mt-8 traco-lateral pl-5 font-display text-[1.15rem] italic text-grafite">{P.personalizacao.selo}</p>
       </SecaoTexto>
 
       {/* 5 e 6 · Para quem faz sentido / quando não é o melhor passo */}

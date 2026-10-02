@@ -313,7 +313,7 @@ export function BlocoDimensao({ b, ctx, numero }: { b: BlocoCopy; ctx: ContextoD
               <Linhas linhas={b.texto} className="revelar mt-7 max-w-xl text-lg leading-relaxed text-grafite/80" />
             </div>
             {b.destaque && (
-              <blockquote className="revelar self-center border-l-2 border-latao pl-6 font-display text-[1.45rem] leading-snug text-grafite sm:text-[1.7rem]">
+              <blockquote className="revelar self-center traco-lateral pl-6 font-display text-[1.45rem] leading-snug text-grafite sm:text-[1.7rem]">
                 {b.destaque.map((l) => <p key={l}>{l}</p>)}
               </blockquote>
             )}
@@ -443,7 +443,7 @@ export function BlocoDimensao({ b, ctx, numero }: { b: BlocoCopy; ctx: ContextoD
           <Eyebrow b={b} />
           {!tituloEhFilme && <Titulo b={b} numero={numero} />}
           <div className="revelar mt-10 grid gap-8 md:grid-cols-[auto_1fr] md:items-start md:gap-14">
-            <div className="border-l-2 border-latao pl-6">
+            <div className="traco-lateral pl-6">
               <p className="font-mono text-xs text-latao-escuro">No cinema</p>
               <p className="mt-2 font-display text-[2.2rem] leading-tight text-grafite">{filme}</p>
             </div>

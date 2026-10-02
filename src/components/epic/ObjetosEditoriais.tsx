@@ -52,7 +52,7 @@ export function CapaLivro({
 export function CapasKit({ dimensao }: { dimensao: DimensionId }) {
   // Rotação no invólucro, entrada na capa: as duas não disputam o transform.
   return (
-    <div className="relative h-[15.5rem] w-[18rem] sm:h-[17.5rem] sm:w-[21rem]">
+    <div className="paralaxe relative h-[15.5rem] w-[18rem] sm:h-[17.5rem] sm:w-[21rem]" style={{ "--paralaxe": "26px" } as React.CSSProperties}>
       {/* Workbook atrás à esquerda, Manual na frente à direita: os dois títulos ficam à vista. */}
       <div className="absolute left-0 top-0 -rotate-[4deg] transition-transform duration-700 [transition-timing-function:var(--ease-saida)] hover:-rotate-[6deg]">
         <CapaLivro tipo="Workbook" dimensao={dimensao} className="entrada" style={atraso(250)} />
@@ -68,7 +68,7 @@ export function CapasKit({ dimensao }: { dimensao: DimensionId }) {
 export function EstanteProtocolo() {
   const alturas = [96, 92, 100, 94, 98, 90, 97, 93, 99, 95];
   return (
-    <div aria-label="Os 10 Manuais do Protocolo" className="w-full max-w-[30rem]">
+    <div aria-label="Os 10 Manuais do Protocolo" className="paralaxe w-full max-w-[30rem]" style={{ "--paralaxe": "20px" } as React.CSSProperties}>
       <ol className="revelar-lista flex h-[17rem] items-end gap-[3px] sm:h-[19rem]">
         {DIMENSION_IDS.map((id, i) => (
           <li key={id} className="flex h-full min-w-0 max-w-[2.9rem] flex-1 items-end">

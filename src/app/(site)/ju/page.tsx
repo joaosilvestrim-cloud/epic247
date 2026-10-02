@@ -51,7 +51,7 @@ function Secao({ s, numero }: { s: SecaoJu; numero: number }) {
             ))}
           </div>
           {s.destaque && (
-            <p className="revelar mt-10 border-l-2 border-latao pl-6 font-display text-[1.6rem] leading-snug text-grafite sm:text-[1.9rem]">
+            <p className="revelar mt-10 traco-lateral pl-6 font-display text-[1.6rem] leading-snug text-grafite sm:text-[1.9rem]">
               {s.destaque}
             </p>
           )}
@@ -104,8 +104,10 @@ export default async function JuPage() {
             </div>
           </div>
           {settings.juPhotoUrl && (
-            <div className="foto-revela relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-epic)]">
-              <Image src={settings.juPhotoUrl} alt="Ju Ferreira" fill sizes="20rem" className="object-cover" priority />
+            <div className="paralaxe" style={{ "--paralaxe": "30px" } as React.CSSProperties}>
+              <div className="foto-revela relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-epic)]">
+                <Image src={settings.juPhotoUrl} alt="Ju Ferreira" fill sizes="20rem" className="object-cover" priority />
+              </div>
             </div>
           )}
         </Container>

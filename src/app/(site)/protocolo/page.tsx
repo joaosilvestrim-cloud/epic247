@@ -261,7 +261,7 @@ export default async function ProtocoloPage() {
             <div className="revelar space-y-1.5 text-lg leading-relaxed text-grafite/80">
               {P.naoPromete.texto.map((t) => <p key={t}>{t}</p>)}
             </div>
-            <div className="revelar mt-10 border-l-2 border-latao pl-6 font-display text-[1.4rem] leading-snug text-grafite">
+            <div className="revelar mt-10 traco-lateral pl-6 font-display text-[1.4rem] leading-snug text-grafite">
               {P.naoPromete.destaque.map((t) => <p key={t}>{t}</p>)}
             </div>
           </div>

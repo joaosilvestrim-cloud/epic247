@@ -36,7 +36,7 @@ export default function IdeiasLista({ itens, escuro = false }: { itens: ItemCont
               )}
             </span>
             {c.cover ? (
-              <span className="relative hidden aspect-[4/3] overflow-hidden rounded-[var(--radius-epic)] bg-papel-escuro sm:block">
+              <span className="imagem-assenta relative hidden aspect-[4/3] overflow-hidden rounded-[var(--radius-epic)] bg-papel-escuro sm:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={c.cover}

@@ -18,9 +18,11 @@ export default function PosicaoDimensao({ atual }: { atual: DimensionId }) {
 
   return (
     <div className="w-full max-w-[20rem]">
-      <p aria-hidden className="entrada-suave select-none font-display text-[7rem] font-light leading-none text-linha sm:text-[9rem]">
-        {String(i + 1).padStart(2, "0")}
-      </p>
+      <div className="paralaxe" style={{ "--paralaxe": "28px" } as React.CSSProperties}>
+        <p aria-hidden className="entrada-suave select-none font-display text-[7rem] font-light leading-none text-linha sm:text-[9rem]">
+          {String(i + 1).padStart(2, "0")}
+        </p>
+      </div>
       <ol aria-label="As 10 dimensões" className="mt-6 flex items-end gap-[7px]">
         {DIMENSION_IDS.map((id, k) => {
           const href = dimensaoHref(id);

@@ -123,6 +123,8 @@ export default function AppHeader({ dimensoes, nav, cta: ctaPadrao, menu }: Prop
         rolou || megaAberto || mobileAberto ? "border-linha bg-papel/95" : "border-transparent bg-papel/80"
       }`}
     >
+      {/* Quanto da página já foi lido: uma linha de latão (só com rolagem animável). */}
+      <span aria-hidden className="linha-leitura" />
       <div
         className={`mx-auto flex max-w-[76rem] items-center justify-between gap-6 px-5 transition-[height] duration-300 [transition-timing-function:var(--ease-saida)] sm:px-8 ${
           rolou ? "h-[58px]" : "h-[68px]"

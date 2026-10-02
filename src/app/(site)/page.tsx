@@ -95,7 +95,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <aside aria-label="Formas que essa distância assume" className="self-end">
+          <aside aria-label="Formas que essa distância assume" className="paralaxe self-end" style={{ "--paralaxe": "22px" } as React.CSSProperties}>
             <p className="entrada-suave mb-5 max-w-xs font-display text-lg italic text-mineral-escuro" style={atraso(500)}>
               {HOME.hero.lateral}
             </p>
@@ -365,7 +365,7 @@ export default async function Home() {
       <section className="grao bg-tinta text-papel">
         <Container className="grid items-center gap-12 py-20 sm:py-28 md:grid-cols-[18rem_1fr] md:gap-16">
           {settings.juPhotoUrl ? (
-            <div className="relative aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-[var(--radius-epic)]">
+            <div className="imagem-assenta relative aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-[var(--radius-epic)]">
               <Image src={settings.juPhotoUrl} alt="Ju Ferreira" fill sizes="18rem" className="object-cover grayscale-[15%]" />
             </div>
           ) : (
