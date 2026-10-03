@@ -1,5 +1,6 @@
 import "server-only";
 import { isDimensionId } from "../dimensions";
+import { concederPorCompra, escopoDo, revogarPorCompra } from "./acessos";
 import { agendarAutomacao, cancelarAutomacoes, ENCERRA_NA_COMPRA } from "./automations";
 import { proximoStatus, recebivelDaVenda, type StatusTransacao } from "../pagamentos/kiwify";
 import { eventIdDeTransacao, type EventoCheckout } from "./checkout";
@@ -230,6 +231,20 @@ export async function processarEventoCheckout(q: Q, ev: EventoCheckout): Promise
     }
     await cancelarAutomacoes(q, lead, ENCERRA_NA_COMPRA[tipo] ?? [], `comprou_${tipo}`);
 
+    // CR-01: o EPIC247 concede o acesso. Só purchase_approved chega aqui, e a
+    // chave da transação impede acesso duplicado com webhook repetido.
+    const novoAcesso = await concederPorCompra(q, {
+      lead, productId: produto.product_id, productType: tipo, scope: escopoDo(produto),
+      provider: ev.provider, transacao: ev.transacaoId, mapResultId: ev.rastreio.src,
+    });
+    if (novoAcesso) {
+      await registrarEvento(q, "AccessGranted", {
+        event_id: eventIdDeTransacao(ev.provider, ev.transacaoId, "access_granted"),
+        lead_id: lead, product_id: produto.product_id, product_type: tipo, dimension: produto.product_dimension,
+        transaction_id: ev.transacaoId,
+      });
+    }
+
     const ctx: Record<string, unknown> = {
       transaction_id: ev.transacaoId, product_id: produto.product_id,
       dimension: produto.product_dimension ?? undefined,
@@ -239,8 +254,10 @@ export async function processarEventoCheckout(q: Q, ev: EventoCheckout): Promise
         lead, dim: produto.product_dimension, productId: produto.product_id,
         provider: ev.provider, transacao: ev.transacaoId, mapResultId: ev.rastreio.src,
       });
+      ctx.plan_id = plano.id;
       ctx.plan_token = plano.token;
       ctx.plan_ready = plano.gerado;
+      ctx.plan_state = plano.estado;
     }
     if (tipo === "mentoring") {
       // Pagamento confirmado: a candidatura aberta vira cliente ativo. Pagou
@@ -308,6 +325,13 @@ export async function processarEventoCheckout(q: Q, ev: EventoCheckout): Promise
       `update plan_generations set access_token = null where provider = $1 and transaction_id = $2`,
       [ev.provider, ev.transacaoId]
     );
+    // D8: reembolso e chargeback encerram o acesso daquela compra no Meu EPIC.
+    await revogarPorCompra(q, ev.provider, ev.transacaoId, status);
+    await registrarEvento(q, "AccessRevoked", {
+      event_id: eventIdDeTransacao(ev.provider, ev.transacaoId, `access_revoked:${status}`),
+      lead_id: lead, product_id: produto.product_id, product_type: tipo, transaction_id: ev.transacaoId,
+      props: { tipo: status },
+    });
     return { acao: status === "refunded" ? "reembolso" : "chargeback", leadId: lead ?? undefined, productId: produto.product_id };
   }
 

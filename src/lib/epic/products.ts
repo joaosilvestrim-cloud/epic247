@@ -17,6 +17,13 @@ export interface Product {
   /** URL do checkout (Kiwify). Sem URL, o produto não é vendável. */
   checkout_url: string | null;
   active: boolean;
+  /**
+   * Quem entrega (CR-01): "epic" = Meu EPIC; "kiwify" = área da Kiwify, só na
+   * transição do Kit Energia do Ciclo 1. Ausente = catálogo do código.
+   */
+  delivery?: "epic" | "kiwify";
+  /** Kit/Protocolo: materiais publicados no Meu EPIC (Kit: da dimensão; Protocolo: das 10). */
+  materiais_ok?: boolean;
 }
 
 /** Checkout já existente: o "Módulo Energia R$97" do site atual é o Kit Energia. */

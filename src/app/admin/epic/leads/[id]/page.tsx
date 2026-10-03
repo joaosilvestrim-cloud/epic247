@@ -3,10 +3,14 @@ import { notFound } from "next/navigation";
 import { Aviso, brl, dataHora, ETAPA_LABEL, origem, Secao, Selo, Tabela, Td, Titulo } from "@/components/epic/admin/ui";
 import { DIMENSIONS, isDimensionId } from "@/lib/epic/dimensions";
 import { anonimizarLead } from "../../actions";
+import { alterarAcessoAdmin, concederAcessoAdmin, reprocessarPlanoAdmin } from "../../acessos-actions";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { query } from "@/lib/epic/server/db";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ erro?: string; anonimizado?: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ erro?: string; anonimizado?: string; acesso?: string; plano?: string }>;
+};
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const dim = (v: string | null) => (v && isDimensionId(v) ? DIMENSIONS[v].name : v ?? "—");
@@ -35,7 +39,7 @@ export default async function LeadPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const [mapas, compras, mensagens, eventos, sessoes] = await Promise.all([
+  const [mapas, compras, mensagens, eventos, sessoes, acessos, planos, produtos, sessaoConta] = await Promise.all([
     query<Record<string, string | null>>(
       `select map_type, status, started_at, completed_at, primary_dimension, primary_pattern, secondary_pattern,
               result_kind, result_token, current_step
@@ -64,6 +68,25 @@ export default async function LeadPage({ params, searchParams }: Props) {
       `select session_started_at, landing_page, utm_source, utm_medium, utm_campaign, device, os, in_app, city, region
        from sessions where lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)
        order by session_started_at desc limit 20`,
+      [id]
+    ),
+    // Meu EPIC (CR-01): acessos, Planos e última entrada.
+    query<{ grant_id: string; product_name: string; access_status: string; source: string; granted_at: string; revoked_at: string | null; status_reason: string | null; source_transaction_id: string | null }>(
+      `select g.grant_id, p.product_name, g.access_status, g.source, g.granted_at, g.revoked_at, g.status_reason, g.source_transaction_id
+       from access_grants g join products p using (product_id)
+       where g.lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1) order by g.granted_at desc`,
+      [id]
+    ),
+    query<{ plan_generation_id: string; product_id: string; processing_status: string; processing_error: string | null; generated_at: string | null; output_version: string | null }>(
+      `select plan_generation_id, product_id, processing_status, processing_error, generated_at, output_version
+       from plan_generations where lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)
+       order by generated_at desc nulls first`,
+      [id]
+    ),
+    query<{ product_id: string; product_name: string }>("select product_id, product_name from products order by product_type, product_id"),
+    query<{ ultima: string | null; ativas: number }>(
+      `select max(last_seen_at) as ultima, count(*) filter (where ended_at is null and expires_at > now())::int as ativas
+       from auth_sessions where lead_id in (select lead_id from leads where lead_id = $1 or merged_into = $1)`,
       [id]
     ),
   ]);
@@ -145,6 +168,97 @@ export default async function LeadPage({ params, searchParams }: Props) {
           ))}
         </Tabela>
       </Secao>
+
+      <section id="meu-epic">
+        <Secao titulo="Meu EPIC: acessos">
+          {sp.acesso && <Aviso>Acesso atualizado.</Aviso>}
+          {sp.plano && (
+            <Aviso tom={sp.plano === "gerado" ? "bom" : "ruim"}>
+              {sp.plano === "gerado"
+                ? "Plano gerado de novo."
+                : sp.plano === "sem_mapa"
+                  ? "Sem Mapa concluído da dimensão: o Plano segue aguardando."
+                  : "Não foi possível gerar o Plano."}
+            </Aviso>
+          )}
+          <p className="mb-3 text-sm text-mineral-escuro">
+            {sessaoConta[0]?.ultima
+              ? `Última entrada no Meu EPIC: ${dataHora(sessaoConta[0].ultima)}. Sessões ativas: ${sessaoConta[0].ativas}.`
+              : "Ainda não entrou no Meu EPIC."}
+          </p>
+          <Tabela cab={["Produto", "Situação", "Origem", "Desde", "Encerrado", "Motivo", ""]} vazio={!acessos.length}>
+            {acessos.map((a) => (
+              <tr key={a.grant_id}>
+                <Td>{a.product_name}</Td>
+                <Td>
+                  <Selo tom={a.access_status === "active" ? "bom" : a.access_status === "suspended" ? "alerta" : "ruim"}>
+                    {a.access_status === "active" ? "ativo" : a.access_status === "suspended" ? "suspenso" : "revogado"}
+                  </Selo>
+                </Td>
+                <Td>{a.source === "purchase" ? `compra ${a.source_transaction_id ?? ""}` : a.source === "admin" ? "admin" : "migração"}</Td>
+                <Td>{dataHora(a.granted_at)}</Td>
+                <Td>{dataHora(a.revoked_at)}</Td>
+                <Td>{a.status_reason ?? "—"}</Td>
+                <Td>
+                  <div className="flex flex-wrap gap-3">
+                    {(["active", "suspended", "revoked"] as const)
+                      .filter((st) => st !== a.access_status)
+                      .map((st) => (
+                        <form key={st} action={alterarAcessoAdmin}>
+                          <input type="hidden" name="lead_id" value={id} />
+                          <input type="hidden" name="grant_id" value={a.grant_id} />
+                          <input type="hidden" name="status" value={st} />
+                          <button className="underline">{st === "active" ? "Reativar" : st === "suspended" ? "Suspender" : "Revogar"}</button>
+                        </form>
+                      ))}
+                  </div>
+                </Td>
+              </tr>
+            ))}
+          </Tabela>
+          <form action={concederAcessoAdmin} className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+            <input type="hidden" name="lead_id" value={id} />
+            <select name="product_id" className="rounded border border-linha bg-papel px-3 py-2">
+              {produtos.map((p) => (
+                <option key={p.product_id} value={p.product_id}>{p.product_name}</option>
+              ))}
+            </select>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="avisar" /> avisar por e-mail com link de acesso
+            </label>
+            <button className="rounded bg-grafite px-3 py-2 text-papel">Conceder acesso</button>
+          </form>
+        </Secao>
+
+        <Secao titulo="Meu EPIC: Planos">
+          <Tabela cab={["Plano", "Situação", "Gerado", "Versão", ""]} vazio={!planos.length}>
+            {planos.map((g) => (
+              <tr key={g.plan_generation_id}>
+                <Td>{g.product_id}</Td>
+                <Td>
+                  {g.processing_status === "generated"
+                    ? "pronto"
+                    : g.processing_error === "sem_mapa"
+                      ? "aguardando Mapa"
+                      : g.processing_status === "failed"
+                        ? `falhou: ${g.processing_error ?? ""}`
+                        : g.processing_status}
+                </Td>
+                <Td>{dataHora(g.generated_at)}</Td>
+                <Td>{g.output_version ?? "—"}</Td>
+                <Td>
+                  <form action={reprocessarPlanoAdmin}>
+                    <input type="hidden" name="lead_id" value={id} />
+                    <input type="hidden" name="plan_generation_id" value={g.plan_generation_id} />
+                    <button className="underline">{g.processing_status === "generated" ? "Gerar de novo" : "Reprocessar"}</button>
+                  </form>
+                </Td>
+              </tr>
+            ))}
+          </Tabela>
+          <p className="mt-2 text-xs text-mineral-escuro">Reprocessar não cria nova cobrança nem nova transação.</p>
+        </Secao>
+      </section>
 
       <Secao titulo="E-mails">
         <Tabela cab={["Automação", "Etapa", "Situação", "Programado", "Enviado", "Assunto", ""]} vazio={!mensagens.length}>

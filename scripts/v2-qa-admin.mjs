@@ -236,12 +236,83 @@ try {
   confere((await q("select 1 from content_performance where content_id = $1", [`qa_${ts}`])).length === 1, "reimportar não duplica");
   fs.rmSync(csv, { force: true });
 
+  // ── 9b. Meu EPIC no admin (CR-01): acessos, materiais, entrega ──
+  console.log("9b. Meu EPIC");
+  await ir(`/admin/epic/leads/${lead.lead_id}`);
+  await enviar('form select[name="product_id"]', { product_id: "kit_amor", avisar: false });
+  const [g1] = await q("select grant_id, access_status, source from access_grants where lead_id = $1 and product_id = 'kit_amor'", [lead.lead_id]);
+  confere(g1?.access_status === "active" && g1.source === "admin", "concede acesso ao Kit pelo admin", JSON.stringify(g1));
+  if (g1) {
+    await ir(`/admin/epic/leads/${lead.lead_id}`);
+    await js(`(() => { const f = [...document.querySelectorAll('input[name="grant_id"][value="${g1.grant_id}"]')].map((i) => i.closest("form")).find((f) => f.querySelector('input[name="status"][value="suspended"]')); f.requestSubmit(); return 1; })()`);
+    await espera(3000);
+    const [g2] = await q("select access_status from access_grants where grant_id = $1", [g1.grant_id]);
+    confere(g2?.access_status === "suspended", "suspende o acesso", g2?.access_status);
+    await ir(`/admin/epic/leads/${lead.lead_id}`);
+    await js(`(() => { const f = [...document.querySelectorAll('input[name="grant_id"][value="${g1.grant_id}"]')].map((i) => i.closest("form")).find((f) => f.querySelector('input[name="status"][value="active"]')); f.requestSubmit(); return 1; })()`);
+    await espera(3000);
+    const [g3] = await q("select access_status from access_grants where grant_id = $1", [g1.grant_id]);
+    confere(g3?.access_status === "active", "reativa o acesso", g3?.access_status);
+  }
+
+  // Material: envio pelo navegador para o bucket privado.
+  const pdf = path.join(os.tmpdir(), `qa-material-${ts}.pdf`);
+  const conteudoPdf = `%PDF-1.4\n% QA ${ts}\n%%EOF\n`;
+  fs.writeFileSync(pdf, conteudoPdf);
+  await ir("/admin/epic/materiais");
+  const { result: docM } = await cmd("DOM.getDocument", { depth: -1 });
+  const { result: inM } = await cmd("DOM.querySelector", { nodeId: docM.root.nodeId, selector: 'input[type="file"][name="arquivo"]' });
+  await cmd("DOM.setFileInputFiles", { nodeId: inM.nodeId, files: [pdf] });
+  await enviar('form input[name="title"]', { dimension: "amor", asset_kind: "manual", title: `QA material ${ts}`, published: true }, 7000);
+  const [mat] = await q("select asset_id, published, storage_path from product_assets where title = $1", [`QA material ${ts}`]);
+  confere(mat?.published && mat.storage_path.startsWith(`${S}/kit/amor/`), "envia material para o armazenamento privado", JSON.stringify(mat));
+  if (mat) {
+    // Quem tem o Kit baixa por URL temporária; sem sessão, não.
+    const segredo = crypto.randomBytes(32).toString("base64url");
+    await q("insert into auth_sessions (session_hash, lead_id, expires_at) values ($1, $2, now() + interval '1 hour')", [
+      crypto.createHash("sha256").update(segredo).digest("hex"), lead.lead_id,
+    ]);
+    const r1 = await fetch(`${BASE}/meu-epic/materiais/${mat.asset_id}`, { headers: { cookie: `epic_conta=${segredo}`, "user-agent": UA }, redirect: "manual" });
+    const destino = r1.headers.get("location") ?? "";
+    confere(r1.status === 303 && /token=/.test(destino), "comprador recebe link assinado do material", `${r1.status}`);
+    if (destino) {
+      const arq = await fetch(destino);
+      confere(arq.ok && (await arq.text()).includes(`QA ${ts}`), "link assinado entrega o arquivo");
+    }
+    const r2 = await fetch(`${BASE}/meu-epic/materiais/${mat.asset_id}`, { headers: { "user-agent": UA }, redirect: "manual" });
+    confere(r2.status === 303 && (r2.headers.get("location") ?? "").includes("/meu-epic/entrar"), "sem sessão, o material não sai");
+    const publico = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/epic-produtos/${mat.storage_path}`);
+    confere(!publico.ok, "o arquivo não tem endereço público", String(publico.status));
+    await ir("/admin/epic/materiais");
+    await js(`(() => { const f = [...document.querySelectorAll('input[name="asset_id"][value="${mat.asset_id}"]')].map((i) => i.closest("form")).find((f) => f.querySelector('input[name="published"]')); f.requestSubmit(); return 1; })()`);
+    await espera(3000);
+    const [oculto] = await q("select published from product_assets where asset_id = $1", [mat.asset_id]);
+    confere(oculto && oculto.published !== mat.published, "oculta/publica material", JSON.stringify(oculto));
+    await ir("/admin/epic/materiais");
+    await js(`(() => { const f = [...document.querySelectorAll('input[name="asset_id"][value="${mat.asset_id}"]')].map((i) => i.closest("form")).find((f) => !f.querySelector('input[name="published"]')); f.requestSubmit(); return 1; })()`);
+    await espera(3000);
+    confere((await q("select 1 from product_assets where asset_id = $1", [mat.asset_id])).length === 0, "exclui material");
+  }
+  fs.rmSync(pdf, { force: true });
+
+  // Entrega: trocar e voltar (Kit Energia).
+  const [ent0] = await q("select delivery from products where product_id = 'kit_energia'");
+  await ir("/admin/epic/materiais");
+  await js(`(() => { document.querySelector('form input[name="product_id"][value="kit_energia"]').closest("form").requestSubmit(); return 1; })()`);
+  await espera(3000);
+  const [ent1] = await q("select delivery from products where product_id = 'kit_energia'");
+  await ir("/admin/epic/materiais");
+  await js(`(() => { document.querySelector('form input[name="product_id"][value="kit_energia"]').closest("form").requestSubmit(); return 1; })()`);
+  await espera(3000);
+  const [ent2] = await q("select delivery from products where product_id = 'kit_energia'");
+  confere(ent1.delivery !== ent0.delivery && ent2.delivery === ent0.delivery, "troca quem entrega o Kit e volta", JSON.stringify([ent0, ent1, ent2]));
+
   // ── 10. Leads: exportar e anonimizar ──
   console.log("10. Leads");
   const ex = await fetch(`${BASE}/admin/epic/leads/${lead.lead_id}/exportar`, { headers: { cookie: `epic_admin=${token}` } });
   confere(ex.ok && (await ex.text()).includes(EMAIL), "exporta dados do lead");
   await ir(`/admin/epic/leads/${lead.lead_id}`);
-  await enviar('form input[name="lead_id"]', { confirmar: "ANONIMIZAR" });
+  await enviar('form input[name="confirmar"]', { confirmar: "ANONIMIZAR" });
   const [an] = await q("select email from leads where lead_id = $1", [lead.lead_id]);
   confere(!an || an.email !== EMAIL, "anonimiza o lead", JSON.stringify(an));
 } catch (e) {
@@ -258,8 +329,9 @@ try {
   await q("delete from content_items where title like 'QA admin %'");
   await q("delete from editorial_ideas where ideia_mae like 'QA ideia %'");
   await q("delete from media_spend where notes like 'QA %'");
+  await q("delete from product_assets where title like 'QA material %'");
   if (leads.length) {
-    for (const t of ["events", "messages", "mentoring_applications", "contact_messages", "map_results"]) await q(`delete from ${t} where lead_id = any($1)`, [leads]);
+    for (const t of ["events", "messages", "mentoring_applications", "contact_messages", "map_results", "access_grants", "auth_sessions", "auth_tokens", "protocol_progress"]) await q(`delete from ${t} where lead_id = any($1)`, [leads]);
     await q("delete from contact_messages where email = $1", [EMAIL]);
     await q("delete from sessions where lead_id = any($1)", [leads]);
     await q("delete from leads where lead_id = any($1)", [leads]);

@@ -220,14 +220,14 @@ export async function concluirMapa(q: Q, id: string, respostasBrutas: Record<str
   if (m.map_type !== "friccao") {
     const gerados = await gerarPlanosPendentes(q, m.lead_id, m.map_type, id);
     if (gerados > 0) {
-      const prontos = await q<{ transaction_id: string; access_token: string }>(
-        `select g.transaction_id, g.access_token from plan_generations g join products p using (product_id)
+      const prontos = await q<{ plan_generation_id: string; transaction_id: string; access_token: string }>(
+        `select g.plan_generation_id, g.transaction_id, g.access_token from plan_generations g join products p using (product_id)
          where g.lead_id = $1 and p.product_dimension = $2 and g.map_result_id = $3`,
         [m.lead_id, m.map_type, id]
       );
       for (const g of prontos) {
         await agendarAutomacao(q, m.lead_id, "AUT_PLAN_READY", {
-          transaction_id: g.transaction_id, plan_token: g.access_token, dimension: m.map_type,
+          transaction_id: g.transaction_id, plan_id: g.plan_generation_id, plan_token: g.access_token, dimension: m.map_type,
         });
       }
     }

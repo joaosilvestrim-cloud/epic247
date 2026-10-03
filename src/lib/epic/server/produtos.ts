@@ -11,8 +11,14 @@ import { query } from "./db";
 export async function listarProdutos(): Promise<Product[]> {
   try {
     const rows = await query<Product & { price_list: string }>(
-      `select product_id, product_type, product_dimension, product_name, price_list, checkout_url, active
-       from products`
+      `select p.product_id, p.product_type, p.product_dimension, p.product_name, p.price_list, p.checkout_url,
+              p.active, p.delivery,
+              case p.product_type
+                when 'kit' then exists (select 1 from product_assets a where a.published and a.product_type = 'kit'
+                                         and a.dimension = p.product_dimension)
+                when 'protocol' then (select count(distinct a.dimension) from product_assets a where a.published) >= 10
+                else true end as materiais_ok
+       from products p`
     );
     if (!rows.length) return PRODUCTS;
     return rows.map((r) => ({ ...r, price_list: Number(r.price_list) }));
@@ -40,17 +46,29 @@ export function planoVendavel(d: string): boolean {
 }
 
 /**
- * Vendável = ativo, com checkout configurado (RF-073) e, no Plano, com o
- * conteúdo da dimensão completo e aprovado (auditoria NC-07). Plano sem
- * conteúdo aprovado nunca aparece à venda, mesmo se ativado por engano.
+ * Vendável = ativo, com checkout configurado (RF-073), no Plano com o conteúdo
+ * da dimensão completo e aprovado (auditoria NC-07) e, no Kit e no Protocolo,
+ * com materiais publicados no Meu EPIC (CR-01).
  */
 export const vendavel = (p: Product | null | undefined): p is Product =>
   Boolean(
     p &&
       p.active &&
       p.checkout_url &&
-      (p.product_type !== "plan" || planoVendavel(p.product_dimension ?? ""))
+      (p.product_type !== "plan" || planoVendavel(p.product_dimension ?? "")) &&
+      entregavel(p)
   );
+
+/**
+ * CR-01: Kit e Protocolo só são vendidos quando o Meu EPIC tem o que entregar
+ * (materiais publicados), salvo o produto ainda entregue pela Kiwify. Sem a
+ * informação (banco fora, catálogo do código), não bloqueia.
+ */
+export function entregavel(p: Product): boolean {
+  if (p.product_type !== "kit" && p.product_type !== "protocol") return true;
+  if (p.delivery === "kiwify" || p.materiais_ok === undefined) return true;
+  return p.materiais_ok === true;
+}
 
 /**
  * Capacidade da Mentoria (RF-035): conta clientes ATIVOS. Ativo = candidatura

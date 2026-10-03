@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/", "/mapa/resultado/", "/mapas/*/resultado/", "/plano/acesso/", "/descadastro"],
+        disallow: ["/admin", "/api/", "/mapa/resultado/", "/mapas/*/resultado/", "/plano/acesso/", "/descadastro", "/meu-epic", "/compra/"],
       },
     ],
     sitemap: "https://epic247.com.br/sitemap.xml",

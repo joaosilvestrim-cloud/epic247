@@ -2,7 +2,9 @@
 // Percorre o caminho de um visitante real pelas APIs e confere o banco:
 // identidade e atribuição, Mapa, captura, checkout, compra pelo webhook,
 // webhook repetido, supressão de oferta, acesso ao Plano, reembolso,
-// chargeback, união de visitantes pelo e-mail e eventos.
+// chargeback, união de visitantes pelo e-mail e eventos. Meu EPIC (CR-01):
+// acesso concedido e revogado, link de entrada, sessão, Planos, PDF, Kit,
+// Protocolo com progresso e bloqueio do que não foi comprado.
 //
 // Uso (com o site rodando contra o staging):
 //   node scripts/v2-qa.mjs                    (site em http://localhost:3100)
@@ -12,7 +14,7 @@
 // Recusa rodar no schema de produção. Mexe por alguns segundos no produto
 // plan_energia (ativa com um link de teste) e devolve como estava no fim.
 import { execSync } from "node:child_process";
-import { createHmac, randomUUID } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import pg from "pg";
@@ -78,7 +80,16 @@ function visitante() {
     async get(caminho) {
       const r = await fetch(BASE + caminho, { headers: cab(), redirect: "manual" });
       guardar(r);
-      return { status: r.status, html: await r.text() };
+      // O React separa textos vizinhos com <!-- -->: some para comparar frases.
+      return { status: r.status, html: (await r.text()).replaceAll("<!-- -->", ""), location: r.headers.get("location"), headers: r.headers };
+    },
+    /** Formulário comum (POST urlencoded), como o navegador sem JavaScript. */
+    async form(caminho, dados) {
+      const c = cab();
+      c["content-type"] = "application/x-www-form-urlencoded";
+      const r = await fetch(BASE + caminho, { method: "POST", headers: c, body: new URLSearchParams(dados).toString(), redirect: "manual" });
+      guardar(r);
+      return { status: r.status, location: r.headers.get("location") ?? "" };
     },
   };
 }
@@ -99,28 +110,38 @@ const email = `qa-${ts}@epic247.invalid`;
 const produtoKiwify = `qa-plano-energia-${ts}`;
 const pedido1 = `QA-${ts}-1`;
 const pedido2 = `QA-${ts}-2`;
+const pedidoKit = `QA-${ts}-3`;
+const pedidoProt = `QA-${ts}-4`;
+const PLANO_QA = { id: produtoKiwify, nome: "Plano EPIC Energia 7 Dias (QA)", centavos: 2900, taxa: 350 };
+const KIT_QA = { id: `qa-kit-coragem-${ts}`, nome: "Kit EPIC Coragem (QA)", centavos: 9700, taxa: 1000 };
+const PROT_QA = { id: `qa-protocolo-${ts}`, nome: "Protocolo EPIC247 (QA)", centavos: 49700, taxa: 5000 };
+const sha256 = (v) => createHash("sha256").update(v).digest("hex");
 const leadsCriados = new Set();
 
-function pedido(id, evento, status, lead, mapa) {
+function pedido(id, evento, status, lead, mapa, prod = PLANO_QA) {
   return {
     order_id: id, order_status: status, webhook_event_type: evento, payment_method: "pix", installments: 1,
     approved_date: new Date().toISOString().slice(0, 16).replace("T", " "),
     refunded_at: evento === "order_refunded" ? new Date().toISOString() : null,
-    Product: { product_id: produtoKiwify, product_name: "Plano EPIC Energia 7 Dias (QA)" },
+    Product: { product_id: prod.id, product_name: prod.nome },
     Customer: { first_name: "QA", full_name: "QA Teste", email },
-    Commissions: { charge_amount: 2900, product_base_price: 2900, kiwify_fee: 350, my_commission: 2550, estimated_deposit_date: "2026-10-03" },
+    Commissions: { charge_amount: prod.centavos, product_base_price: prod.centavos, kiwify_fee: prod.taxa, my_commission: prod.centavos - prod.taxa, estimated_deposit_date: "2026-10-03" },
     TrackingParameters: { sck: lead, src: mapa, utm_source: "qa", utm_medium: "teste" },
   };
 }
 
 const [produtoOriginal] = await sql("select checkout_url, provider_product_id, active from §products where product_id = 'plan_energia'");
 if (!produtoOriginal) throw new Error("Produto plan_energia não existe neste schema. Rode a migração antes.");
+// Kit Coragem e Protocolo: só o id da Kiwify muda (para o webhook achar o produto), e volta no fim.
+const outrosOriginais = await sql("select product_id, provider_product_id from §products where product_id in ('kit_coragem', 'protocol')");
 
 try {
   await sql(
     "update §products set active = true, checkout_url = 'https://pay.kiwify.com.br/qa-teste', provider_product_id = $1 where product_id = 'plan_energia'",
     [produtoKiwify]
   );
+  await sql("update §products set provider_product_id = $1 where product_id = 'kit_coragem'", [KIT_QA.id]);
+  await sql("update §products set provider_product_id = $1 where product_id = 'protocol'", [PROT_QA.id]);
 
   console.log(`QA do EPIC247 2.0 · ${BASE} · schema ${S}`);
   const a = visitante();
@@ -235,6 +256,8 @@ try {
     [pedido1]
   );
   confere(cont.t === 1 && cont.p === 1 && cont.pp === 1 && cont.g === 1, "nada duplicado: 1 transação, 1 Purchase, 1 PurchasePlan, 1 Plano", JSON.stringify(cont));
+  const acessos1 = await sql("select access_status, product_type, scope from §access_grants where source_transaction_id = $1", [pedido1]);
+  confere(acessos1.length === 1 && acessos1[0].access_status === "active" && acessos1[0].scope === "energia", "CR-01: compra aprovada concede 1 acesso, mesmo com webhook repetido", JSON.stringify(acessos1));
 
   // ── 6. Supressão ──
   secao("6. Quem comprou não vê a mesma oferta (RF-038, RF-039, RF-093)");
@@ -246,7 +269,95 @@ try {
   const ck2 = await a.post("/api/v2/checkout/iniciar", { product_id: "plan_energia", r: tokenResultado });
   confere(ck2.status === 409, "novo checkout do mesmo Plano é recusado", `status ${ck2.status}`);
   const acesso = await a.get(`/plano/acesso/${plano?.access_token}`);
-  confere(acesso.status === 200, "link de acesso ao Plano abre");
+  confere(acesso.status === 307 && (acesso.location ?? "").includes("/meu-epic/planos/"), "link antigo do Plano leva ao Meu EPIC (D3)", `status ${acesso.status}`);
+
+  // ── 6b. Meu EPIC ──
+  secao("6b. Meu EPIC: entrada por link, Planos, PDF e limites (CR-01, CR-01A)");
+  const [gp] = await sql("select plan_generation_id from §plan_generations where transaction_id = $1", [pedido1]);
+  const planoUrl = `/meu-epic/planos/${gp.plan_generation_id}`;
+  const semSessao = await visitante().get(planoUrl);
+  confere(semSessao.status === 307 && (semSessao.location ?? "").includes("/meu-epic/entrar"), "sem sessão, conhecer o endereço do Plano não abre nada", `status ${semSessao.status}`);
+
+  const pl = await a.form("/api/v2/conta/link", { email, volta: planoUrl });
+  confere(pl.status === 303 && pl.location.includes("enviado=1"), "pedido de link de entrada aceito", `${pl.status} ${pl.location}`);
+  const [tok] = await sql("select count(*)::int n, bool_and(length(token_hash) = 64) so_hash from §auth_tokens where lead_id = $1 and purpose = 'login'", [lead]);
+  confere(tok.n === 1 && tok.so_hash, "link criado e só o hash fica no banco");
+  const ninguem = await visitante().form("/api/v2/conta/link", { email: `ninguem-${ts}@epic247.invalid` });
+  confere(ninguem.status === 303 && ninguem.location.includes("enviado=1"), "e-mail sem conta recebe a mesma resposta (não revela quem é cliente)");
+
+  // Link de compra com valor conhecido (o e-mail real não é lido no QA).
+  const segredo = randomBytes(32).toString("base64url");
+  await sql(
+    "insert into §auth_tokens (token_hash, lead_id, purpose, email, next_path, expires_at) values ($1, $2, 'compra', $3, $4, now() + interval '1 hour')",
+    [sha256(segredo), lead, email, planoUrl]
+  );
+  const pagLink = await a.get(`/meu-epic/entrar/${segredo}`);
+  confere(pagLink.status === 200 && pagLink.html.includes("Entrar no Meu EPIC"), "link do e-mail abre a página de entrada", `status ${pagLink.status}`);
+  const [intacto] = await sql("select used_at from §auth_tokens where token_hash = $1", [sha256(segredo)]);
+  confere(intacto.used_at === null, "abrir o link não gasta o acesso (filtros de e-mail que abrem links)");
+  const ent = await a.form("/api/v2/conta/entrar", { token: segredo });
+  confere(ent.status === 303 && ent.location.endsWith(planoUrl) && Boolean(a.pote.get("epic_conta")), "entrar abre a sessão e leva direto ao Plano", `${ent.status} ${ent.location}`);
+  const reuso = await visitante().form("/api/v2/conta/entrar", { token: segredo });
+  confere(reuso.location.includes("erro=expirado"), "link de uso único");
+  const vencido = randomBytes(32).toString("base64url");
+  await sql(
+    "insert into §auth_tokens (token_hash, lead_id, purpose, email, expires_at) values ($1, $2, 'login', $3, now() - interval '1 minute')",
+    [sha256(vencido), lead, email]
+  );
+  const venc = await visitante().get(`/meu-epic/entrar/${vencido}`);
+  confere(venc.status === 307 && (venc.location ?? "").includes("erro=expirado"), "link vencido não entra");
+
+  const inicio = await a.get("/meu-epic");
+  confere(inicio.status === 200 && inicio.html.includes("Olá") && inicio.html.includes("Plano mais recente"), "Início do Meu EPIC", `status ${inicio.status}`);
+  confere((inicio.headers.get("x-robots-tag") ?? "").includes("noindex") && /<meta name="robots" content="noindex, ?nofollow/.test(inicio.html), "Meu EPIC fora de busca (noindex, nofollow)");
+  confere(/no-store/.test(inicio.headers.get("cache-control") ?? ""), "Meu EPIC sem cache público");
+  confere(!/<title>[^<]*(qa-|QA Teste)/.test(inicio.html), "nenhum dado pessoal no título da página");
+  const mm = await a.get("/meu-epic/mapas");
+  confere(mm.status === 200 && mm.html.includes("Ver resultado") && mm.html.includes(`/mapas/energia/resultado/`), "Meus Mapas lista o histórico com link do resultado");
+  const mp = await a.get(planoUrl);
+  confere(mp.status === 200 && mp.html.includes("Baixar PDF") && mp.html.includes("Os 7 dias"), "Plano completo abre no Meu EPIC", `status ${mp.status}`);
+  const pdf = await a.get(`${planoUrl}/pdf`);
+  confere(pdf.status === 200 && pdf.headers.get("content-type") === "application/pdf", "PDF do Plano gerado a partir do Plano salvo", `status ${pdf.status}`);
+  const kitNao = await a.get("/meu-epic/produtos/kit/energia");
+  confere(kitNao.html.includes("não faz parte da sua conta"), "Kit não comprado não abre");
+  const protNao = await a.get("/meu-epic/produtos/protocolo");
+  confere(protNao.html.includes("não faz parte da sua conta"), "Protocolo não comprado não abre");
+
+  // Outra pessoa, com sessão própria, não abre o Plano de ninguém.
+  const [outra] = await sql("insert into §leads (email, first_name) values ($1, 'Outra') returning lead_id", [`outra-${ts}@epic247.invalid`]);
+  leadsCriados.add(outra.lead_id);
+  const sessaoOutra = randomBytes(32).toString("base64url");
+  await sql("insert into §auth_sessions (session_hash, lead_id, expires_at) values ($1, $2, now() + interval '1 day')", [sha256(sessaoOutra), outra.lead_id]);
+  const c = visitante();
+  c.pote.set("epic_conta", sessaoOutra);
+  const alheio = await c.get(planoUrl);
+  confere(alheio.status === 404, "Plano de outra conta não abre, mesmo com sessão válida", `status ${alheio.status}`);
+  const alheioPdf = await c.get(`${planoUrl}/pdf`);
+  confere(alheioPdf.status === 404, "PDF de outra conta não sai");
+
+  // ── 6c. Kit e Protocolo ──
+  secao("6c. Kit e Protocolo no Meu EPIC (CR-01, critérios 6 e 7)");
+  await webhook(pedido(pedidoKit, "order_approved", "paid", lead, null, KIT_QA));
+  const kit = await a.get("/meu-epic/produtos/kit/coragem");
+  confere(kit.status === 200 && kit.html.includes("Kit EPIC Coragem") && kit.html.includes("Materiais"), "Kit comprado abre no Meu EPIC", `status ${kit.status}`);
+  const kitOutro = await a.get("/meu-epic/produtos/kit/amor");
+  confere(kitOutro.html.includes("não faz parte da sua conta"), "Kit libera só a dimensão comprada");
+  await webhook(pedido(pedidoProt, "order_approved", "paid", lead, null, PROT_QA));
+  const prot = await a.get("/meu-epic/produtos/protocolo");
+  confere(prot.status === 200 && prot.html.includes("0 de 10 dimensões concluídas") && prot.html.includes("Não iniciado"), "Protocolo liberado com as 10 dimensões e progresso");
+  const dimAcao = await a.get("/meu-epic/produtos/protocolo/acao");
+  confere(dimAcao.status === 200 && dimAcao.html.includes("Concluí esta dimensão"), "dimensão do Protocolo abre sem bloqueio de ordem");
+  const [pp] = await sql("select status from §protocol_progress where lead_id = $1 and dimension = 'acao'", [lead]);
+  confere(pp?.status === "in_progress", "abrir a dimensão marca \"em andamento\"");
+  await a.form("/api/v2/conta/protocolo", { dimensao: "acao", concluida: "1" });
+  const prot2 = await a.get("/meu-epic/produtos/protocolo");
+  confere(prot2.html.includes("1 de 10 dimensões concluídas") && prot2.html.includes("Concluído"), "concluir a dimensão atualiza o progresso");
+  const kitPeloProt = await a.get("/meu-epic/produtos/kit/amor");
+  confere(!kitPeloProt.html.includes("não faz parte da sua conta") && kitPeloProt.html.includes("Incluído no seu Protocolo"), "Protocolo inclui os materiais de todas as dimensões");
+  const prods = await a.get("/meu-epic/produtos");
+  confere(prods.html.includes("Kit EPIC Coragem") && prods.html.includes("Protocolo EPIC247"), "Meus Produtos reúne Kit e Protocolo");
+  const conta = await a.get("/meu-epic/conta");
+  confere(conta.html.includes(email) && conta.html.includes("Sair") && conta.html.includes("Aprovada"), "Minha Conta: e-mail, compras e sair");
 
   // ── 7. Reembolso ──
   secao("7. Reembolso (RF-045)");
@@ -258,9 +369,19 @@ try {
   const [r2] = await sql("select count(*)::int n from §events where transaction_id = $1 and event_name = 'Refund'", [pedido1]);
   confere(r2.n === 1, "1 evento Refund mesmo com webhook repetido", `${r2.n}`);
   const [rec] = await sql("select lifetime_revenue_gross from §lead_profile where lead_id = $1", [lead]);
-  confere(Number(rec.lifetime_revenue_gross) === 0, "receita do lead volta a zero");
+  // Ficam só o Kit (97) e o Protocolo (497) comprados na seção 6c.
+  confere(Number(rec.lifetime_revenue_gross) === 594, "receita do lead perde o Plano reembolsado", rec.lifetime_revenue_gross);
   const acesso2 = await a.get(`/plano/acesso/${plano?.access_token}`);
-  confere(acesso2.status === 404, "acesso ao Plano revogado", `status ${acesso2.status}`);
+  confere(acesso2.status === 404, "link antigo do Plano deixa de existir", `status ${acesso2.status}`);
+  const [gr] = await sql("select access_status, revoked_at from §access_grants where source_transaction_id = $1", [pedido1]);
+  confere(gr?.access_status === "revoked" && Boolean(gr.revoked_at), "CR-01: reembolso revoga o acesso e guarda quando");
+  const mp2 = await a.get(planoUrl);
+  confere(mp2.html.includes("O acesso a este Plano foi encerrado"), "Plano reembolsado não abre no Meu EPIC");
+  confere(!mp2.html.includes("Baixar PDF") && !mp2.html.includes("Os 7 dias"), "conteúdo do Plano não aparece");
+  const pdf2 = await a.get(`${planoUrl}/pdf`);
+  confere(pdf2.status === 404, "PDF do Plano reembolsado bloqueado", `status ${pdf2.status}`);
+  const [hist7] = await sql("select count(*)::int n from §plan_generations where transaction_id = $1", [pedido1]);
+  confere(hist7.n === 1, "histórico do Plano preservado");
   const pagPlano2 = await a.get("/plano/energia");
   confere(!pagPlano2.html.includes("Você já tem este Plano"), "Plano volta a ser oferecido");
 
@@ -273,7 +394,15 @@ try {
   const [t3] = await sql("select transaction_status from §transactions where transaction_id = $1", [pedido2]);
   confere(t3?.transaction_status === "chargeback", "transação marcada como chargeback", t3?.transaction_status);
   const [rec2] = await sql("select lifetime_revenue_gross from §lead_profile where lead_id = $1", [lead]);
-  confere(Number(rec2.lifetime_revenue_gross) === 0, "chargeback não conta como receita");
+  confere(Number(rec2.lifetime_revenue_gross) === 594, "chargeback não conta como receita", rec2.lifetime_revenue_gross);
+  const [gc] = await sql("select access_status from §access_grants where source_transaction_id = $1", [pedido2]);
+  confere(gc?.access_status === "revoked", "CR-01: chargeback revoga o acesso");
+  const sai = await a.form("/api/v2/conta/sair", {});
+  confere(sai.status === 303 && sai.location.includes("saiu=1"), "sair do Meu EPIC");
+  const depois = await a.get("/meu-epic");
+  confere(depois.status === 307 && (depois.location ?? "").includes("/meu-epic/entrar"), "depois de sair, o Meu EPIC pede entrada", `status ${depois.status}`);
+  const [sess] = await sql("select count(*) filter (where ended_at is null)::int abertas from §auth_sessions where lead_id = $1", [lead]);
+  confere(sess.abertas === 0, "sessão encerrada no banco");
 
   // ── 9. Outro aparelho, mesmo e-mail ──
   secao("9. Mesmo e-mail em outro aparelho une o histórico (RF-017, RF-022, RF-092)");
@@ -307,7 +436,8 @@ try {
     [lead]
   );
   const tem = (n) => evs.find((e) => e.event_name === n);
-  for (const n of ["StartMap", "CompleteMap", "SubmitMapEmail", "StartCheckout", "Purchase", "PurchasePlan", "Refund", "LifecycleChanged", "MapNurtureStarted", "ResultFeedback"]) {
+  for (const n of ["StartMap", "CompleteMap", "SubmitMapEmail", "StartCheckout", "Purchase", "PurchasePlan", "Refund", "LifecycleChanged", "MapNurtureStarted", "ResultFeedback",
+    "AccessGranted", "AccessRevoked", "LoginMeuEpic", "ViewMeuEpicHome", "ViewMapHistory", "ViewPlan", "DownloadPlanPDF", "ViewProduct", "ViewProtocolDimension", "CompleteProtocolDimension"]) {
     confere(Boolean(tem(n)), `evento ${n}`);
   }
   confere(tem("StartMap")?.com_sessao && tem("CompleteMap")?.com_sessao, "eventos de Mapa levam session_id");
@@ -323,6 +453,9 @@ try {
   await sql("update §products set active = $1, checkout_url = $2, provider_product_id = $3 where product_id = 'plan_energia'", [
     produtoOriginal.active, produtoOriginal.checkout_url, produtoOriginal.provider_product_id,
   ]);
+  for (const o of outrosOriginais) {
+    await sql("update §products set provider_product_id = $2 where product_id = $1", [o.product_id, o.provider_product_id]);
+  }
   if (process.env.MANTER !== "1") {
     const ids = [...leadsCriados].filter(Boolean);
     const [{ todos }] = await sql("select coalesce(array_agg(lead_id), '{}') todos from §leads where lead_id = any($1) or merged_into = any($1)", [ids]);
@@ -330,6 +463,9 @@ try {
     try {
       // Recebíveis (012) dependem das transações: saem antes.
       await sql("delete from §receivables where transaction_id in (select transaction_id from §transactions where lead_id = any($1))", [todos]);
+      for (const t of ["access_grants", "auth_tokens", "auth_sessions", "protocol_progress"]) {
+        await sql(`delete from §${t} where lead_id = any($1)`, [todos]);
+      }
       for (const t of ["events", "messages", "plan_generations", "transactions", "mentoring_applications", "contact_messages"]) {
         await sql(`delete from §${t} where lead_id = any($1)`, [todos]);
       }

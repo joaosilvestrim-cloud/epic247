@@ -17,6 +17,7 @@ const NAV = [
   { href: "/admin/epic/midia", label: "Mídia" },
   { href: "/admin/epic/conteudo", label: "Conteúdo" },
   { href: "/admin/epic/produtos", label: "Produtos" },
+  { href: "/admin/epic/materiais", label: "Materiais" },
   { href: "/admin/epic/emails", label: "E-mails" },
   { href: "/admin/epic/editorial", label: "Banco de ideias" },
   { href: "/admin/epic/ideias", label: "Ideias no site" },

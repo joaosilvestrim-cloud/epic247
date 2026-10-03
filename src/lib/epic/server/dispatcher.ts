@@ -11,9 +11,11 @@ import { assinar } from "./assinatura";
 import { ehStatusMentoria, supressaoMentoria } from "../mentoria";
 import { mapaVisivel } from "../site";
 import { AUTOMACOES, etapaDe, type Contexto, type PerfilLead } from "./automations";
+import { criarLinkDeEntrada } from "./conta";
 import { withTx, type Q } from "./db";
 import { registrarEvento, type EventoNome } from "./events";
 import { recomporResultado, resultadoPorToken, type ResultadoSalvo } from "./mapas";
+import { idDoPlanoPorToken } from "./planos";
 import { enviarEmail } from "./resend";
 
 // Disparador da fila de mensagens. Cada mensagem vencida é avaliada com o
@@ -81,8 +83,14 @@ async function produtoVendavelUrl(q: Q, id: string, pagina: string): Promise<str
   return p?.ok || !IS_PROD ? `${SITE_URL}${pagina}` : null;
 }
 
-/** Monta os dados de um e-mail a partir do contexto e do estado atual. */
-async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail> {
+/** E-mails da compra que levam o link de entrada no Meu EPIC (CR-01, primeiro acesso). */
+const COM_ACESSO = new Set(["plan_delivery", "plan_ready", "kit_delivery", "protocol_welcome"]);
+
+/**
+ * Monta os dados de um e-mail a partir do contexto e do estado atual.
+ * `envio`: só no envio de verdade cria o link de entrada (a pré-visualização não).
+ */
+async function montarDados(q: Q, m: Mensagem, p: PerfilLead, envio = false): Promise<DadosEmail> {
   const ctx = m.context;
   const dim = typeof ctx.dimension === "string" && isDimensionId(ctx.dimension) ? (ctx.dimension as DimensionId) : null;
   const d: DadosEmail = {
@@ -90,6 +98,8 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
     dimensaoNome: dim ? DIMENSIONS[dim].name : undefined,
     protocoloUrl: `${SITE_URL}/protocolo`,
     mentoriaUrl: `${SITE_URL}/mentoria`,
+    suporteUrl: `${SITE_URL}/contato?assunto=produtos`,
+    meuEpicUrl: `${SITE_URL}/meu-epic`,
     mapaFriccaoUrl: `${SITE_URL}/mapa`,
     ideiasUrl: `${SITE_URL}/ideias`,
     mapaUrl: dim ? `${SITE_URL}${mapPath(dim)}` : undefined,
@@ -180,21 +190,36 @@ async function montarDados(q: Q, m: Mensagem, p: PerfilLead): Promise<DadosEmail
       d.edicao = { titulo: c.title, resumo: c.excerpt, corpo: c.body, url: `${SITE_URL}/ideias/${rota}/${c.slug}` };
     }
   }
-  if (typeof ctx.plan_token === "string") {
-    d.planoUrl = `${SITE_URL}/plano/acesso/${ctx.plan_token}`;
+  // Plano: abre no Meu EPIC (D3). Mensagens antigas só têm o token: acha o id por ele.
+  const planoId =
+    typeof ctx.plan_id === "string" ? ctx.plan_id
+    : typeof ctx.plan_token === "string" ? await idDoPlanoPorToken(q, ctx.plan_token)
+    : null;
+  if (planoId) {
+    d.planoUrl = `${SITE_URL}/meu-epic/planos/${planoId}`;
     d.planoPronto = ctx.plan_ready !== false;
+    d.planoEmPreparo = ctx.plan_state === "falhou";
   }
+  let destinoAcesso: string | null = planoId ? `/meu-epic/planos/${planoId}` : null;
   if (typeof ctx.product_id === "string") {
-    const [prod] = await q<{ product_name: string; product_type: string; product_dimension: string | null }>(
-      "select product_name, product_type, product_dimension from products where product_id = $1", [ctx.product_id]
+    const [prod] = await q<{ product_name: string; product_type: string; product_dimension: string | null; delivery: string }>(
+      "select product_name, product_type, product_dimension, delivery from products where product_id = $1", [ctx.product_id]
     );
     if (prod) {
+      d.entregaKiwify = prod.delivery === "kiwify";
+      if (prod.product_type === "kit") destinoAcesso = `/meu-epic/produtos/kit/${prod.product_dimension}`;
+      if (prod.product_type === "protocol") destinoAcesso = "/meu-epic/produtos/protocolo";
       d.produtoNome = prod.product_name;
       const pagina = prod.product_type === "plan" ? `/plano/${prod.product_dimension}`
         : prod.product_type === "kit" ? `/kit/${prod.product_dimension}`
         : `/${prod.product_type === "protocol" ? "protocolo" : "mentoria"}`;
       d.checkoutUrl = typeof ctx.checkout_link === "string" ? ctx.checkout_link : `${SITE_URL}${pagina}`;
     }
+  }
+  if (COM_ACESSO.has(m.template_key) && p.email) {
+    d.acessoUrl = envio
+      ? await criarLinkDeEntrada(q, m.lead_id, p.email, "compra", destinoAcesso ?? "/meu-epic")
+      : `${SITE_URL}/meu-epic/entrar`;
   }
   return d;
 }
@@ -312,7 +337,7 @@ async function processarUma(rel: Relatorio): Promise<boolean> {
       rel.puladas.template_inexistente = (rel.puladas.template_inexistente ?? 0) + 1;
       return true;
     }
-    const dados = await montarDados(q, m, p!);
+    const dados = await montarDados(q, m, p!, true);
     let email;
     try {
       email = tpl(dados);

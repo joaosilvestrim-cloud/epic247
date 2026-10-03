@@ -93,6 +93,19 @@ marketing (o Ciclo 1 não pedia esse aceite).
 Compra de produto sem ID cadastrado fica como "falhou" em /admin/epic/vendas.
 Cadastre o ID e clique em Reprocessar: nada se perde.
 
+**Página de obrigado na Kiwify** (CR-01): em cada produto, configurar o
+redirecionamento depois da compra para `https://epic247.com.br/compra/confirmada`.
+A Kiwify não entrega mais o produto: desligar a área de membros dela para os
+produtos novos. O acesso é liberado pelo webhook e chega por e-mail com o
+link do Meu EPIC.
+
+**Meu EPIC antes de vender Kit ou Protocolo:** enviar Manual, Workbook e
+ferramentas em /admin/epic/materiais. Sem material publicado, o Kit da
+dimensão não aparece à venda; o Protocolo precisa das 10 dimensões. O Kit
+Energia do Ciclo 1 segue entregue pela Kiwify até os materiais subirem
+(coluna "Entrega" na mesma tela). Compradores anteriores: colar os e-mails
+da exportação da Kiwify em "Migrar compradores anteriores".
+
 **Webhook do Resend:**
 
 - URL: `https://epic247.com.br/api/v2/webhooks/resend`

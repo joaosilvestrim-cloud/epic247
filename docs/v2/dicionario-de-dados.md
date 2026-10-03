@@ -147,6 +147,12 @@ CrossDimensionMapStarted, ResumeMap, NewsletterSignup, ContactSubmitted,
 ResultFeedback e LifecycleChanged (gravado pelo banco a cada mudança de
 estágio, com o anterior e o novo em `props`). Eventos de pagamento (§65), só
 pelo webhook: PaymentWaiting, PaymentRefused e Chargeback.
+Eventos do Meu EPIC (CR-01A), só pelo servidor depois de conferir sessão e
+acesso: LoginMeuEpic (props.via = login ou compra), ViewMeuEpicHome,
+ViewMapHistory, ViewPlan, DownloadPlanPDF, ViewProduct, DownloadProductAsset
+(props: asset_id, tipo, versao), ViewProtocolDimension,
+CompleteProtocolDimension. Provisionamento: AccessGranted (compra aprovada)
+e AccessRevoked (reembolso ou chargeback, props.tipo).
 O navegador só consegue registrar eventos de visualização; compra e e-mail
 vêm sempre do servidor.
 
@@ -156,6 +162,47 @@ plan_generation_id, lead_id, map_result_id, product_id, provider,
 transaction_id, generated_at, input_version, output_version
 (plan_template_version), content, access_token (revogado no reembolso),
 processing_status, processing_error, retry_count, last_retry_at (§33, §48).
+
+Estado no Meu EPIC (CR-01A): `generated` com conteúdo = ready; `failed` =
+failed (mostrado como "em revisão", reprocessado pelo admin sem nova
+cobrança); `pending` = processing (`processing_error = sem_mapa` quando falta
+o Mapa da dimensão). O PDF é gerado na hora a partir de `content`, nunca
+guardado. O link por `access_token` só aponta para o Plano no Meu EPIC.
+
+## Acesso (`access_grants`, CR-01)
+
+grant_id, lead_id, product_id, product_type, scope (dimensão no Plano e no
+Kit; `protocol`; `mentoring`), access_status (active, suspended, revoked),
+source (purchase, admin, migration), provider, source_transaction_id,
+map_result_id, granted_at, revoked_at, status_reason, updated_at. Único por
+(provider, source_transaction_id, product_id): webhook repetido não duplica.
+Reembolso e chargeback revogam; o admin suspende, revoga ou reativa. O
+Protocolo abre os materiais de todas as dimensões; não inclui o Plano
+personalizado.
+
+## Conta do Meu EPIC (`auth_tokens`, `auth_sessions`)
+
+A conta é o lead: entra-se com o e-mail do lead ou com o e-mail usado no
+checkout da Kiwify (`transactions.buyer_email`). `auth_tokens`: token_hash
+(sha256, o token nunca é guardado), lead_id, purpose (login: 20 minutos;
+compra: 72 horas), email, next_path, expires_at, used_at (uso único).
+`auth_sessions`: session_hash, lead_id, expires_at (30 dias, renovada a cada
+uso), last_seen_at, ended_at (sair), device. Na união de leads, sessões,
+links e acessos acompanham o lead que fica.
+
+## Materiais (`product_assets`) e progresso (`protocol_progress`)
+
+`product_assets`: asset_id, product_type (kit, protocol), dimension,
+asset_kind (manual, workbook, ferramenta, outro), title, storage_path (bucket
+privado `epic-produtos`, pasta do schema), file_name, file_size, version,
+published, sort_order. Download só por URL assinada de 60 segundos depois de
+conferir o acesso. `products.delivery` (epic, kiwify) marca o produto ainda
+entregue pela área da Kiwify (transição do Kit Energia do Ciclo 1). Kit só é
+vendável com material publicado da dimensão; Protocolo, com as 10.
+
+`protocol_progress`: lead_id, dimension, status (in_progress ao abrir o
+módulo ou baixar material; completed quando a pessoa marca), started_at,
+completed_at.
 
 ## Mensagem (`messages`)
 

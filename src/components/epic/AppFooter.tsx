@@ -13,6 +13,7 @@ const EXPLORE = [
   { label: "Ju", href: "/ju" },
   { label: "Ideias", href: "/ideias" },
   { label: "Contato", href: "/contato" },
+  { label: "Meu EPIC", href: "/meu-epic" },
 ];
 const IDEIAS = [
   { label: "Artigos", href: "/ideias/artigos" },

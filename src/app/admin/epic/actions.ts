@@ -133,6 +133,9 @@ export async function anonimizarLead(f: FormData) {
     );
     await q("update messages set context = '{}'::jsonb, subject = null where lead_id = any($1)", [ids]);
     await q("update plan_generations set content = null, access_token = null where lead_id = any($1)", [ids]);
+    // Meu EPIC: encerra sessões e links. Os acessos ficam (registro da compra), sem dado pessoal.
+    await q("update auth_sessions set ended_at = coalesce(ended_at, now()) where lead_id = any($1)", [ids]);
+    await q("delete from auth_tokens where lead_id = any($1)", [ids]);
     await q("update events set props = null, page_url = null, referrer = null where lead_id = any($1)", [ids]);
   });
   revalidatePath(`/admin/epic/leads/${id}`);

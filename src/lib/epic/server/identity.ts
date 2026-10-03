@@ -222,9 +222,19 @@ export async function identificar(
 
   const destino = dono.lead_id;
   for (const tabela of ["map_results", "sessions", "events", "transactions", "plan_generations",
-    "mentoring_applications", "contact_messages"]) {
+    "mentoring_applications", "contact_messages", "access_grants", "auth_sessions", "auth_tokens"]) {
     await q(`update ${tabela} set lead_id = $1 where lead_id = $2`, [destino, leadAtualId]);
   }
+  // Progresso do Protocolo: uma linha por dimensão. Fica a mais avançada.
+  await q(
+    `insert into protocol_progress (lead_id, dimension, status, started_at, completed_at)
+     select $1, dimension, status, started_at, completed_at from protocol_progress where lead_id = $2
+     on conflict (lead_id, dimension) do update set
+       status = case when protocol_progress.status = 'completed' then 'completed' else excluded.status end,
+       completed_at = coalesce(protocol_progress.completed_at, excluded.completed_at)`,
+    [destino, leadAtualId]
+  );
+  await q("delete from protocol_progress where lead_id = $1", [leadAtualId]);
   await q(`update messages set lead_id = $1 where lead_id = $2 and status = 'scheduled'`, [destino, leadAtualId]);
   // Resumo de Mapas e estágio: o destino herda o que o anônimo avançou.
   await q(

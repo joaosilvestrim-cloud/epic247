@@ -38,12 +38,20 @@ export interface DadosEmail {
   edicao?: { titulo: string; resumo: string | null; corpo: string | null; url: string };
   planoUrl?: string | null;
   planoPronto?: boolean;
+  /** Plano que não pôde ser gerado na hora (falha): fica em preparação no Meu EPIC. */
+  planoEmPreparo?: boolean;
+  /** Link de entrada no Meu EPIC (CR-01): uso único, 72 horas. */
+  acessoUrl?: string | null;
+  /** Produto ainda entregue pela área da Kiwify (transição do Kit Energia). */
+  entregaKiwify?: boolean;
   planoOfertaUrl?: string | null;
   kitUrl?: string | null;
   produtoNome?: string;
   checkoutUrl?: string | null;
   protocoloUrl: string;
   mentoriaUrl: string;
+  suporteUrl: string;
+  meuEpicUrl: string;
   mapaFriccaoUrl: string;
   ideiasUrl: string;
 }
@@ -87,6 +95,12 @@ function blocosDoTexto(texto: string): BlocoEmail[] {
       return t(limpa(b));
     });
 }
+
+/** Rodapé dos e-mails de acesso (CR-01: instrução simples e suporte). */
+const comoEntrar = (d: DadosEmail): BlocoEmail[] => [
+  pequeno("O botão vale por 72 horas e funciona uma vez. Depois disso, entre em epic247.com.br/meu-epic com este e-mail e receba um novo link na hora, sem senha."),
+  pequeno(`Algum problema com o acesso? Fale com a gente: ${d.suporteUrl}`),
+];
 
 const AVISO_MAPA =
   "O Mapa EPIC é uma ferramenta educativa de autoavaliação. Ele sugere onde vale olhar primeiro e não substitui avaliação profissional.";
@@ -255,23 +269,36 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
 
   // ─────────────── Plano ───────────────
   plan_delivery: (d) => ({
-    assunto: d.planoPronto ? `Seu Plano EPIC ${d.dimensaoNome} está pronto` : `Falta um passo para o seu Plano EPIC ${d.dimensaoNome}`,
+    assunto: d.planoPronto
+      ? `Seu Plano EPIC ${d.dimensaoNome} está pronto`
+      : d.planoEmPreparo
+        ? `Pagamento confirmado: seu Plano EPIC ${d.dimensaoNome} está sendo preparado`
+        : `Falta um passo para o seu Plano EPIC ${d.dimensaoNome}`,
     preheader: "Personalizado a partir das suas respostas.",
     aprovado: false,
     blocos: d.planoPronto
       ? [
           t(ola(d)),
-          t(`Seu Plano EPIC ${d.dimensaoNome} de 7 dias está pronto. Ele foi personalizado a partir das suas respostas no Mapa.`),
-          botao("Abrir meu Plano", d.planoUrl!),
+          t(`Pagamento confirmado. Seu Plano EPIC ${d.dimensaoNome} de 7 dias está pronto. Ele foi personalizado a partir das suas respostas no Mapa e fica guardado no Meu EPIC, a sua área no site.`),
+          botao("Acessar meu EPIC", d.acessoUrl ?? d.planoUrl!),
           t("Como usar: um dia de cada vez, sem tentar compensar o que ficou para trás. No dia 7, você revisa o que fica."),
-          pequeno("Guarde este e-mail: o link acima é o seu acesso ao Plano."),
+          ...comoEntrar(d),
         ]
-      : [
-          t(ola(d)),
-          t(`Obrigado pela compra. Para personalizar o seu Plano EPIC ${d.dimensaoNome}, precisamos das suas respostas no Mapa.`),
-          t("São 15 afirmações, de 3 a 4 minutos. Assim que você concluir, o Plano fica pronto e chega no seu e-mail."),
-          ...se(d.mapaUrl, botao(`Fazer o Mapa de ${d.dimensaoNome}`, d.mapaUrl!)),
-        ],
+      : d.planoEmPreparo
+        ? [
+            t(ola(d)),
+            t(`Pagamento confirmado. Seu Plano EPIC ${d.dimensaoNome} está sendo preparado. Assim que estiver pronto, ele aparece no Meu EPIC e avisamos por e-mail.`),
+            botao("Acessar meu EPIC", d.acessoUrl ?? d.meuEpicUrl),
+            ...comoEntrar(d),
+          ]
+        : [
+            t(ola(d)),
+            t(`Obrigado pela compra. Para personalizar o seu Plano EPIC ${d.dimensaoNome}, precisamos das suas respostas no Mapa.`),
+            t("São 15 afirmações, de 3 a 4 minutos. Assim que você concluir, o Plano fica pronto no Meu EPIC e avisamos por e-mail."),
+            ...se(d.mapaUrl, botao(`Fazer o Mapa de ${d.dimensaoNome}`, d.mapaUrl!)),
+            pequeno("Use o mesmo e-mail desta compra ao concluir o Mapa."),
+            pequeno(`Algum problema? Fale com a gente: ${d.suporteUrl}`),
+          ],
   }),
   plan_ready: (d) => ({
     assunto: `Seu Plano EPIC ${d.dimensaoNome} está pronto`,
@@ -279,8 +306,9 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
     aprovado: false,
     blocos: [
       t(ola(d)),
-      t("Recebemos suas respostas. O seu Plano de 7 dias já está pronto."),
-      botao("Abrir meu Plano", d.planoUrl!),
+      t("Recebemos suas respostas. O seu Plano de 7 dias já está pronto no Meu EPIC."),
+      botao("Acessar meu EPIC", d.acessoUrl ?? d.planoUrl!),
+      ...comoEntrar(d),
     ],
   }),
   plan_d2: (d) => ({
@@ -326,11 +354,19 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
     assunto: `Seu Kit ${d.dimensaoNome} chegou`,
     preheader: "Por onde começar.",
     aprovado: false,
-    blocos: [
-      t(ola(d)),
-      t(`Seu acesso ao Kit ${d.dimensaoNome} foi enviado pela plataforma de pagamento, no e-mail da compra.`),
-      t("Uma sugestão de ordem: leia o Manual primeiro, para entender o mecanismo. Depois abra o Workbook e faça um exercício por dia."),
-    ],
+    blocos: d.entregaKiwify
+      ? [
+          t(ola(d)),
+          t(`Seu acesso ao Kit ${d.dimensaoNome} foi enviado pela plataforma de pagamento, no e-mail da compra.`),
+          t("Uma sugestão de ordem: leia o Manual primeiro, para entender o mecanismo. Depois abra o Workbook e faça um exercício por dia."),
+        ]
+      : [
+          t(ola(d)),
+          t(`Pagamento confirmado. Seu Kit ${d.dimensaoNome} já está liberado no Meu EPIC, a sua área no site: Manual, Workbook e ferramentas práticas.`),
+          botao("Acessar meu EPIC", d.acessoUrl ?? d.meuEpicUrl),
+          t("Uma sugestão de ordem: leia o Manual primeiro, para entender o mecanismo. Depois abra o Workbook e faça um exercício por dia."),
+          ...comoEntrar(d),
+        ],
   }),
   kit_d2: (d) => ({
     assunto: "Por onde começar o seu Kit",
@@ -362,7 +398,13 @@ export const TEMPLATES: Record<string, (d: DadosEmail) => EmailPronto> = {
     assunto: "Bem-vindo ao Protocolo EPIC247",
     preheader: "Como navegar.",
     aprovado: false,
-    blocos: [t(ola(d)), t("Seu acesso ao Protocolo foi enviado pela plataforma de pagamento, no e-mail da compra."), t("As 10 dimensões têm uma sequência recomendada. Mas você não precisa começar pela primeira: comece onde a sua vida está pedindo atenção.")],
+    blocos: [
+      t(ola(d)),
+      t("Pagamento confirmado. O Protocolo EPIC247 já está liberado no Meu EPIC, a sua área no site, com as 10 dimensões, os materiais e o seu progresso."),
+      botao("Acessar meu EPIC", d.acessoUrl ?? d.meuEpicUrl),
+      t("As 10 dimensões têm uma sequência recomendada. Mas você não precisa começar pela primeira: comece onde a sua vida está pedindo atenção."),
+      ...comoEntrar(d),
+    ],
   }),
   protocol_d1: (d) => ({
     assunto: "Por onde começar o Protocolo",

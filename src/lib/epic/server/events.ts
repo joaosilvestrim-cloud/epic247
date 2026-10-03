@@ -23,8 +23,19 @@ export const EVENTOS_AUTOMACAO = [
 // Pagamento (Modelo de Dados §65, RC1 §11): só o webhook do provedor emite.
 export const EVENTOS_PAGAMENTO = ["PaymentWaiting", "PaymentRefused", "Chargeback"] as const;
 
+// Meu EPIC (CR-01A, eventos mínimos adicionais): só o servidor emite, depois
+// de conferir a sessão. AccessGranted/AccessRevoked registram o provisionamento.
+export const EVENTOS_MEU_EPIC = [
+  "LoginMeuEpic", "ViewMeuEpicHome", "ViewMapHistory", "ViewPlan", "DownloadPlanPDF", "ViewProduct",
+  "DownloadProductAsset", "ViewProtocolDimension", "CompleteProtocolDimension", "AccessGranted", "AccessRevoked",
+] as const;
+
 export type EventoCore = (typeof EVENTOS_CORE)[number];
-export type EventoNome = EventoCore | (typeof EVENTOS_AUTOMACAO)[number] | (typeof EVENTOS_PAGAMENTO)[number];
+export type EventoNome =
+  | EventoCore
+  | (typeof EVENTOS_AUTOMACAO)[number]
+  | (typeof EVENTOS_PAGAMENTO)[number]
+  | (typeof EVENTOS_MEU_EPIC)[number];
 
 /** Eventos que o navegador pode registrar. Compras e e-mails só pelo servidor. */
 export const EVENTOS_DO_NAVEGADOR = new Set<string>([
