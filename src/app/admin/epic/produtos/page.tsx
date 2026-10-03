@@ -1,4 +1,6 @@
 import { Aviso, brl, Secao, Selo, Titulo } from "@/components/epic/admin/ui";
+import { isDimensionId, type DimensionId } from "@/lib/epic/dimensions";
+import { pendenciasPlano } from "@/lib/epic/plano/liberacao";
 import { salvarCapacidadeMentoria, salvarProduto } from "../actions";
 import { exigirAdmin } from "@/lib/epic/server/admin";
 import { query } from "@/lib/epic/server/db";
@@ -46,6 +48,14 @@ export default async function ProdutosPage({ searchParams }: Props) {
 
       {sp.ok && <Aviso>Produto {sp.ok} salvo.</Aviso>}
       {sp.erro === "checkout" && <Aviso tom="ruim">O link de checkout de {sp.id} precisa começar com https://. Nada foi salvo.</Aviso>}
+      {sp.erro === "plano_incompleto" && (
+        <Aviso tom="ruim">
+          {sp.id} não pode ser ativado: o conteúdo do Plano dessa dimensão ainda não está completo e aprovado. Nada foi salvo.
+          {sp.id && isDimensionId(sp.id.slice(5)) && (
+            <span className="mt-1 block text-xs">Falta: {pendenciasPlano(sp.id.slice(5) as DimensionId).join(" · ")}</span>
+          )}
+        </Aviso>
+      )}
       <div className="mb-8 max-w-3xl rounded-[var(--radius-epic)] border border-linha bg-papel-claro p-4 text-sm text-mineral-escuro">
         <p>
           <strong className="text-grafite">Como ligar um produto à Kiwify.</strong> Crie o produto na Kiwify, copie o link do

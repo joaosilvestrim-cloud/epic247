@@ -5,10 +5,10 @@ import {
   getTracking,
   getMetaCapiTokenConfigurado,
 } from "@/lib/settings";
-import type { Conteudo } from "@/lib/conteudos";
-import { getResumoOrigem } from "@/lib/origem-resumo";
+import type { Conteudo } from "@/legacy/ciclo1/conteudos";
+import { getResumoOrigem } from "@/legacy/ciclo1/origem-resumo";
 import AdminLogin from "@/components/admin-login";
-import AdminDashboard, { type LeadRow } from "@/components/admin-dashboard";
+import AdminDashboard, { type LeadRow } from "@/legacy/ciclo1/components/admin-dashboard";
 
 export const dynamic = "force-dynamic";
 

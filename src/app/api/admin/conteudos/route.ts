@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/admin-auth";
 import { getServiceClient } from "@/lib/supabase";
-import { isStatus } from "@/lib/conteudos";
+import { isStatus } from "@/legacy/ciclo1/conteudos";
 
 const CAMPOS = [
   "semana",

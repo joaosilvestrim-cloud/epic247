@@ -1,4 +1,5 @@
 import "server-only";
+import { segredoDoSite } from "./segredo";
 import { createHmac } from "node:crypto";
 import { withTx, type Q } from "./db";
 
@@ -68,7 +69,7 @@ export async function enviarFilaCrm(limite = 50): Promise<RelatorioCrm> {
   const rel: RelatorioCrm = { enviados: 0, falhas: 0 };
   const url = process.env.CRM_WEBHOOK_URL;
   if (!url) return rel;
-  const segredo = process.env.CRM_WEBHOOK_SECRET || process.env.EPIC_SECRET || "";
+  const segredo = process.env.CRM_WEBHOOK_SECRET || segredoDoSite();
   for (let i = 0; i < limite; i++) {
     const houve = await withTx(async (q) => {
       const [item] = await q<{ id: number; payload: Record<string, unknown>; retry_count: number }>(

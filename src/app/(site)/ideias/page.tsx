@@ -255,7 +255,7 @@ export default async function IdeiasPage({ searchParams }: Props) {
             </div>
           </div>
           <div className="self-end">
-            <NewsletterForm claro consentimento={I.newsletter.consentimento} />
+            <NewsletterForm claro aceiteCaixa={I.newsletter.consentimento} micro={I.newsletter.micro} rotuloCampo={I.newsletter.campo} />
           </div>
         </Container>
       </section>

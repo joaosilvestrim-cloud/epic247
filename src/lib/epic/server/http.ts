@@ -1,4 +1,5 @@
 import "server-only";
+import { segredoDoSite } from "./segredo";
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { withTx } from "./db";
@@ -48,7 +49,7 @@ export const str = (v: unknown, n = 300) => (typeof v === "string" && v.trim() ?
  */
 export async function excedeuLimite(req: Request, rota: string, maximo: number, janelaSegundos: number): Promise<boolean> {
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || req.headers.get("x-real-ip") || "sem-ip";
-  const segredo = process.env.EPIC_SECRET ?? "epic247";
+  const segredo = segredoDoSite();
   const chave = `${rota}:${createHash("sha256").update(`${segredo}:${ip}`).digest("hex").slice(0, 24)}`;
   const janela = new Date(Math.floor(Date.now() / (janelaSegundos * 1000)) * janelaSegundos * 1000).toISOString();
   try {

@@ -1,5 +1,5 @@
 // Templates canônicos de Plano EPIC 7 Dias e Kit EPIC [Dimensão]
-// (Copy Final §25 e §26). PROPOSTA FINAL. [DIMENSÃO] entra pelos parâmetros.
+// (Copy Final §25 e §26). APROVADO (Editorial Freeze 02/10/2026). [DIMENSÃO] entra pelos parâmetros.
 // Preços e meios de pagamento vêm do catálogo/checkout, nunca daqui.
 
 export const PLANO_PAGINA = {
@@ -70,11 +70,11 @@ export const PLANO_PAGINA = {
   faq: [
     {
       p: "O Plano é feito pela Ju pessoalmente?",
-      r: "Não. O Plano é gerado automaticamente e personalizado a partir das suas respostas no Mapa.",
+      r: "Não. Quando o Plano for gerado automaticamente, ele será personalizado a partir das suas respostas no Mapa.",
     },
     {
       p: "Preciso fazer o Mapa antes?",
-      r: "O Plano depende das suas respostas para ser personalizado. Na jornada padrão, ele é oferecido depois do Mapa da dimensão. Se você comprar antes, o Plano fica pronto assim que você terminar o Mapa.",
+      r: "O Plano depende de respostas suficientes para ser personalizado. Na jornada padrão, ele é oferecido após o Mapa da dimensão.",
     },
     {
       p: "É um curso?",
@@ -189,7 +189,7 @@ export const KIT_PAGINA = {
   faq: (d: string) => [
     {
       p: "Preciso fazer o Mapa antes?",
-      r: "Não. A escada do EPIC247 não é obrigatória. O Mapa pode ajudar a identificar onde está a principal fricção, mas o Kit pode ser comprado diretamente quando você já reconhece que quer trabalhar aquela dimensão.",
+      r: "Não. A escada do EPIC247 não é obrigatória. O Mapa pode ajudar a identificar onde está a principal fricção, mas o Kit pode ser comprado diretamente quando a pessoa já reconhece que quer trabalhar aquela dimensão.",
     },
     {
       p: "Preciso comprar o Plano de 7 Dias antes?",
@@ -202,7 +202,7 @@ export const KIT_PAGINA = {
     },
     {
       p: "O Kit tem acompanhamento individual?",
-      r: "Não. O Kit é Manual + Workbook + ferramentas práticas. Acompanhamento individual pertence à Mentoria EPIC Individual.",
+      r: "Não. A composição aprovada do Kit é Manual + Workbook + ferramentas práticas. Acompanhamento individual pertence à Mentoria EPIC Individual.",
     },
     {
       p: "O Kit garante resultado?",

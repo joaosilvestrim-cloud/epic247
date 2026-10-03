@@ -5,9 +5,13 @@ import { createHash } from "node:crypto";
 // nomenclatura da Kiwify passa daqui para o domínio, exceto provider_status_raw,
 // que é só auditoria.
 //
-// Os nomes de evento e status abaixo seguem os payloads recebidos e a
-// documentação pública da Kiwify. Os marcados "a confirmar" precisam ser
-// conferidos contra um payload real antes da produção.
+// Mapeamento fechado (auditoria Entrega 01, NC-05): só entram os eventos e
+// status do webhook de produto da Kiwify (gatilhos documentados: compra
+// aprovada, recusada, reembolsada, chargeback, boleto e Pix gerados).
+// Qualquer valor fora desta lista NÃO é adivinhado: o evento fica gravado
+// como "ignorado", com o valor bruto, para revisão no admin, e nunca libera
+// nem retira acesso. Se a homologação com pagamento real trouxer um valor
+// novo, ele entra aqui com teste (kiwify.test.ts).
 
 /** Estado interno da transação (transactions.transaction_status). */
 export type StatusTransacao = "pending" | "approved" | "refused" | "refunded" | "chargeback" | "cancelled";
@@ -67,20 +71,14 @@ export const EVENTOS_KIWIFY: Record<string, Normalizado> = {
 /** order_status da Kiwify (usado quando o tipo de evento não decide). */
 export const STATUS_KIWIFY: Record<string, Normalizado> = {
   paid: APROVADO,
-  approved: APROVADO, // a confirmar
   waiting_payment: AGUARDANDO,
-  pending: AGUARDANDO, // a confirmar
-  processing: AGUARDANDO, // a confirmar
-  authorized: AGUARDANDO, // a confirmar: cartão autorizado, ainda não capturado
   refused: RECUSADO,
-  rejected: RECUSADO, // a confirmar
   refunded: REEMBOLSO,
   chargedback: CHARGEBACK,
-  chargeback: CHARGEBACK, // a confirmar
-  canceled: CANCELADO, // a confirmar
-  cancelled: CANCELADO, // a confirmar
-  expired: CANCELADO, // a confirmar: boleto ou Pix vencido
 };
+
+/** Reservado para status de cancelamento/expiração, se a homologação mostrar que existem. */
+export const STATUS_CANCELADO = CANCELADO;
 
 /** Traduz evento e status da Kiwify. null = não muda a venda (ex.: assinatura, pedido de reembolso em análise). */
 export function normalizarKiwify(evento: string | null, statusPedido: string | null): Normalizado | null {
@@ -143,7 +141,8 @@ export function interpretarKiwify(p: Record<string, unknown>): EventoCheckout {
   const evento = texto(p.webhook_event_type);
   const statusPedido = texto(p.order_status);
   const pedido = texto(p.order_id);
-  // a confirmar: a Kiwify não documenta id de evento; se vier, tem prioridade.
+  // O webhook de produto não traz id de evento (a deduplicação usa pedido +
+  // evento). Se um dia vier, ele tem prioridade (Modelo de Dados §65).
   const eventoId = texto(p.webhook_event_id) ?? texto(p.event_id);
 
   // Carrinho abandonado vem num formato próprio, sem order_id.

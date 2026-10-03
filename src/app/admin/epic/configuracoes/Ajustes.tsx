@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { MarketingView, UploadCard } from "@/components/admin-dashboard";
+import { MarketingView, UploadCard } from "@/components/epic/admin/Marketing";
 import { SETTING_KEYS, type TrackingSettings } from "@/lib/settings";
 
 /**

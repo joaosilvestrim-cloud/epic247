@@ -11,7 +11,7 @@ import {
   type Anexo,
   type Conteudo,
   type ConteudoStatus,
-} from "@/lib/conteudos";
+} from "@/legacy/ciclo1/conteudos";
 
 function hojeISO() {
   const d = new Date();

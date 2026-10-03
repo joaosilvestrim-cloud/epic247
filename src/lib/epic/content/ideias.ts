@@ -1,4 +1,4 @@
-// Página Ideias (Copy Final §23). PROPOSTA FINAL.
+// Página Ideias (Copy Final §23). APROVADO (Editorial Freeze 02/10/2026).
 // As perguntas por dimensão são as mesmas do mega-menu (navegacao.ts).
 
 export const IDEIAS_PAGINA = {
@@ -86,7 +86,10 @@ export const IDEIAS_PAGINA = {
       "Sem a obrigação de transformar toda mensagem em aula ou oferta.",
       "A proposta é continuar a conversa com mais espaço e menos ruído.",
     ],
-    consentimento: "Ao assinar, você recebe ideias, conteúdos e novidades do EPIC247. Você pode sair quando quiser.",
+    // Opt-in explícito (Copy Final §23.9 e §23.13): caixa de aceite + microcopy.
+    consentimento: "Quero receber ideias, conteúdos e novidades do EPIC247.",
+    micro: "Você pode sair quando quiser.",
+    campo: "Seu melhor e-mail",
   },
   movimento: {
     eyebrow: "Nem toda ideia precisa virar produto",

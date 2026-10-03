@@ -1,6 +1,6 @@
-// Home (Copy Final do Site §4 e §7). PROPOSTA FINAL: texto do documento,
-// sem reescrita, aguardando validação de Luiz/Ju. A ordem dos blocos é a do
-// documento; o layout está em src/app/(site)/page.tsx.
+// Home (Copy Final do Site §4 e §7). APROVADO no Editorial Freeze de
+// 02/10/2026: texto literal do documento (conferido por copy-final.test.ts).
+// A ordem dos blocos é a do documento; o layout está em src/app/(site)/page.tsx.
 
 import type { DimensionId } from "../dimensions";
 
@@ -240,26 +240,7 @@ export const CARD_DIMENSAO: Record<DimensionId, { pergunta: string; texto: strin
   },
 };
 
-/** Manifesto v1 (Posicionamento §12). Aprovado. */
+/** Promessa de marca (Posicionamento §9; fecha a Home e o rodapé na Copy Final). */
 export const MANIFESTO = {
-  abertura: [
-    "A vida pode estar funcionando e ainda assim não estar fazendo sentido.",
-    "Você pode ser competente, responsável, inteligente e continuar adiando uma conversa, uma mudança, um projeto, uma escolha ou uma parte importante de si mesmo.",
-    "Pode saber exatamente o que fazer e ainda não conseguir fazer.",
-    "Pode ter conquistado muito e, mesmo assim, sentir que alguma coisa ficou para trás.",
-    "Nós não acreditamos que isso se resolva com mais uma frase de motivação.",
-    "Nem com mais cobrança.",
-    "Nem com a promessa de uma vida perfeita.",
-    "Mudanças reais precisam de condições reais.",
-  ],
-  fechamento: [
-    "Chamamos esse conjunto de Infraestrutura Humana.",
-    "O EPIC247 existe para ajudar você a enxergar onde sua vida está encontrando fricção, entender o que está acontecendo e construir condições para avançar.",
-    "Sem fórmula mágica.",
-    "Sem personagem perfeito.",
-    "Sem precisar esperar a hora ideal.",
-    "Porque viver conscientemente não é controlar tudo o que acontece.",
-    "É participar das escolhas que constroem quem você está se tornando.",
-  ],
   promessa: "Da vida que acontece para a vida que você escolhe.",
 };

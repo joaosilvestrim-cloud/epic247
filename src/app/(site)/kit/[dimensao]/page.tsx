@@ -12,7 +12,7 @@ import { KIT_PAGINA as K } from "@/lib/epic/content/paginas-produto";
 import { FUNCAO_KIT } from "@/lib/epic/content/produtos";
 import { DIMENSION_IDS, DIMENSIONS, isDimensionId, mapPath } from "@/lib/epic/dimensions";
 import { formatPrice } from "@/lib/epic/products";
-import { metadados, produtoLd } from "@/lib/epic/seo";
+import { metadados, NAO_INDEXAR, produtoLd } from "@/lib/epic/seo";
 import { ofertasPermitidas, perfilAtual } from "@/lib/epic/server/perfil";
 import { listarProdutos, vendavel } from "@/lib/epic/server/produtos";
 import { dimensaoVisivel, mapaVisivel } from "@/lib/epic/site";
@@ -28,7 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { dimensao } = await params;
   if (!isDimensionId(dimensao)) return {};
   const nome = DIMENSIONS[dimensao].name;
-  return metadados({ titulo: K.seo.titulo(nome), tituloAbsoluto: true, descricao: K.seo.descricao(nome), caminho: `/kit/${dimensao}` });
+  const base = metadados({ titulo: K.seo.titulo(nome), tituloAbsoluto: true, descricao: K.seo.descricao(nome), caminho: `/kit/${dimensao}` });
+  // Produto fora de venda pode existir para QA, mas não entra na busca (NC-12).
+  const p = (await listarProdutos()).find((x) => x.product_id === `kit_${dimensao}`);
+  return vendavel(p) ? base : { ...base, robots: NAO_INDEXAR };
 }
 
 const minuscula = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);

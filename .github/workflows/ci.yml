@@ -1,0 +1,65 @@
+# CI do EPIC247 2.0 (auditoria Entrega 01, EA-01).
+# - verificar: instalação limpa, testes unitários e build, em todo push e PR.
+# - qa: fluxo ponta a ponta (npm run qa) contra o banco de STAGING. Só roda se
+#   o segredo STAGING_DATABASE_URL estiver cadastrado no repositório
+#   (Settings > Secrets and variables > Actions). Nunca usa produção: o
+#   script recusa o schema v2.
+name: CI
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_EPIC_ENV: staging
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  qa:
+    needs: verificar
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_EPIC_ENV: staging
+      NEXT_PUBLIC_SITE_URL: http://localhost:3100
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+      EPIC_DB_SCHEMA: v2_staging
+      EPIC_SECRET: ${{ secrets.STAGING_EPIC_SECRET }}
+      CRON_SECRET: ${{ secrets.STAGING_CRON_SECRET }}
+      ADMIN_PASSWORD: ${{ secrets.STAGING_ADMIN_PASSWORD }}
+      EPIC_EMAIL_MODE: simulate
+      EPIC_PLANO_SEM_APROVACAO: "1"
+      QA_URL: http://localhost:3100
+    steps:
+      - name: Sem segredos de staging, o QA ponta a ponta não roda
+        if: env.DATABASE_URL == ''
+        run: echo "Cadastre STAGING_DATABASE_URL, STAGING_EPIC_SECRET, STAGING_CRON_SECRET e STAGING_ADMIN_PASSWORD para ligar o QA."
+      - uses: actions/checkout@v4
+        if: env.DATABASE_URL != ''
+      - uses: actions/setup-node@v4
+        if: env.DATABASE_URL != ''
+        with:
+          node-version: 24
+          cache: npm
+      - if: env.DATABASE_URL != ''
+        run: npm ci
+      - if: env.DATABASE_URL != ''
+        run: npm run build
+      - name: Sobe o servidor e roda o QA
+        if: env.DATABASE_URL != ''
+        run: |
+          npx next start -p 3100 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3100/ && break; sleep 2; done
+          npm run qa

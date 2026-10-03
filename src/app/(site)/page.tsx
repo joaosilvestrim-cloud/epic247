@@ -233,11 +233,11 @@ export default async function Home() {
               </div>
               <div>
                 <dt>resultado</dt>
-                <dd className="mt-1 font-display text-3xl text-papel">na hora</dd>
+                <dd className="mt-1 font-display text-3xl text-papel">imediato</dd>
               </div>
               <div>
-                <dt>custo</dt>
-                <dd className="mt-1 font-display text-3xl text-papel">zero</dd>
+                <dt>Mapa</dt>
+                <dd className="mt-1 font-display text-3xl text-papel">gratuito</dd>
               </div>
             </dl>
             <PrimaryCTA href="/mapa" escuro>

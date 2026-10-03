@@ -1,5 +1,5 @@
 // Converte as 10 páginas de dimensão da "Copy Final do Site" em dados.
-// Uso: node scripts/v2-copy-final.mjs <copy-final.txt>
+// Uso: node scripts/v2-copy-final.mjs [docs/v2/fontes/copy-final.txt]
 // Entrada: o texto do documento exportado (uma linha por parágrafo).
 // Saída: src/lib/epic/content/copy-final/dimensoes.json
 //
@@ -9,8 +9,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const entrada = process.argv[2];
-if (!entrada) throw new Error("informe o caminho do texto da Copy Final");
+import crypto from "node:crypto";
+
+// Fonte: o texto exportado do Google Docs congelado (Editorial Freeze 02/10/2026).
+const entrada = process.argv[2] ?? path.join("docs", "v2", "fontes", "copy-final.txt");
 const linhas = fs
   .readFileSync(entrada, "utf8")
   .split(/\r?\n/)
@@ -363,6 +365,10 @@ for (const p of Object.values(paginas)) {
 
 const destino = path.join("src", "lib", "epic", "content", "copy-final", "dimensoes.json");
 fs.mkdirSync(path.dirname(destino), { recursive: true });
-fs.writeFileSync(destino, JSON.stringify(paginas, null, 2) + "\n");
+// Carimbo da fonte: copy-final.test.ts recalcula o hash e falha se o texto
+// do repositório e os dados gerados se separarem (drift).
+const fonte = fs.readFileSync(entrada, "utf8").replace(/\r/g, "");
+const _meta = { fonte: entrada.split(path.sep).join("/"), sha256: crypto.createHash("sha256").update(fonte).digest("hex") };
+fs.writeFileSync(destino, JSON.stringify({ _meta, ...paginas }, null, 2) + "\n");
 const resumo = Object.entries(paginas).map(([k, v]) => `${k}: ${v.blocos.length} blocos`);
 console.log(resumo.join("\n"));

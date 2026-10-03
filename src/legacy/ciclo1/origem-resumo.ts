@@ -1,4 +1,4 @@
-import { getServiceClient } from "./supabase";
+import { getServiceClient } from "@/lib/supabase";
 
 // Resumo de origem para o /admin (servidor). Usa a função origem_resumo
 // criada em supabase/003_origem.sql, que agrega no banco.

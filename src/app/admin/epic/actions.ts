@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { exigirAdmin } from "@/lib/epic/server/admin";
+import { planoVendavel } from "@/lib/epic/server/produtos";
 import { withTx } from "@/lib/epic/server/db";
 import { dispararFila } from "@/lib/epic/server/dispatcher";
 import { isDimensionId } from "@/lib/epic/dimensions";
@@ -27,6 +28,11 @@ export async function salvarProduto(f: FormData) {
   const checkout = s(f, "checkout_url", 300);
   if (checkout && !/^https:\/\//.test(checkout)) redirect(`/admin/epic/produtos?erro=checkout&id=${id}#${id}`);
   const ativo = f.get("active") === "on";
+  // Trava NC-07: Plano só ativa com conteúdo da dimensão completo e aprovado.
+  const dimPlano = id.startsWith("plan_") ? id.slice(5) : null;
+  if (ativo && dimPlano && isDimensionId(dimPlano) && !planoVendavel(dimPlano)) {
+    redirect(`/admin/epic/produtos?erro=plano_incompleto&id=${id}#${id}`);
+  }
   await withTx((q) =>
     q(
       `update products set price_list = coalesce($2::numeric, price_list), checkout_url = $3::text,

@@ -1,4 +1,4 @@
-// Página Contato (Copy Final §24). PROPOSTA FINAL.
+// Página Contato (Copy Final §24). APROVADO (Editorial Freeze 02/10/2026).
 // Sem prazo de resposta prometido: a operação ainda não definiu SLA.
 
 export const ASSUNTOS = {

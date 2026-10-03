@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/admin-auth";
-import { getDetalheOrigem, periodoValido } from "@/lib/origem-resumo";
+import { getDetalheOrigem, periodoValido } from "@/legacy/ciclo1/origem-resumo";
 
 /** Funil, abandono do quiz e perfil para a aba Origem do /admin. */
 export async function GET(request: Request) {

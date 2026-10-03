@@ -12,7 +12,7 @@ import { ESTRUTURA_PLANO } from "@/lib/epic/content/produtos";
 import { DIMENSION_IDS, DIMENSIONS, isDimensionId, mapPath } from "@/lib/epic/dimensions";
 import { getDimensionalMap } from "@/lib/epic/maps";
 import { formatPrice } from "@/lib/epic/products";
-import { metadados, produtoLd } from "@/lib/epic/seo";
+import { metadados, NAO_INDEXAR, produtoLd } from "@/lib/epic/seo";
 import { withTx } from "@/lib/epic/server/db";
 import { resultadoPorToken } from "@/lib/epic/server/mapas";
 import { ofertasPermitidas, perfilAtual } from "@/lib/epic/server/perfil";
@@ -30,7 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { dimensao } = await params;
   if (!isDimensionId(dimensao)) return {};
   const nome = DIMENSIONS[dimensao].name;
-  return metadados({ titulo: P.seo.titulo(nome), tituloAbsoluto: true, descricao: P.seo.descricao(nome), caminho: `/plano/${dimensao}` });
+  const base = metadados({ titulo: P.seo.titulo(nome), tituloAbsoluto: true, descricao: P.seo.descricao(nome), caminho: `/plano/${dimensao}` });
+  // Produto fora de venda pode existir para QA, mas não entra na busca (NC-12).
+  const p = (await listarProdutos()).find((x) => x.product_id === `plan_${dimensao}`);
+  return vendavel(p) ? base : { ...base, robots: NAO_INDEXAR };
 }
 
 /** Eixo prioritário do resultado que trouxe a pessoa até aqui (sem expor respostas). */

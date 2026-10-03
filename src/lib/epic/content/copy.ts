@@ -1,8 +1,8 @@
 // Copy com status (Blueprint §30 e v1.2 §54.4, RF-087, RF-095).
 // - string: texto APROVADO. Aparece sempre.
-// - proposta(): texto da "Copy Final do Site" em PROPOSTA FINAL. É texto
-//   do cliente, completo, aguardando a validação de Luiz/Ju (RC1 §8).
-//   Aparece em todo ambiente; o status fica marcado no código e no admin.
+// - proposta(): texto da "Copy Final do Site". Desde o Editorial Freeze
+//   (02/10/2026) é texto aprovado; o nome ficou só para não mexer nos usos.
+//   Aparece em todo ambiente.
 // - pendente(): rascunho nosso. Só em staging, marcado.
 
 export type Copy = string | { pendente: string } | { proposta: string };

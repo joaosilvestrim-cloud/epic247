@@ -1,14 +1,11 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { segredoDoSite } from "./segredo";
 
 // Links assinados (descadastro). Sem login: o link do e-mail prova que a
 // pessoa tem acesso àquela caixa. A assinatura impede descadastrar terceiros.
 
-function segredo() {
-  const s = process.env.EPIC_SECRET;
-  if (!s) throw new Error("EPIC_SECRET não configurado");
-  return s;
-}
+const segredo = segredoDoSite;
 
 export function assinar(valor: string, finalidade: string): string {
   return createHmac("sha256", segredo()).update(`${finalidade}:${valor}`).digest("base64url").slice(0, 32);

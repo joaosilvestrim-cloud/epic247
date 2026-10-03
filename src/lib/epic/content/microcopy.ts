@@ -1,4 +1,4 @@
-// Sistema global de microcopy (Copy Final §27, PROPOSTA FINAL).
+// Sistema global de microcopy (Copy Final §27, APROVADO no Editorial Freeze 02/10/2026).
 // Chaves reutilizáveis: nenhuma tela escreve a própria versão destas frases
 // (§27.33). Strings simples porque também rodam em componentes de cliente.
 // Mentoria (§27.21-23) fica com o fluxo da Mentoria.

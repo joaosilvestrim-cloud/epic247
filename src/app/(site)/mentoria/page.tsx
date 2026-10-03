@@ -10,7 +10,8 @@ import { temCopy } from "@/lib/epic/content/copy";
 import { MENTORIA_FORM, MENTORIA_PAGINA as M, MENTORIA_SEO } from "@/lib/epic/content/mentoria";
 import { SITE } from "@/lib/epic/seo";
 import { perfilAtual } from "@/lib/epic/server/perfil";
-import { capacidadeMentoria } from "@/lib/epic/server/produtos";
+import { formatPrice } from "@/lib/epic/products";
+import { capacidadeMentoria, listarProdutos } from "@/lib/epic/server/produtos";
 
 export const dynamic = "force-dynamic";
 
@@ -88,7 +89,17 @@ function Destaque({ linhas, escuro = false }: { linhas: string[]; escuro?: boole
 }
 
 export default async function MentoriaPage({ searchParams }: Props) {
-  const [vagas, perfil, sp] = await Promise.all([capacidadeMentoria(), perfilAtual(), searchParams]);
+  const [vagas, perfil, sp, produtos] = await Promise.all([capacidadeMentoria(), perfilAtual(), searchParams, listarProdutos()]);
+  // Preço exibido vem do catálogo (fonte comercial vigente, editável no admin),
+  // não do texto: o "R$..." da Copy é trocado pelo valor atual do produto.
+  const precoDe = (id: string) => {
+    const p = produtos.find((x) => x.product_id === id);
+    return p ? formatPrice(p.price_list) : null;
+  };
+  const comPreco = (texto: string, id: string) => {
+    const v = precoDe(id);
+    return v ? texto.replace(/R\$\s?[\d.]+(,\d{2})?/, v) : texto;
+  };
   // Mentoria ativa: sem campanha de aquisição como CTA principal (Microcopy §31, RF-041).
   const cliente = Boolean(perfil?.mentoring_purchased);
   const espera = !vagas.disponivel;
@@ -250,7 +261,9 @@ export default async function MentoriaPage({ searchParams }: Props) {
                   </div>
                   <div>
                     <dt className="font-mono text-xs text-latao-escuro">{c.precoRotulo}</dt>
-                    <dd className="mt-1 font-display text-2xl text-grafite">{c.preco}</dd>
+                    <dd className="mt-1 font-display text-2xl text-grafite">
+                      {comPreco(c.preco, c.href === "/protocolo" ? "protocol" : "mentoring")}
+                    </dd>
                   </div>
                 </dl>
                 {c.href && (
@@ -331,7 +344,7 @@ export default async function MentoriaPage({ searchParams }: Props) {
           <div>
             <p className={`mb-4 ${eyebrow}`}>{M.investimento.eyebrow}</p>
             <h2 className="revelar font-display text-[1.9rem] font-normal leading-[1.15] text-grafite sm:text-[2.4rem]">
-              {M.investimento.titulo}
+              {comPreco(M.investimento.titulo, "mentoring")}
             </h2>
             <p className="mb-3 mt-8 text-grafite">{M.investimento.intro}</p>
             <Lista itens={M.investimento.itens} />

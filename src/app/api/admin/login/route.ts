@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE, makeToken, senhaConfere, adminConfigurado } from "@/lib/admin-auth";
+import { ADMIN_COOKIE, makeToken, senhaConfere, adminConfigurado, SESSAO_ADMIN_SEGUNDOS } from "@/lib/admin-auth";
+import { excedeuLimite } from "@/lib/epic/server/http";
 
 export async function POST(request: Request) {
   if (!adminConfigurado()) {
@@ -7,6 +8,12 @@ export async function POST(request: Request) {
       { error: "ADMIN_PASSWORD não configurada no servidor." },
       { status: 500 }
     );
+  }
+
+  // Força bruta (auditoria NC-14): 5 tentativas por IP a cada 15 minutos.
+  if (await excedeuLimite(request, "admin-login", 5, 900)) {
+    console.warn("[admin] login bloqueado por excesso de tentativas");
+    return NextResponse.json({ error: "Muitas tentativas. Espere 15 minutos e tente de novo." }, { status: 429 });
   }
 
   let body: unknown;
@@ -18,6 +25,8 @@ export async function POST(request: Request) {
 
   const senha = (body as { senha?: unknown })?.senha;
   if (typeof senha !== "string" || !senhaConfere(senha)) {
+    // Registro sem dado pessoal: só o fato e a hora (o log da Vercel já tem a hora).
+    console.warn("[admin] tentativa de login com senha incorreta");
     return NextResponse.json({ error: "Senha incorreta." }, { status: 401 });
   }
 
@@ -26,9 +35,9 @@ export async function POST(request: Request) {
   res.cookies.set(ADMIN_COOKIE, token!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 dias
+    maxAge: SESSAO_ADMIN_SEGUNDOS,
   });
   return res;
 }

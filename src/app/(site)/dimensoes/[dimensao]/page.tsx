@@ -4,7 +4,6 @@ import { BlocoDimensao, type ContextoDimensao } from "@/components/epic/BlocosDi
 import JsonLd from "@/components/epic/JsonLd";
 import Retorno from "@/components/epic/Retorno";
 import Visualizacao from "@/components/epic/Visualizacao";
-import { DraftRibbon } from "@/components/epic/ui";
 import { IS_PRODUCTION } from "@/lib/epic/content/copy";
 import { paginaDimensao } from "@/lib/epic/content/copy-final";
 import { DIMENSAO_CONTEUDO } from "@/lib/epic/content/dimensoes";
@@ -84,7 +83,6 @@ export default async function DimensaoPage({ params }: Params) {
           ]),
         ]}
       />
-      {!IS_PRODUCTION && <DraftRibbon texto="Proposta final da Copy Final do Site. Aguarda validação de Luiz e Ju." />}
       <Retorno />
       {blocos.map((b) => {
         const numero = numerado.has(b.tipo) ? undefined : String(++n).padStart(2, "0");

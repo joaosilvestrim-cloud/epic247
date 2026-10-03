@@ -1,5 +1,7 @@
 import "server-only";
 import { estadoMentoria } from "../mentoria";
+import { isDimensionId } from "../dimensions";
+import { planoLiberavel } from "../plano/liberacao";
 import { PRODUCTS, type Product } from "../products";
 import { query } from "./db";
 
@@ -23,9 +25,32 @@ export async function produto(id: string): Promise<Product | null> {
   return (await listarProdutos()).find((p) => p.product_id === id) ?? null;
 }
 
-/** Vendável = ativo e com checkout configurado (RF-073). */
+/**
+ * Só para QA automatizado fora de produção: libera Planos sem aprovação
+ * editorial para testar compra e geração. Em produção é ignorado.
+ */
+export const PLANO_LIBERADO_PARA_QA =
+  process.env.NEXT_PUBLIC_EPIC_ENV !== "production" &&
+  process.env.VERCEL_ENV !== "production" &&
+  process.env.EPIC_PLANO_SEM_APROVACAO === "1";
+
+/** Plano da dimensão pode ser vendido (conteúdo aprovado, ou QA fora de produção). */
+export function planoVendavel(d: string): boolean {
+  return PLANO_LIBERADO_PARA_QA || (isDimensionId(d) && planoLiberavel(d));
+}
+
+/**
+ * Vendável = ativo, com checkout configurado (RF-073) e, no Plano, com o
+ * conteúdo da dimensão completo e aprovado (auditoria NC-07). Plano sem
+ * conteúdo aprovado nunca aparece à venda, mesmo se ativado por engano.
+ */
 export const vendavel = (p: Product | null | undefined): p is Product =>
-  Boolean(p && p.active && p.checkout_url);
+  Boolean(
+    p &&
+      p.active &&
+      p.checkout_url &&
+      (p.product_type !== "plan" || planoVendavel(p.product_dimension ?? ""))
+  );
 
 /**
  * Capacidade da Mentoria (RF-035): conta clientes ATIVOS. Ativo = candidatura

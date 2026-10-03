@@ -1,4 +1,4 @@
-// Páginas de dimensão da "Copy Final do Site" v1.0 (PROPOSTA FINAL).
+// Páginas de dimensão da "Copy Final do Site" v1.0 (APROVADO, Editorial Freeze 02/10/2026).
 // dimensoes.json é gerado por scripts/v2-copy-final.mjs a partir do
 // documento: o texto público vem dele, sem reescrita (Blueprint v1.2 §54.1).
 

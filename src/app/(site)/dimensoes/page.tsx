@@ -102,7 +102,6 @@ export default async function DimensoesPage() {
             <p className="revelar mt-5 max-w-md text-lg leading-relaxed text-grafite/80">
               Um plano curto, personalizado a partir das suas respostas, para transformar reconhecimento em uma semana de movimento intencional.
             </p>
-            <p className="mt-4 text-[15px] text-mineral-escuro">Comece pelo Mapa da dimensão. O Plano nasce das suas respostas.</p>
           </div>
           <div id="kits" className="scroll-mt-24">
             <SectionTitle numero="02">Kit EPIC da Dimensão</SectionTitle>

@@ -7,11 +7,11 @@ import FeedbackResultado from "@/components/epic/FeedbackResultado";
 import MarcaMao from "@/components/epic/MarcaMao";
 import EixosMapa from "@/components/epic/EixosMapa";
 import Visualizacao from "@/components/epic/Visualizacao";
-import { C, Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
-import { pendente } from "@/lib/epic/content/copy";
+import { Container, PrimaryCTA, TextCTA } from "@/components/epic/ui";
 import { paginaDimensao } from "@/lib/epic/content/copy-final";
 import { MICRO } from "@/lib/epic/content/microcopy";
 import { NAO_INDEXAR } from "@/lib/epic/seo";
+import { orientacaoProtocolo } from "@/lib/epic/ofertas";
 import { DIMENSIONS, isDimensionId, type DimensionId } from "@/lib/epic/dimensions";
 import { relacaoDoPar } from "@/lib/epic/maps/relacoes";
 import { getDimensionalMap } from "@/lib/epic/maps";
@@ -210,11 +210,11 @@ export default async function ResultadoDimensionalPage({ params }: Params) {
       <section className="border-y border-linha bg-papel-claro">
         <Container estreito className="py-14">
           {regras.jaTemProtocolo ? (
+            // RF-081: sem nova oferta; orienta para o módulo desta dimensão no Protocolo.
             <div>
-              <p className="font-mono text-sm text-latao-escuro">Você já tem o Protocolo EPIC247</p>
-              <p className="mt-3 font-display text-2xl text-grafite">
-                <C v={pendente(`Use este resultado para começar pelo módulo de ${d.name} do Protocolo.`)} />
-              </p>
+              <p className="font-mono text-sm text-latao-escuro">Protocolo EPIC247 · {orientacaoProtocolo(dimensao).rotulo}</p>
+              <p className="mt-3 font-display text-2xl leading-snug text-grafite">{orientacaoProtocolo(dimensao).funcao}</p>
+              <p className="mt-3 text-grafite/80">{orientacaoProtocolo(dimensao).sequencia}</p>
             </div>
           ) : (
             <div className="space-y-5">

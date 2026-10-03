@@ -14,6 +14,23 @@ import { processarWebhook } from "@/lib/epic/server/webhooks";
 export async function POST(req: Request) {
   const corpo = await req.text();
   if (!PROVEDOR.assinaturaValida(corpo, req)) {
+    // Diagnóstico para a homologação (NC-05), sem dado pessoal: o formato da
+    // assinatura e do payload aparece no log da Vercel se o primeiro webhook
+    // real não bater com o esperado.
+    try {
+      const p = JSON.parse(corpo) as Record<string, unknown>;
+      const url = new URL(req.url);
+      console.warn("[kiwify] assinatura recusada", {
+        temSignature: url.searchParams.has("signature"),
+        tamanhoSignature: (url.searchParams.get("signature") ?? "").length,
+        cabecalhos: [...req.headers.keys()].filter((h) => /sign|token|kiwify|hmac/i.test(h)),
+        campos: Object.keys(p).slice(0, 40),
+        evento: p.webhook_event_type ?? p.type ?? null,
+        status: p.order_status ?? null,
+      });
+    } catch {
+      console.warn("[kiwify] assinatura recusada (corpo não é JSON)");
+    }
     return NextResponse.json({ ok: false, error: "assinatura inválida" }, { status: 401 });
   }
   let payload: Record<string, unknown>;

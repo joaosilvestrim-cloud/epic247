@@ -1,4 +1,4 @@
-// Página do Protocolo EPIC247 (Copy Final §20). PROPOSTA FINAL.
+// Página do Protocolo EPIC247 (Copy Final §20). APROVADO (Editorial Freeze 02/10/2026).
 // Preço e condições de pagamento vêm do catálogo/checkout (fonte comercial).
 
 import type { DimensionId } from "../dimensions";
@@ -96,7 +96,7 @@ export const PROTOCOLO_PAGINA = {
       "sequência recomendada das 10 etapas",
       "mapa de progresso",
       "orientações de aplicação",
-      "conexão entre as dimensões para evitar trabalhar sintomas isoladamente",
+      "conexão entre as dimensões para não olhar cada questão de forma isolada",
     ],
   },
   paraQuem: {
@@ -177,7 +177,7 @@ export const PROTOCOLO_PAGINA = {
   faq: [
     {
       p: "Preciso fazer as 10 dimensões obrigatoriamente na ordem?",
-      r: "O Protocolo possui uma sequência recomendada porque as dimensões formam um sistema. Ao mesmo tempo, os Mapas ajudam a reconhecer qual área pede mais atenção no momento. Você pode usar esse contexto sem transformar a jornada em uma regra rígida e cega à vida real.",
+      r: "O Protocolo possui uma sequência recomendada porque as dimensões formam um sistema. Ao mesmo tempo, os Mapas ajudam a reconhecer qual área pede mais atenção no momento. A orientação de aplicação deve permitir usar esse contexto sem transformar a jornada em uma regra rígida e cega à vida real.",
     },
     {
       p: "Posso comprar o Protocolo sem ter feito nenhum Mapa?",

@@ -12,13 +12,21 @@ export default function NewsletterForm({
   claro = false,
   texto,
   consentimento,
+  aceiteCaixa,
+  micro,
+  rotuloCampo = "Seu e-mail",
 }: {
   claro?: boolean;
   texto?: string | null;
   consentimento?: string | null;
+  /** Opt-in em caixa de marcação (Ideias, Copy Final §23.9). Sem ela, assinar é o aceite. */
+  aceiteCaixa?: string | null;
+  micro?: string | null;
+  rotuloCampo?: string;
 }) {
   const id = useId();
   const [email, setEmail] = useState("");
+  const [aceite, setAceite] = useState(false);
   const [estado, setEstado] = useState<"livre" | "enviando" | "ok">("livre");
   const [erro, setErro] = useState<string | null>(null);
 
@@ -27,6 +35,7 @@ export default function NewsletterForm({
     setErro(null);
     if (!email.trim()) return setErro(MICRO.form.emailVazio);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setErro(MICRO.form.emailInvalido);
+    if (aceiteCaixa && !aceite) return setErro(MICRO.form.obrigatorio);
     setEstado("enviando");
     const isca = (new FormData(e.currentTarget).get("website") as string) ?? "";
     try {
@@ -52,7 +61,7 @@ export default function NewsletterForm({
     <form onSubmit={enviarForm} className="space-y-3" noValidate>
       {texto && <p className={`text-sm leading-relaxed ${claro ? "text-grafite/75" : "text-papel/70"}`}>{texto}</p>}
       <label htmlFor={`${id}-email`} className={`block text-xs ${claro ? "text-grafite/70" : "text-papel/60"}`}>
-        Seu e-mail
+        {rotuloCampo}
       </label>
       <div className="flex gap-2">
         <input
@@ -77,9 +86,22 @@ export default function NewsletterForm({
       </div>
       {/* isca para robôs: invisível para pessoas */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+      {aceiteCaixa ? (
+        <label className={`flex items-start gap-2.5 text-sm leading-snug ${claro ? "text-grafite/85" : "text-papel/80"}`}>
+          <input
+            type="checkbox"
+            checked={aceite}
+            onChange={(e) => setAceite(e.target.checked)}
+            className="mt-0.5 accent-[var(--color-latao)]"
+          />
+          <span>{aceiteCaixa}</span>
+        </label>
+      ) : null}
       <p className={`text-xs leading-snug ${claro ? "text-grafite/65" : "text-papel/55"}`}>
-        {consentimento ??
-          "Ao assinar, você concorda em receber comunicações editoriais do EPIC247. Você pode sair a qualquer momento."}{" "}
+        {aceiteCaixa
+          ? micro
+          : consentimento ??
+            "Ao assinar, você concorda em receber comunicações editoriais do EPIC247. Você pode sair a qualquer momento."}{" "}
         <a href="/privacidade" className="underline underline-offset-2">
           Política de privacidade
         </a>

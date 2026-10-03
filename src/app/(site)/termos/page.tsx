@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
-import { Container, DraftRibbon } from "@/components/epic/ui";
+import { Container } from "@/components/epic/ui";
+import { AVISO_PROVISORIO, legalPublicavel } from "@/lib/epic/content/legal";
+import { NAO_INDEXAR } from "@/lib/epic/seo";
 
-export const metadata: Metadata = { title: "Termos de uso", alternates: { canonical: "/termos" } };
+// Status de publicação em src/lib/epic/content/legal.ts (ver privacidade).
+const PUBLICAVEL = legalPublicavel("termos");
 
-/* RASCUNHO PARA REVISÃO JURÍDICA. */
+export const metadata: Metadata = {
+  title: "Termos de uso",
+  alternates: { canonical: "/termos" },
+  ...(PUBLICAVEL ? {} : { robots: NAO_INDEXAR }),
+};
+
 export default function TermosPage() {
   return (
     <>
-      <DraftRibbon texto="Rascunho para revisão jurídica antes de publicar." />
       <article className="grao">
         <Container estreito className="py-16 sm:py-24">
+          {!PUBLICAVEL && (
+            <p role="note" className="mb-8 rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro px-4 py-3 text-sm text-grafite/80">
+              {AVISO_PROVISORIO}
+            </p>
+          )}
           <h1 className="entrada font-display text-[2.6rem] leading-tight text-grafite">Termos de uso</h1>
           <div className="mt-10 space-y-8 text-[17px] leading-relaxed text-grafite/90">
             <section>

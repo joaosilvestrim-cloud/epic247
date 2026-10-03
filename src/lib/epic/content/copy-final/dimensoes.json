@@ -1,4 +1,8 @@
 {
+  "_meta": {
+    "fonte": "docs/v2/fontes/copy-final.txt",
+    "sha256": "842a214eb66e53b2da6ed1f3f41b184cbb4615e9ca056509ade61b48d15f68a8"
+  },
   "energia": {
     "blocos": [
       {
@@ -13,7 +17,7 @@
         ],
         "sub": [
           "Nem todo cansaço é falta de sono.",
-          "Sua energia também é afetada pela forma como você dorme, se alimenta, lida com o estado de alerta, usa sua atenção e movimenta o corpo."
+          "Sua energia também pode ser influenciada pela forma como você dorme, se alimenta, lida com o estado de alerta, usa sua atenção e movimenta o corpo."
         ],
         "apoio": [
           "Às vezes você não precisa de mais disciplina.",

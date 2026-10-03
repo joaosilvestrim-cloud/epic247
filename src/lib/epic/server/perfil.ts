@@ -37,13 +37,5 @@ export async function perfilAtual(): Promise<PerfilVisitante | null> {
   }
 }
 
-/** Regras de supressão de oferta (RF-038 a RF-041). */
-export function ofertasPermitidas(perfil: PerfilVisitante | null, dimensao: string) {
-  const protocolo = Boolean(perfil?.protocol_purchased);
-  return {
-    plano: !protocolo && !perfil?.plans_owned.includes(dimensao) && !perfil?.kits_owned.includes(dimensao),
-    kit: !protocolo && !perfil?.kits_owned.includes(dimensao),
-    protocolo: !protocolo,
-    jaTemProtocolo: protocolo,
-  };
-}
+/** Regras de supressão de oferta (RF-038 a RF-041): ver src/lib/epic/ofertas.ts. */
+export { ofertasPermitidas } from "../ofertas";

@@ -1,4 +1,4 @@
-// Header, mega-menu e footer (Copy Final §2, §3 e §5). PROPOSTA FINAL.
+// Header, mega-menu e footer (Copy Final §2, §3 e §5). APROVADO (Editorial Freeze 02/10/2026).
 
 import type { DimensionId } from "../dimensions";
 import { proposta, type Copy } from "./copy";

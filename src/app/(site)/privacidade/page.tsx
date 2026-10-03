@@ -1,36 +1,63 @@
 import type { Metadata } from "next";
-import { Container, DraftRibbon } from "@/components/epic/ui";
+import Link from "next/link";
+import { Container } from "@/components/epic/ui";
+import { AVISO_PROVISORIO, CONTROLADOR, legalPublicavel, PAGINAS_LEGAIS } from "@/lib/epic/content/legal";
+import { NAO_INDEXAR } from "@/lib/epic/seo";
+
+// Status de publicação em src/lib/epic/content/legal.ts. Enquanto não
+// aprovada pelo jurídico: no ar (os formulários apontam para cá), sem
+// placeholder, marcada como provisória, noindex e fora do sitemap.
+const PUBLICAVEL = legalPublicavel("privacidade");
+// Versão registrada junto de cada consentimento (RF-063). Mudou o texto,
+// muda a versão em legal.ts e em app_settings.privacy_policy_version.
+const VERSAO = PAGINAS_LEGAIS.privacidade.versao;
 
 export const metadata: Metadata = {
   title: "Política de privacidade",
   alternates: { canonical: "/privacidade" },
+  ...(PUBLICAVEL ? {} : { robots: NAO_INDEXAR }),
 };
 
-// Versão registrada junto de cada consentimento (RF-063). Mudou o texto,
-// muda a versão aqui e em app_settings.privacy_policy_version.
-const VERSAO = "2026-10-01";
+/** Canal para pedidos de privacidade: o e-mail do encarregado, quando definido; senão, o Contato. */
+function Canal() {
+  return CONTROLADOR.emailPrivacidade ? (
+    <a href={`mailto:${CONTROLADOR.emailPrivacidade}`} className="underline underline-offset-2">
+      {CONTROLADOR.emailPrivacidade}
+    </a>
+  ) : (
+    <Link href="/contato?assunto=outro" className="underline underline-offset-2">
+      a página de Contato
+    </Link>
+  );
+}
 
-/*
-  RASCUNHO PARA REVISÃO JURÍDICA. Descreve o que o sistema de fato coleta e
-  faz (verificado no código). Antes da publicação: preencher controlador e
-  contato do encarregado, e validar bases legais.
-*/
 export default function PrivacidadePage() {
   return (
     <>
-      <DraftRibbon texto="Rascunho para revisão jurídica. Preencher razão social, CNPJ e contato do encarregado antes de publicar." />
       <article className="grao">
         <Container estreito className="py-16 sm:py-24">
+          {!PUBLICAVEL && (
+            <p role="note" className="mb-8 rounded-[var(--radius-epic)] border border-latao/50 bg-papel-claro px-4 py-3 text-sm text-grafite/80">
+              {AVISO_PROVISORIO}
+            </p>
+          )}
           <p className="font-mono text-sm text-latao-escuro">Versão {VERSAO}</p>
           <h1 className="entrada mt-4 font-display text-[2.6rem] leading-tight text-grafite">Política de privacidade</h1>
 
           <div className="prosa mt-10 space-y-8 text-[17px] leading-relaxed text-grafite/90">
             <Bloco titulo="Quem é responsável pelos seus dados">
-              <p>
-                O EPIC247 é operado por [RAZÃO SOCIAL], inscrita no CNPJ [NÚMERO], que é a controladora dos dados
-                pessoais tratados neste site. Para qualquer assunto de privacidade, escreva para [E-MAIL DO
-                ENCARREGADO].
-              </p>
+              {CONTROLADOR.razaoSocial && CONTROLADOR.cnpj ? (
+                <p>
+                  O EPIC247 é operado por {CONTROLADOR.razaoSocial}, inscrita no CNPJ {CONTROLADOR.cnpj}, que é a
+                  controladora dos dados pessoais tratados neste site. Para qualquer assunto de privacidade, use <Canal />.
+                </p>
+              ) : (
+                <p>
+                  O EPIC247 é o controlador dos dados pessoais tratados neste site. Os dados de identificação da
+                  empresa serão publicados aqui ao fim da revisão jurídica. Para qualquer assunto de privacidade, use{" "}
+                  <Canal />.
+                </p>
+              )}
             </Bloco>
 
             <Bloco titulo="O que coletamos">
@@ -114,7 +141,7 @@ export default function PrivacidadePage() {
               <p>
                 Você pode pedir acesso, correção, portabilidade ou exclusão dos seus dados, e revogar o
                 consentimento a qualquer momento. Para parar de receber e-mails, use o link no rodapé de qualquer
-                mensagem. Para os demais pedidos, escreva para [E-MAIL DO ENCARREGADO].
+                mensagem. Para os demais pedidos, use <Canal />.
               </p>
             </Bloco>
           </div>

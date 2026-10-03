@@ -2,7 +2,7 @@
   "name": "epic247",
   "version": "0.1.0",
   "private": true,
-  "description": "Ecossistema EPIC247 — Landing Page do Módulo Energia + Quiz de Diagnóstico dos 5 Drenos",
+  "description": "EPIC247 2.0: site, Mapas EPIC (Fricção + 10 dimensões), produtos, CMS e admin",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +10,8 @@
     "lint": "next lint",
     "qa": "node scripts/v2-qa.mjs",
     "qa:admin": "node scripts/v2-qa-admin.mjs",
+    "copy:sync": "node scripts/v2-copy-final.mjs",
+    "db:migrate": "node scripts/v2-migrate.mjs",
     "test": "tsc -p tsconfig.test.json && node --test \".test-build/**/*.test.js\""
   },
   "dependencies": {

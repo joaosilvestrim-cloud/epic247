@@ -25,6 +25,8 @@ const S = process.env.EPIC_DB_SCHEMA;
 if (!S || !/^[a-z_][a-z0-9_]*$/.test(S)) throw new Error("EPIC_DB_SCHEMA ausente ou inválido");
 if (S === "v2") throw new Error("Este QA cria e apaga dados: não roda no schema de produção (v2).");
 const BASE = (process.env.QA_URL || "http://localhost:3100").replace(/\/$/, "");
+// O QA compra o Plano de Energia: o servidor testado precisa subir com
+// EPIC_PLANO_SEM_APROVACAO=1 (só vale fora de produção; ver server/produtos.ts).
 const TOKEN_KIWIFY = process.env.KIWIFY_WEBHOOK_TOKEN || "";
 
 // Configuração dos Mapas: a mesma que o site usa, compilada pelo npm test.

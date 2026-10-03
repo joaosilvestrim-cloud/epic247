@@ -29,7 +29,10 @@ test("sem tipo de evento conhecido, decide pelo order_status", () => {
   assert.equal(normalizarKiwify(null, "paid")?.status, "approved");
   assert.equal(normalizarKiwify("evento_novo", "waiting_payment")?.status, "pending");
   assert.equal(normalizarKiwify(null, "REFUSED")?.status, "refused");
-  assert.equal(normalizarKiwify(null, "canceled")?.status, "cancelled");
+  // Fora do mapeamento fechado: não adivinha (fica "ignorado" para revisão).
+  for (const s of ["canceled", "cancelled", "expired", "approved", "pending", "authorized", "rejected"]) {
+    assert.equal(normalizarKiwify(null, s), null, s);
+  }
   assert.equal(normalizarKiwify("subscription_renewed", null), null);
   assert.equal(normalizarKiwify(null, null), null);
 });

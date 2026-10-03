@@ -18,7 +18,9 @@ for (const l of fs.readFileSync(".env.local", "utf8").split(/\r?\n/)) { const m 
 const S = process.env.EPIC_DB_SCHEMA;
 if (S !== "v2_staging") throw new Error("só staging");
 const BASE = "http://localhost:3100";
-const token = crypto.createHmac("sha256", fs.readFileSync(process.argv[2], "utf8").trim()).update("epic247-admin-v1").digest("hex");
+// Mesmo formato de src/lib/admin-auth.ts: "<expira em ms>.<hmac>".
+const expira = Date.now() + 60 * 60 * 1000;
+const token = `${expira}.${crypto.createHmac("sha256", fs.readFileSync(process.argv[2], "utf8").trim()).update(`epic247-admin-v2:${expira}`).digest("hex")}`;
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36 Edg/140.0";
 const ts = Date.now().toString(36);
 const EMAIL = `qa-admin-${ts}@epic247.invalid`;
